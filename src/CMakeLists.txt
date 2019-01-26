@@ -1,0 +1,1 @@
+add_library(LLVMHelloFunction MODULE HelloFunctionPass.cpp)
