@@ -1,1 +1,1 @@
-add_library(LLVMHelloFunction MODULE HelloFunctionPass.cpp)
+add_library(TASPrototypePasses MODULE SimplePrototypePasses.cpp)

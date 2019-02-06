@@ -1,4 +1,4 @@
-; ModuleID = 'lookup.c'
+; ModuleID = 'lookup.ll'
 source_filename = "lookup.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
@@ -7,10 +7,11 @@ target triple = "x86_64-pc-linux-gnu"
 
 @hashes = common dso_local global [8192 x i32] zeroinitializer, align 16
 @packet_buffer = common dso_local global [48 x %struct.packet] zeroinitializer, align 16
-@.str = private unnamed_addr constant [10 x i8] c"tas_batch\00", section "llvm.metadata"
-@.str.1 = private unnamed_addr constant [9 x i8] c"lookup.c\00", section "llvm.metadata"
+@.str = private unnamed_addr constant [3 x i8] c"%d\00", align 1
+@.str.1 = private unnamed_addr constant [10 x i8] c"tas_batch\00", section "llvm.metadata"
+@.str.2 = private unnamed_addr constant [9 x i8] c"lookup.c\00", section "llvm.metadata"
 @expected = common dso_local global [48 x i32] zeroinitializer, align 16
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.1, i32 0, i32 0), i32 31 }], section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.1, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i32 41 }], section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local void @fill_hashTable() #0 {
@@ -82,6 +83,59 @@ define dso_local void @fill_packet_buffer(%struct.packet**, i32) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
+define dso_local void @test_loop_function() #0 {
+  %1 = alloca i32, align 4
+  %2 = alloca i32, align 4
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  store i32 10, i32* %1, align 4
+  store i32 0, i32* %2, align 4
+  store i32 0, i32* %3, align 4
+  br label %5
+
+; <label>:5:                                      ; preds = %22, %0
+  %6 = load i32, i32* %3, align 4
+  %7 = load i32, i32* %1, align 4
+  %8 = icmp slt i32 %6, %7
+  br i1 %8, label %9, label %25
+
+; <label>:9:                                      ; preds = %5
+  store i32 0, i32* %4, align 4
+  br label %10
+
+; <label>:10:                                     ; preds = %18, %9
+  %11 = load i32, i32* %4, align 4
+  %12 = load i32, i32* %1, align 4
+  %13 = icmp slt i32 %11, %12
+  br i1 %13, label %14, label %21
+
+; <label>:14:                                     ; preds = %10
+  %15 = load i32, i32* %2, align 4
+  %16 = load i32, i32* %4, align 4
+  %17 = add nsw i32 %15, %16
+  store i32 %17, i32* %2, align 4
+  br label %18
+
+; <label>:18:                                     ; preds = %14
+  %19 = load i32, i32* %4, align 4
+  %20 = add nsw i32 %19, 1
+  store i32 %20, i32* %4, align 4
+  br label %10
+
+; <label>:21:                                     ; preds = %10
+  br label %22
+
+; <label>:22:                                     ; preds = %21
+  %23 = load i32, i32* %3, align 4
+  %24 = add nsw i32 %23, 1
+  store i32 %24, i32* %3, align 4
+  br label %5
+
+; <label>:25:                                     ; preds = %5
+  ret void
+}
+
+; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local void @hash_lookup(%struct.packet*) #0 {
   %2 = alloca %struct.packet*, align 8
   %3 = alloca i32, align 4
@@ -93,8 +147,12 @@ define dso_local void @hash_lookup(%struct.packet*) #0 {
   %8 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %7
   %9 = load i32, i32* %8, align 4
   store i32 %9, i32* %3, align 4
+  %10 = load i32, i32* %3, align 4
+  %11 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %10)
   ret void
 }
+
+declare i32 @printf(i8*, ...) #1
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local i32 @main() #0 {
@@ -104,7 +162,7 @@ define dso_local i32 @main() #0 {
   %4 = alloca i32, align 4
   %5 = alloca i32, align 4
   store i32 0, i32* %1, align 4
-  %6 = call noalias i8* @malloc(i64 384) #2
+  %6 = call noalias i8* @malloc(i64 384) #3
   %7 = bitcast i8* %6 to %struct.packet**
   store %struct.packet** %7, %struct.packet*** %2, align 8
   store i32 0, i32* %3, align 4
@@ -116,7 +174,7 @@ define dso_local i32 @main() #0 {
   br i1 %10, label %11, label %21
 
 ; <label>:11:                                     ; preds = %8
-  %12 = call noalias i8* @malloc(i64 16) #2
+  %12 = call noalias i8* @malloc(i64 16) #3
   %13 = bitcast i8* %12 to %struct.packet*
   %14 = load %struct.packet**, %struct.packet*** %2, align 8
   %15 = load i32, i32* %3, align 4
@@ -174,7 +232,7 @@ define dso_local i32 @main() #0 {
   %43 = getelementptr inbounds %struct.packet*, %struct.packet** %40, i64 %42
   %44 = load %struct.packet*, %struct.packet** %43, align 8
   %45 = bitcast %struct.packet* %44 to i8*
-  call void @free(i8* %45) #2
+  call void @free(i8* %45) #3
   br label %46
 
 ; <label>:46:                                     ; preds = %39
@@ -186,19 +244,20 @@ define dso_local i32 @main() #0 {
 ; <label>:49:                                     ; preds = %36
   %50 = load %struct.packet**, %struct.packet*** %2, align 8
   %51 = bitcast %struct.packet** %50 to i8*
-  call void @free(i8* %51) #2
+  call void @free(i8* %51) #3
   ret i32 0
 }
 
 ; Function Attrs: nounwind
-declare noalias i8* @malloc(i64) #1
+declare noalias i8* @malloc(i64) #2
 
 ; Function Attrs: nounwind
-declare void @free(i8*) #1
+declare void @free(i8*) #2
 
 attributes #0 = { noinline nounwind optnone sspstrong uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind }
+attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind }
 
 !llvm.module.flags = !{!0, !1, !2}
 !llvm.ident = !{!3}

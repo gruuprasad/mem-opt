@@ -28,6 +28,16 @@ void fill_packet_buffer(struct packet ** pkts, int n) {
   }
 }
 
+void test_loop_function() {
+  int M = 10;
+  int sum = 0;
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < M; ++j) {
+      sum = sum + j;
+    }
+  }
+}
+
 void hash_lookup(struct packet * pkt) __attribute__((annotate("tas_batch"))){
   uint32_t h;
   h = hashes[pkt->id];

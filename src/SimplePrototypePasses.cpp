@@ -1,3 +1,4 @@
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/InstIterator.h>
@@ -5,6 +6,8 @@
 #include <llvm/Pass.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <deque>
+#include <map>
 #include <string>
 
 using namespace llvm;
@@ -33,9 +36,27 @@ std::string IRTypeToString(Instruction & I) {
 
 namespace {
 
-struct HelloFunction : public FunctionPass {
+// Pass to collect loop info in a function
+struct LoopDetails : public FunctionPass {
   static char ID;
-  HelloFunction() : FunctionPass(ID) {}
+  LoopDetails() : FunctionPass(ID) {}
+
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+    AU.addRequired<LoopInfoWrapperPass>();
+  }
+
+  bool runOnFunction(Function &F) override {
+    errs() << "Running LoopAnalysis on: " << F.getName() << "\n";
+    auto LI = getAnalysis<LoopInfoWrapperPass>()
+    LI.print(errs());
+    return false;
+  }
+};
+
+struct FunctionAttributeInfo : public FunctionPass {
+  static char ID;
+  FunctionAttributeInfo() : FunctionPass(ID) {}
 
   // Annotation list structure in IR: stored as array of struct
   // ConstantArray : [Size x struct]
@@ -52,7 +73,7 @@ struct HelloFunction : public FunctionPass {
   // For each annotation, it adds annotation as attribute in corresponding
   // Function object so that other passes can use the presence of this attribute
   // to do transformation.
-  void setTASFnAnnotationinFunction(Module * M) {
+  void setAnnotationInFunctionObject(Module * M) {
     if (auto annotationList = M->getNamedGlobal("llvm.global.annotations")) {
       auto ca = cast<ConstantArray>(annotationList->getOperand(0));
       for (unsigned int i = 0; i < ca->getNumOperands(); ++i) {
@@ -68,7 +89,7 @@ struct HelloFunction : public FunctionPass {
   }
 
   bool doInitialization(Module &M) override {
-    setTASFnAnnotationinFunction(&M);
+    setAnnotationInFunctionObject(&M);
     return true;
   }
 
@@ -107,8 +128,14 @@ struct HelloFunction : public FunctionPass {
   }
 };
 
-char HelloFunction::ID = 0;
-static RegisterPass<HelloFunction> X("hello", "Hello Function Pass",
+char FunctionAttributeInfo::ID = 0;
+static RegisterPass<FunctionAttributeInfo> X("tas-fn-attribute", "Pass detecting functions with TAS-related attribute",
                                       false /* Only looks at CFG */,
                                       false /* Analysis Pass */);
+
+char LoopDetails::ID = 0;
+static RegisterPass<LoopDetails> X1("eli", "Pass extracting loop info in a function",
+                                   false,
+                                   false);
+
 } // Anonymous namespace
