@@ -1,4 +1,4 @@
-; ModuleID = 'lookup.ll'
+; ModuleID = 'lookup.c'
 source_filename = "lookup.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
@@ -139,16 +139,35 @@ define dso_local void @test_loop_function() #0 {
 define dso_local void @hash_lookup(%struct.packet*) #0 {
   %2 = alloca %struct.packet*, align 8
   %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
   store %struct.packet* %0, %struct.packet** %2, align 8
-  %4 = load %struct.packet*, %struct.packet** %2, align 8
-  %5 = getelementptr inbounds %struct.packet, %struct.packet* %4, i32 0, i32 0
-  %6 = load i32, i32* %5, align 8
-  %7 = sext i32 %6 to i64
-  %8 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %7
-  %9 = load i32, i32* %8, align 4
-  store i32 %9, i32* %3, align 4
-  %10 = load i32, i32* %3, align 4
-  %11 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %10)
+  store i32 0, i32* %3, align 4
+  br label %5
+
+; <label>:5:                                      ; preds = %17, %1
+  %6 = load i32, i32* %3, align 4
+  %7 = icmp slt i32 %6, 48
+  br i1 %7, label %8, label %20
+
+; <label>:8:                                      ; preds = %5
+  %9 = load %struct.packet*, %struct.packet** %2, align 8
+  %10 = getelementptr inbounds %struct.packet, %struct.packet* %9, i32 0, i32 0
+  %11 = load i32, i32* %10, align 8
+  %12 = sext i32 %11 to i64
+  %13 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %12
+  %14 = load i32, i32* %13, align 4
+  store i32 %14, i32* %4, align 4
+  %15 = load i32, i32* %4, align 4
+  %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %15)
+  br label %17
+
+; <label>:17:                                     ; preds = %8
+  %18 = load i32, i32* %3, align 4
+  %19 = add nsw i32 %18, 1
+  store i32 %19, i32* %3, align 4
+  br label %5
+
+; <label>:20:                                     ; preds = %5
   ret void
 }
 

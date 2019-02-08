@@ -42,3 +42,4 @@ include_directories(src/)
 add_subdirectory(src/)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/examples DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.sh DESTINATION ${CMAKE_BINARY_DIR})

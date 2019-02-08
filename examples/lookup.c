@@ -39,9 +39,13 @@ void test_loop_function() {
 }
 
 void hash_lookup(struct packet * pkt) __attribute__((annotate("tas_batch"))){
-  uint32_t h;
-  h = hashes[pkt->id];
-  printf("%d", h);
+  int n = N;
+  for (int i = 0; i < n; ++i) {
+    uint32_t h;
+    h = hashes[pkt->id];
+    printf("%d", h);
+    printf("loop 2\n");
+  }
   return;
 }
 
