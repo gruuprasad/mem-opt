@@ -14,8 +14,8 @@ using namespace llvm;
 
 namespace tas {
 
-const std::string fn_mark = "tas_attr1";
-const std::string var_mark = "tas_attr2";
+static const std::string fn_mark = "tas_batch";
+static const std::string var_mark = "tas_attr2";
 
 std::string IRTypeToString(Instruction & I) {
   if (isa<PHINode>(I))
@@ -47,9 +47,38 @@ struct LoopDetails : public FunctionPass {
   }
 
   bool runOnFunction(Function &F) override {
-    errs() << "Running LoopAnalysis on: " << F.getName() << "\n";
-    auto LI = getAnalysis<LoopInfoWrapperPass>()
-    LI.print(errs());
+    if (!F.hasFnAttribute(tas::fn_mark)) 
+      return false;
+
+    errs() << "\nLoopFission pass: " << F.getName() << "\n";
+    LoopInfo *LI = &getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
+    LI->print(errs());
+    auto loop = *LI->begin();
+    errs() << "GetNumBlocks " << loop->getNumBlocks() << "\n";
+    errs() << "GetLoopDepth " << loop->getLoopDepth() << "\n";
+
+    if (auto ph = loop->getLoopPreheader()) {
+      errs() << "Preheader:\n" << *ph << "\n";
+    }
+
+    errs() << "Loop Header:\n" << *loop->getHeader() << "\n";
+    errs() << "Loop Header has exit instruction:" << loop->isLoopExiting(loop->getHeader()) << "\n";
+
+    for (auto & bb : loop->blocks()) {
+      errs() << *bb;
+    }
+    errs() << "\n";
+    
+    errs() << "Is Safe to clone " << (loop->isSafeToClone() ? "Yes": "No") << "\n";
+    errs() << "Is loop simplify form " << (loop->isLoopSimplifyForm() ? "Yes": "No") << "\n";
+
+    errs() << "Loop blocks in preorder\n";
+    auto loopBlocks = LI->getLoopsInPreorder();
+    for (auto & bb : loopBlocks) {
+      errs() << "block " << *bb;
+    }
+    //assert(loop->getSubLoops().empty() &&
+    //     "Loop to be cloned cannot have inner loop");
     return false;
   }
 };
