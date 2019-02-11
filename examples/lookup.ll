@@ -8,10 +8,11 @@ target triple = "x86_64-pc-linux-gnu"
 @hashes = common dso_local global [8192 x i32] zeroinitializer, align 16
 @packet_buffer = common dso_local global [48 x %struct.packet] zeroinitializer, align 16
 @.str = private unnamed_addr constant [3 x i8] c"%d\00", align 1
-@.str.1 = private unnamed_addr constant [10 x i8] c"tas_batch\00", section "llvm.metadata"
-@.str.2 = private unnamed_addr constant [9 x i8] c"lookup.c\00", section "llvm.metadata"
+@.str.1 = private unnamed_addr constant [8 x i8] c"loop 2\0A\00", align 1
+@.str.2 = private unnamed_addr constant [10 x i8] c"tas_batch\00", section "llvm.metadata"
+@.str.3 = private unnamed_addr constant [9 x i8] c"lookup.c\00", section "llvm.metadata"
 @expected = common dso_local global [48 x i32] zeroinitializer, align 16
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.1, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i32 41 }], section "llvm.metadata"
+@llvm.global.annotations = appending global [3 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup_loopSplit to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3, i32 0, i32 0), i32 41 }, { i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup_v2 to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3, i32 0, i32 0), i32 55 }, { i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @hash_lookup to i8*), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.3, i32 0, i32 0), i32 69 }], section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local void @fill_hashTable() #0 {
@@ -136,42 +137,165 @@ define dso_local void @test_loop_function() #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
-define dso_local void @hash_lookup(%struct.packet*) #0 {
+define dso_local void @hash_lookup_loopSplit(%struct.packet*) #0 {
   %2 = alloca %struct.packet*, align 8
   %3 = alloca i32, align 4
   %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
   store %struct.packet* %0, %struct.packet** %2, align 8
-  store i32 0, i32* %3, align 4
-  br label %5
+  store i32 48, i32* %3, align 4
+  store i32 0, i32* %4, align 4
+  br label %7
 
-; <label>:5:                                      ; preds = %17, %1
-  %6 = load i32, i32* %3, align 4
-  %7 = icmp slt i32 %6, 48
-  br i1 %7, label %8, label %20
+; <label>:7:                                      ; preds = %20, %1
+  %8 = load i32, i32* %4, align 4
+  %9 = load i32, i32* %3, align 4
+  %10 = icmp slt i32 %8, %9
+  br i1 %10, label %11, label %23
 
-; <label>:8:                                      ; preds = %5
-  %9 = load %struct.packet*, %struct.packet** %2, align 8
-  %10 = getelementptr inbounds %struct.packet, %struct.packet* %9, i32 0, i32 0
-  %11 = load i32, i32* %10, align 8
-  %12 = sext i32 %11 to i64
-  %13 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %12
-  %14 = load i32, i32* %13, align 4
-  store i32 %14, i32* %4, align 4
-  %15 = load i32, i32* %4, align 4
-  %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %15)
-  br label %17
+; <label>:11:                                     ; preds = %7
+  %12 = load %struct.packet*, %struct.packet** %2, align 8
+  %13 = getelementptr inbounds %struct.packet, %struct.packet* %12, i32 0, i32 0
+  %14 = load i32, i32* %13, align 8
+  %15 = sext i32 %14 to i64
+  %16 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %15
+  %17 = load i32, i32* %16, align 4
+  store i32 %17, i32* %5, align 4
+  %18 = load i32, i32* %5, align 4
+  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %18)
+  br label %20
 
-; <label>:17:                                     ; preds = %8
-  %18 = load i32, i32* %3, align 4
-  %19 = add nsw i32 %18, 1
-  store i32 %19, i32* %3, align 4
-  br label %5
+; <label>:20:                                     ; preds = %11
+  %21 = load i32, i32* %4, align 4
+  %22 = add nsw i32 %21, 1
+  store i32 %22, i32* %4, align 4
+  br label %7
 
-; <label>:20:                                     ; preds = %5
+; <label>:23:                                     ; preds = %7
+  store i32 0, i32* %6, align 4
+  br label %24
+
+; <label>:24:                                     ; preds = %30, %23
+  %25 = load i32, i32* %6, align 4
+  %26 = load i32, i32* %3, align 4
+  %27 = icmp slt i32 %25, %26
+  br i1 %27, label %28, label %33
+
+; <label>:28:                                     ; preds = %24
+  %29 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0))
+  br label %30
+
+; <label>:30:                                     ; preds = %28
+  %31 = load i32, i32* %6, align 4
+  %32 = add nsw i32 %31, 1
+  store i32 %32, i32* %6, align 4
+  br label %24
+
+; <label>:33:                                     ; preds = %24
   ret void
 }
 
 declare i32 @printf(i8*, ...) #1
+
+; Function Attrs: noinline nounwind optnone sspstrong uwtable
+define dso_local void @hash_lookup_v2(%struct.packet*) #0 {
+  %2 = alloca %struct.packet*, align 8
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  %6 = alloca i32, align 4
+  store %struct.packet* %0, %struct.packet** %2, align 8
+  store i32 48, i32* %3, align 4
+  store i32 0, i32* %4, align 4
+  br label %7
+
+; <label>:7:                                      ; preds = %29, %1
+  %8 = load i32, i32* %4, align 4
+  %9 = load i32, i32* %3, align 4
+  %10 = icmp slt i32 %8, %9
+  br i1 %10, label %11, label %32
+
+; <label>:11:                                     ; preds = %7
+  %12 = load %struct.packet*, %struct.packet** %2, align 8
+  %13 = getelementptr inbounds %struct.packet, %struct.packet* %12, i32 0, i32 0
+  %14 = load i32, i32* %13, align 8
+  %15 = sext i32 %14 to i64
+  %16 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %15
+  %17 = load i32, i32* %16, align 4
+  store i32 %17, i32* %5, align 4
+  %18 = load i32, i32* %5, align 4
+  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %18)
+  store i32 0, i32* %6, align 4
+  br label %20
+
+; <label>:20:                                     ; preds = %25, %11
+  %21 = load i32, i32* %6, align 4
+  %22 = icmp slt i32 %21, 10
+  br i1 %22, label %23, label %28
+
+; <label>:23:                                     ; preds = %20
+  %24 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0))
+  br label %25
+
+; <label>:25:                                     ; preds = %23
+  %26 = load i32, i32* %6, align 4
+  %27 = add nsw i32 %26, 1
+  store i32 %27, i32* %6, align 4
+  br label %20
+
+; <label>:28:                                     ; preds = %20
+  br label %29
+
+; <label>:29:                                     ; preds = %28
+  %30 = load i32, i32* %4, align 4
+  %31 = add nsw i32 %30, 1
+  store i32 %31, i32* %4, align 4
+  br label %7
+
+; <label>:32:                                     ; preds = %7
+  ret void
+}
+
+; Function Attrs: noinline nounwind optnone sspstrong uwtable
+define dso_local void @hash_lookup(%struct.packet*) #0 {
+  %2 = alloca %struct.packet*, align 8
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i32, align 4
+  store %struct.packet* %0, %struct.packet** %2, align 8
+  store i32 48, i32* %3, align 4
+  store i32 0, i32* %4, align 4
+  br label %6
+
+; <label>:6:                                      ; preds = %20, %1
+  %7 = load i32, i32* %4, align 4
+  %8 = load i32, i32* %3, align 4
+  %9 = icmp slt i32 %7, %8
+  br i1 %9, label %10, label %23
+
+; <label>:10:                                     ; preds = %6
+  %11 = load %struct.packet*, %struct.packet** %2, align 8
+  %12 = getelementptr inbounds %struct.packet, %struct.packet* %11, i32 0, i32 0
+  %13 = load i32, i32* %12, align 8
+  %14 = sext i32 %13 to i64
+  %15 = getelementptr inbounds [8192 x i32], [8192 x i32]* @hashes, i64 0, i64 %14
+  %16 = load i32, i32* %15, align 4
+  store i32 %16, i32* %5, align 4
+  %17 = load i32, i32* %5, align 4
+  %18 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0), i32 %17)
+  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0))
+  br label %20
+
+; <label>:20:                                     ; preds = %10
+  %21 = load i32, i32* %4, align 4
+  %22 = add nsw i32 %21, 1
+  store i32 %22, i32* %4, align 4
+  br label %6
+
+; <label>:23:                                     ; preds = %6
+  ret void
+}
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local i32 @main() #0 {

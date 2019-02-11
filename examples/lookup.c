@@ -38,6 +38,34 @@ void test_loop_function() {
   }
 }
 
+void hash_lookup_loopSplit(struct packet * pkt) __attribute__((annotate("tas_batch"))){
+  int n = N;
+  for (int i = 0; i < n; ++i) {
+    uint32_t h;
+    h = hashes[pkt->id];
+    printf("%d", h);
+  }
+
+  for (int i = 0; i < n; ++i) {
+    printf("loop 2\n");
+  }
+  return;
+}
+
+void hash_lookup_v2(struct packet * pkt) __attribute__((annotate("tas_batch"))){
+  int n = N;
+  for (int i = 0; i < n; ++i) {
+    uint32_t h;
+    h = hashes[pkt->id];
+    printf("%d", h);
+
+    for (int i = 0; i < 10; ++i) {
+      printf("loop 2\n");
+    }
+  }
+  return;
+}
+
 void hash_lookup(struct packet * pkt) __attribute__((annotate("tas_batch"))){
   int n = N;
   for (int i = 0; i < n; ++i) {
