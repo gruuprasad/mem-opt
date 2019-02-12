@@ -1,15 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int funcA() __attribute__((annotate("tas_attr1"))) {
-  int __attribute__((annotate("tas_attr2"))) a = 10;
-  int b = 20;
-  int c;
-  c = a + b;
-  if (c > 10)
-    c = 0;
-  else
-    c = 30;
+int funcA() __attribute__((annotate("tas_batch"))) {
+  int __attribute__((annotate("expensive"))) * a;
+  int b = 10;
+  int c = 20;
+  a = malloc(sizeof(int));
 
+  c = c + (*a);
+  printf("c = %d\n", c);
+
+  free(a);
   return c;
 }
 
