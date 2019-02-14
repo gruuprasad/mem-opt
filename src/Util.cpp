@@ -51,7 +51,7 @@ void detectVarAnnotation(Function * F, SmallVectorImpl<Instruction *> & EI) {
 void cloneLoopBasicBlocks(Function * F, Loop * L, ValueToValueMapTy & VMap) {
   SmallVector<BasicBlock *, 16> ClonedBlocks;
   for (auto * BB : L->blocks()) {
-    auto * ClonedBlock = CloneBasicBlock(BB, VMap, "clone_");
+    auto * ClonedBlock = CloneBasicBlock(BB, VMap, "_clone");
     VMap[BB] = ClonedBlock;
     ClonedBlocks.push_back(ClonedBlock);
 
