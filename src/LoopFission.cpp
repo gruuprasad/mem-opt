@@ -22,10 +22,21 @@ bool LoopFission::run() {
   assert(!LI->empty() && "Function must contain atleast one loop");
   auto L = *LI->begin();
 
-  errs() << "Function before loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F;
+  // Get basic block split points in loop body based on annotation.
+  SmallVector<Instruction *, 4> SplitPoints;
+  detectVarAnnotation(F, SplitPoints);
+
+  if (SplitPoints.empty())
+    return false;
+
+  LLVM_DEBUG(dbgs() << "Number of split points "<< SplitPoints.size() << "\n");
+  for (auto & SP : SplitPoints)
+    SP->getParent()->splitBasicBlock(SP, "new_BB");
+
+  LLVM_DEBUG(dbgs() << "Function before loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F);
   ValueToValueMapTy VMap;
   cloneLoopBasicBlocks(F, L, VMap);
-  errs() << "Function after loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F;
+  LLVM_DEBUG(dbgs() << "Function after loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F);
   return true;
 }
 

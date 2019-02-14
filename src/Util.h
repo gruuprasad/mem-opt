@@ -1,7 +1,9 @@
 #ifndef TAS_UTIL_H
 #define TAS_UTIL_H
 
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/LoopInfo.h>
+#include <llvm/IR/Instruction.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
 #include <llvm/Transforms/Utils/ValueMapper.h>
@@ -30,7 +32,7 @@ void setAnnotationInFunctionObject(llvm::Module * M);
 
 // This function identifies pointer variables that are marked as expensive memory load
 // operation. 
-void detectVarAnnotation(llvm::Function * F);
+void detectVarAnnotation(llvm::Function * F, llvm::SmallVectorImpl<llvm::Instruction *> & EI);
 
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValueMapTy & VMap);
 } // namespace tas

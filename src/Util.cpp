@@ -18,17 +18,17 @@ namespace tas {
 Intrinsic::ID VarAnnotationId = static_cast<Intrinsic::ID>(177);
 
 void setAnnotationInFunctionObject(Module * M) {
-  auto annotationList = M->getNamedGlobal("llvm.global.annotations");
-  if (!annotationList) return;
+  auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
+  if (!AnnotationList) return;
 
-  auto ca = cast<ConstantArray>(annotationList->getOperand(0));
-  for (unsigned int i = 0; i < ca->getNumOperands(); ++i) {
-    auto ca_struct =cast<ConstantStruct>(ca->getOperand(i));
-    auto ca_func = dyn_cast<Function>(ca_struct->getOperand(0)->getOperand(0));
-    if (!ca_func) continue;
-    auto ca_annotation = cast<ConstantDataArray>(
-        cast<GlobalVariable>(ca_struct->getOperand(1)->getOperand(0))->getOperand(0));
-    ca_func->addFnAttr(ca_annotation->getAsCString());
+  auto CA = cast<ConstantArray>(AnnotationList->getOperand(0));
+  for (unsigned int i = 0; i < CA->getNumOperands(); ++i) {
+    auto CAStruct =cast<ConstantStruct>(CA->getOperand(i));
+    auto CAFunc = dyn_cast<Function>(CAStruct->getOperand(0)->getOperand(0));
+    if (!CAFunc) continue;
+    auto CAAnnotation = cast<ConstantDataArray>(
+        cast<GlobalVariable>(CAStruct->getOperand(1)->getOperand(0))->getOperand(0));
+    CAFunc->addFnAttr(CAAnnotation->getAsCString());
   }
 }
 
