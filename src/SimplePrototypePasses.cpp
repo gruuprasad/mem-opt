@@ -1,3 +1,4 @@
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
@@ -5,10 +6,13 @@
 #include <llvm/IR/Module.h>
 #include <llvm/Pass.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Transforms/Utils/Cloning.h>
 
 #include <deque>
 #include <map>
 #include <string>
+
+#include "Util.h"
 
 using namespace llvm;
 
@@ -36,20 +40,55 @@ std::string IRTypeToString(Instruction & I) {
 
 namespace {
 
+void cloneLLVMObjects(Function &F) {
+  ValueToValueMapTy VMap;
+  Function *ClonedF = Function::Create(cast<FunctionType>(F.getValueType()), F.getLinkage(),
+      F.getName() + "_cloned");
+  ClonedF->copyAttributesFrom(&F);
+  VMap[&F] = ClonedF;
+
+  Function::arg_iterator ClonedFI = ClonedF->arg_begin();
+  for (Function::const_arg_iterator J = F.arg_begin(); J != F.arg_end(); ++J) {
+      ClonedFI->setName(J->getName());
+      VMap[&*J] = &*ClonedFI++;
+  }
+
+  SmallVector<ReturnInst*, 16> Returns;
+  CloneFunctionInto(ClonedF, &F, VMap, false, Returns, "Clone-");
+
+  // Print results
+  errs() << "old Function:\n" << F << "\n";
+  errs() << "Total entries in VMap: " << VMap.size() << "\n";
+  errs() << "new Function:\n" << *ClonedF << "\n";
+  /*
+  for (const auto &entry : VMap) {
+    errs() << "Key:" << *entry.first << " Value:" << *entry.second << "\n";
+  }*/
+  ClonedF->eraseFromParent();
+}
+
 // Pass to collect loop info in a function
 struct LoopDetails : public FunctionPass {
   static char ID;
   LoopDetails() : FunctionPass(ID) {}
 
+  bool doInitialization(Module &M) override {
+    tas::setAnnotationInFunctionObject(&M);
+    return true;
+  }
+
   void getAnalysisUsage(AnalysisUsage &AU) const override {
-    AU.setPreservesAll();
     AU.addRequired<LoopInfoWrapperPass>();
+    AU.setPreservesAll();
   }
 
   bool runOnFunction(Function &F) override {
     if (!F.hasFnAttribute(tas::fn_mark)) 
       return false;
 
+    cloneLLVMObjects(F);
+
+    /*
     errs() << "\nLoopFission pass: " << F.getName() << "\n";
     LoopInfo *LI = &getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
     LI->print(errs());
@@ -79,6 +118,7 @@ struct LoopDetails : public FunctionPass {
     }
     //assert(loop->getSubLoops().empty() &&
     //     "Loop to be cloned cannot have inner loop");
+    */
     return false;
   }
 };
@@ -87,38 +127,8 @@ struct FunctionAttributeInfo : public FunctionPass {
   static char ID;
   FunctionAttributeInfo() : FunctionPass(ID) {}
 
-  // Annotation list structure in IR: stored as array of struct
-  // ConstantArray : [Size x struct]
-  // struct definition: [Function  ptr, GlobalVariable ptr, GlobalVariable ptr, i32]
-  // @llvm.global.annotations = [N x {i8*, i8*, i8*, i32}]
-  // N - number of global annotations in a module
-  // Struct members details:
-  // i8* - Function pointer
-  // i8* - Pointer to annotation string
-  // i8* - Pointer to file name string
-  // i32 - line number of annotation in source file
-  //
-  // This function goes through annotation list stored as global variable.
-  // For each annotation, it adds annotation as attribute in corresponding
-  // Function object so that other passes can use the presence of this attribute
-  // to do transformation.
-  void setAnnotationInFunctionObject(Module * M) {
-    if (auto annotationList = M->getNamedGlobal("llvm.global.annotations")) {
-      auto ca = cast<ConstantArray>(annotationList->getOperand(0));
-      for (unsigned int i = 0; i < ca->getNumOperands(); ++i) {
-        auto ca_struct =cast<ConstantStruct>(ca->getOperand(i));
-        if (auto ca_func = dyn_cast<Function>(ca_struct->getOperand(0)->getOperand(0))) {
-          auto ca_annotation = cast<ConstantDataArray>(
-              cast<GlobalVariable>(ca_struct->getOperand(1)->getOperand(0))->getOperand(0));
-
-          ca_func->addFnAttr(ca_annotation->getAsCString());
-        }
-      }
-    }
-  }
-
   bool doInitialization(Module &M) override {
-    setAnnotationInFunctionObject(&M);
+    tas::setAnnotationInFunctionObject(&M);
     return true;
   }
 
@@ -163,7 +173,7 @@ static RegisterPass<FunctionAttributeInfo> X("tas-fn-attribute", "Pass detecting
                                       false /* Analysis Pass */);
 
 char LoopDetails::ID = 0;
-static RegisterPass<LoopDetails> X1("eli", "Pass extracting loop info in a function",
+static RegisterPass<LoopDetails> X1("tas-loop-details", "Pass extracting loop info in a function",
                                    false,
                                    false);
 
