@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#define EXPENSIVE __attribute__((annotate("expensive")))
+#define TAS_BATCH __attribute__((annotate("tas_batch")))
+
 #define BucketSize 8192
 #define N 48
 
@@ -38,7 +41,7 @@ void test_loop_function() {
   }
 }
 
-void hash_lookup_loopSplit(struct packet * pkt) __attribute__((annotate("tas_batch"))){
+void hash_lookup_loopSplit(struct packet * pkt EXPENSIVE) TAS_BATCH {
   int n = N;
   for (int i = 0; i < n; ++i) {
     uint32_t h;
@@ -46,6 +49,7 @@ void hash_lookup_loopSplit(struct packet * pkt) __attribute__((annotate("tas_bat
     printf("%d", h);
   }
 
+  printf("access %d", pkt->id);
   for (int i = 0; i < n; ++i) {
     printf("loop 2\n");
   }
