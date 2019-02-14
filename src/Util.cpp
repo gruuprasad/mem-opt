@@ -1,13 +1,14 @@
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/Module.h>
 #include <llvm/Support/Debug.h>
+#include <llvm/Transforms/Utils/Cloning.h>
 
 #include "Util.h"
-
 
 using namespace llvm;
 
@@ -48,4 +49,25 @@ void setAnnotationInFunctionObject(Module * M) {
   }
 }
 
+void cloneLoopBasicBlocks(Function * F, Loop * L, ValueToValueMapTy & VMap) {
+  SmallVector<BasicBlock *, 16> ClonedBlocks;
+  for (auto * BB : L->blocks()) {
+    auto * ClonedBlock = CloneBasicBlock(BB, VMap, "clone_");
+    VMap[BB] = ClonedBlock;
+    ClonedBlocks.push_back(ClonedBlock);
+
+    auto ExitBlock = L->getExitBlock();
+    assert(ExitBlock != nullptr && "Support only loop with single exit edge");
+
+    ClonedBlock->insertInto(F, ExitBlock);
+  }
+  remapInstructionsInBlocks(ClonedBlocks, VMap);
+
+  // Set cloned loop as successor of old loop
+  auto LoopExitingBlock = L->getExitingBlock();
+  assert(LoopExitingBlock != nullptr && "Support only loop with single exit edge");
+  auto LoopTerminator = LoopExitingBlock->getTerminator();
+  assert(LoopTerminator != nullptr && "Loop Basicblock is not well formed");
+  LoopTerminator->setSuccessor(1, ClonedBlocks.front());
+}
 }
