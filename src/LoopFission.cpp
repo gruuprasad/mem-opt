@@ -19,26 +19,30 @@ const std::string fn_mark = "tas_batch";
 namespace tas {
 
 bool LoopFission::run() {
-  // Assume there is only single top-level loop in this function.
-  assert(!LI->empty() && "Function must contain atleast one loop");
-  auto L = *LI->begin();
+  // If there is no loop in this function, below transformation is not applicable,
+  if (LI->empty())
+    return false;
 
-  // Get basic block split points in loop body based on annotation.
+  // Get basic block split points based on annotation.
   SmallVector<Instruction *, 4> SplitPoints;
   detectVarAnnotation(F, SplitPoints);
-
+  LLVM_DEBUG(dbgs() << "Number of split points "<< SplitPoints.size() << "\n");
   if (SplitPoints.empty())
     return false;
 
-  LLVM_DEBUG(dbgs() << "Number of split points "<< SplitPoints.size() << "\n");
+  /*
   for (auto & SP : SplitPoints)
     SP->getParent()->splitBasicBlock(SP, "new_BB");
+
+  // Assume there is only single top-level loop in this function.
+  auto L = *LI->begin();
 
   LLVM_DEBUG(dbgs() << "Function before loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F);
   ValueToValueMapTy VMap;
   cloneLoopBasicBlocks(F, L, VMap);
   LLVM_DEBUG(dbgs() << "Function after loop clone:\nNumber of BasicBlock:" << F->size() << "\n" << *F);
-  return true;
+  */
+  return false;
 }
 
 } // namespace tas
@@ -60,7 +64,7 @@ bool TASLoopFission::runOnFunction(Function &F) {
   if (!F.hasFnAttribute(fn_mark)) 
     return false;
 
-  errs() << "LoopFission pass: " << F.getName() << "\n";
+  LLVM_DEBUG(errs() << "LoopFission pass: " << F.getName() << "\n");
   //tas::detectVarAnnotation(&F);
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   tas::LoopFission LF(&F, &LI);

@@ -34,17 +34,30 @@ void setAnnotationInFunctionObject(Module * M) {
 
 void detectVarAnnotation(Function * F, SmallVectorImpl<Instruction *> & EI) {
   for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I) {
+    // First argument to llvm.var.annotation intrinsic is the value to be annotated.
+    // Address is of type i8*. BitCast instruction is used before intrinsic call
+    // to convert variable pointer type to i8*. Operand to BitCast instruction
+    // is the Value we are interested in.
     auto * CI = dyn_cast<CallInst>(&*I);
     if(!CI) continue;
       
     if (CI->getCalledFunction()->getIntrinsicID() != VarAnnotationId)
       continue;
 
-    LLVM_DEBUG(dbgs() << "Use of annotated ptr in load instruction\n");
-    auto * ExprPtr = (cast<BitCastInst>(CI->getOperand(0)))->getOperand(0);
-    for (User * U : ExprPtr->users())
-      if (auto * Inst = dyn_cast<LoadInst>(U))
-        EI.push_back(Inst);
+    //LLVM_DEBUG(dbgs() << "Use of annotated ptr in load instruction\n");
+    auto * ExpensivePtr = (cast<BitCastInst>(CI->getOperand(0)))->getOperand(0);
+
+    // If annotated variable is of type pointer, then we are interested in load with
+    // address contained in pointer variable. In LLVM, allocas are used for local variable,
+    // accessing allocas are done using load/store op. Such load/store is not
+    // expensive hence we don't track it.
+    for (User * U : ExpensivePtr->users()) {
+      auto PtrInst = dyn_cast<LoadInst>(U);
+      if (!PtrInst) continue;
+      for (User *PtrUse : PtrInst->users())
+        if (auto * ExpLoad = dyn_cast<LoadInst>(PtrUse))
+          EI.push_back(ExpLoad);
+    }
   }
 }
 
