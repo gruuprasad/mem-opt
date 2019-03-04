@@ -1,0 +1,17 @@
+[
+{
+  "directory": "/home/gp/mpi-sws/tas-opt/build/src",
+  "command": "/usr/bin/c++  -DTASPrototypePasses_EXPORTS -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPrototypePasses.dir/SimplePrototypePasses.cpp.o -c /home/gp/mpi-sws/tas-opt/src/SimplePrototypePasses.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/src/SimplePrototypePasses.cpp"
+},
+{
+  "directory": "/home/gp/mpi-sws/tas-opt/build/src",
+  "command": "/usr/bin/c++  -DTASPrototypePasses_EXPORTS -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPrototypePasses.dir/LoopFission.cpp.o -c /home/gp/mpi-sws/tas-opt/src/LoopFission.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/src/LoopFission.cpp"
+},
+{
+  "directory": "/home/gp/mpi-sws/tas-opt/build/src",
+  "command": "/usr/bin/c++  -DTASPrototypePasses_EXPORTS -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPrototypePasses.dir/Util.cpp.o -c /home/gp/mpi-sws/tas-opt/src/Util.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/src/Util.cpp"
+}
+]
