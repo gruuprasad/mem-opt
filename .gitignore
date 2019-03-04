@@ -1,2 +1,4 @@
 # Build directory
 build
+cmake-build-debug
+examples
