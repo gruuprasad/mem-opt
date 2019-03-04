@@ -8,6 +8,8 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
+#include <string>
+
 #include "Util.h"
 
 using namespace llvm;
@@ -15,7 +17,7 @@ using namespace llvm;
 namespace tas {
 
 // FIXME Use intrinsic call name for detection instead of enum value
-Intrinsic::ID VarAnnotationId = static_cast<Intrinsic::ID>(177);
+std::string GlobalAnnotationStr = "llvm.global.annotations";
 
 void setAnnotationInFunctionObject(Module * M) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
@@ -40,12 +42,14 @@ void detectVarAnnotation(Function * F, SmallVectorImpl<Instruction *> & EI) {
     // is the Value we are interested in.
     auto * CI = dyn_cast<CallInst>(&*I);
     if(!CI) continue;
-      
-    if (CI->getCalledFunction()->getIntrinsicID() != VarAnnotationId)
+
+    if (CI->getCalledFunction()->getName() != GlobalAnnotationStr)
       continue;
 
-    //LLVM_DEBUG(dbgs() << "Use of annotated ptr in load instruction\n");
+    //LLVM_DEBUG(dbgs() << "annotated ptr declarattion instruction\n");
     auto * ExpensivePtr = (cast<BitCastInst>(CI->getOperand(0)))->getOperand(0);
+
+    // TODO Check whether Pointer is of type struct, then find it's uses.
 
     // If annotated variable is of type pointer, then we are interested in load with
     // address contained in pointer variable. In LLVM, allocas are used for local variable,
