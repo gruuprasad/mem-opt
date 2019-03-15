@@ -13,5 +13,15 @@
   "directory": "/home/gp/mpi-sws/tas-opt/build/src",
   "command": "/usr/bin/c++  -DTASPrototypePasses_EXPORTS -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPrototypePasses.dir/Util.cpp.o -c /home/gp/mpi-sws/tas-opt/src/Util.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/src/Util.cpp"
+},
+{
+  "directory": "/home/gp/mpi-sws/tas-opt/build/test",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/catch_LIB.dir/test_main.cpp.o -c /home/gp/mpi-sws/tas-opt/test/test_main.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/test/test_main.cpp"
+},
+{
+  "directory": "/home/gp/mpi-sws/tas-opt/build/test",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/src  -g -Wall -fno-rtti   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tests.dir/simple_test.cpp.o -c /home/gp/mpi-sws/tas-opt/test/simple_test.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/test/simple_test.cpp"
 }
 ]

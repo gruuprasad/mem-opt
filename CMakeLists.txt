@@ -26,6 +26,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+enable_testing()
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 set(LLVM_DIR "/home/gp/llvm_projects/llvm/install/lib/cmake/llvm")
@@ -43,6 +45,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 
 include_directories(src/)
 add_subdirectory(src/)
+add_subdirectory(test/)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/examples DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.sh DESTINATION ${CMAKE_BINARY_DIR})
