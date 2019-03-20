@@ -28,8 +28,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 enable_testing()
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-
 set(LLVM_DIR "/home/gp/llvm_projects/llvm/install/lib/cmake/llvm")
 # Find LLVM libraries
 find_package(LLVM REQUIRED CONFIG)
@@ -47,6 +45,13 @@ include_directories(src/)
 add_subdirectory(src/)
 add_subdirectory(test/)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/examples DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/scripts/run_test.sh DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION ${CMAKE_CURRENT_SOURCE_DIR})
+# Testing related tools
+if(NOT EXISTS ${LLVM_ROOT}/bin/FileCheck)
+    message(FATAL_ERROR "LLVM wasn't configured with -DLLVM_INSTALL_UTILS, cannot use FileCheck")
+endif()
+
+# Set lit configurations
+configure_file("${CMAKE_SOURCE_DIR}/test/litTests/lit.site.cfg.in" "${CMAKE_BINARY_DIR}/test/litTests/lit.site.cfg")
+
+add_custom_target(check COMMAND lit ${CMAKE_BINARY_DIR}/test/litTests)
+add_custom_target(checkunit COMMAND ctest)

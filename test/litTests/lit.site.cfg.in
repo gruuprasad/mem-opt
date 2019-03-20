@@ -1,0 +1,30 @@
+# -*- Python -*-
+
+# Configuration file for the 'lit' test runner.
+
+import os
+import sys
+import re
+import platform
+
+import lit.formats
+
+# name: The name of this test suite.
+config.name = 'TAS'
+
+# testFormat: The test format to use to interpret tests.
+config.test_format = lit.formats.ShTest(True)
+config.test_source_root = os.path.join("@CMAKE_SOURCE_DIR@", "test/litTests")
+
+# suffixes: A list of file extensions to treat as test files. This is overriden
+# by individual lit.local.cfg files in the test subdirectories.
+config.suffixes = ['.ll', '.c', '.cxx', '.test', '.txt', '.s']
+
+# excludes: A list of directories to exclude from the testsuite. The 'Inputs'
+# subdirectories contain auxiliary inputs for various tests in their parent
+# directories.
+config.excludes = ['CMakeLists.txt', 'CMakeFiles', 'CMakeCache.txt']
+
+config.substitutions.append(('%bindir', "@CMAKE_BINARY_DIR@"))
+
+config.environment['CMAKE_SOURCE_DIR'] = "@CMAKE_SOURCE_DIR@"

@@ -1,3 +1,5 @@
+// RUN: clang -S -emit-llvm %s -o %t.ll
+// RUN: opt -load lib/libTASPrototypePasses.so < %t.ll >/dev/null -tas-loop-fission -debug-only=tas
 #include <stdio.h>
 #include <stdlib.h>
 
