@@ -30,10 +30,6 @@ namespace tas {
 // i32 - line number of annotation in source file
 void setAnnotationInFunctionObject(llvm::Module * M);
 
-// This function identifies pointer variables that are marked as expensive memory load
-// operation. 
-void detectVarAnnotation(llvm::Function * F, llvm::SmallVectorImpl<llvm::Instruction *> & EI);
-
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValueMapTy & VMap);
 } // namespace tas
 

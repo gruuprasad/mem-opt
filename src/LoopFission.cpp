@@ -18,17 +18,67 @@ const std::string fn_mark = "tas_batch";
 
 namespace tas {
 
+static std::string VarAnnotationStr = "llvm.var.annotation";
+
+bool LoopFission::ArePreconditionsMet() {
+  return !(LI->empty());
+}
+
+void detectPrefetchVariables(Function * F, SmallVectorImpl<Value *> & EI) {
+  /*
+  for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I) {
+    auto * CI = dyn_cast<CallInst>(&*I);
+    if(!CI) continue;
+
+    if (CI->getCalledFunction()->getName() != VarAnnotationStr)
+      continue;
+
+    auto * ExpensivePtr = (cast<BitCastInst>(CI->getOperand(0)))->getOperand(0);
+    EI.push_back(ExpensivePtr);
+  }
+  */
+}
+
+int detectLoopTripCount() {
+  return 0;
+}
+
+Value * detectPrefetchVariableDef(Value * PV) {
+  return nullptr;
+}
+
+void collectPrefetchVariablesUses(SmallVectorImpl<Value *> & PrefetchUses,
+                                  SmallVectorImpl<Value *> & PrefetechVariables) {
+  return;
+}
+
 bool LoopFission::run() {
-  // If there is no loop in this function, below transformation is not applicable,
-  if (LI->empty())
+  if (!ArePreconditionsMet())
     return false;
 
-  // Get basic block split points based on annotation.
-  SmallVector<Instruction *, 4> SplitPoints;
-  detectVarAnnotation(F, SplitPoints);
-  LLVM_DEBUG(dbgs() << "Number of split points "<< SplitPoints.size() << "\n");
-  if (SplitPoints.empty())
+  // Step 1:
+  SmallVector<Value *, 8> PrefetechVariables;
+  detectPrefetchVariables(F, PrefetechVariables);
+
+  // If there are no annotations, then do nothing for now
+  if (PrefetechVariables.empty())
     return false;
+
+  // Step 2:
+  // If loop trip count is not constant, then return -1.
+  // FIXME In that case loop body is copied transparently
+  int LoopTripCount = 0;
+  LoopTripCount = detectLoopTripCount();
+
+  // Step 3:
+  SmallVector<Value *, 8> PrefetechVariablesDefs;
+  for (auto & PV : PrefetechVariables) {
+    PrefetechVariablesDefs.push_back(detectPrefetchVariableDef(PV));
+  }
+
+  // Step 4:
+  SmallVector<Value *, 8> PrefetchUses;
+  collectPrefetchVariablesUses(PrefetchUses, PrefetechVariables);
 
   /*
   for (auto & SP : SplitPoints)
@@ -74,5 +124,5 @@ bool TASLoopFission::runOnFunction(Function &F) {
 char TASLoopFission::ID = 0;
 static RegisterPass<TASLoopFission> X("tas-loop-fission", "Pass replicating single loop into multiple instances",
                                    false,
-                                   false);
+                                     false);
 } // Anonymous namespace

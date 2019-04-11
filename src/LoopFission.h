@@ -5,9 +5,21 @@
 
 namespace tas {
 
+/**
+ * Steps:
+ * 1. Detect and store all variables marked with prefetch annotation.
+ * 2. Detect loop trip count.
+ * 3. Detect prefetch variables def instructions.
+ * 4. Find first access of prefetch variable value access. Aim is to make this
+ *    access result in cache hit.
+ *
+ */
+
 class LoopFission {
   llvm::Function * F;
   llvm::LoopInfo * LI;
+
+  bool ArePreconditionsMet();
 
 public:
   LoopFission(llvm::Function * F_, llvm::LoopInfo * LI_) :
@@ -15,6 +27,13 @@ public:
 
   bool run();
 };
+
+
+void detectPrefetchVariables(llvm::Function * F, llvm::SmallVectorImpl<llvm::Value *> & EI);
+int detectLoopTripCount();
+llvm::Value * detectPrefetchVariableDef(llvm::Value * PV);
+void collectPrefetchVariablesUses(llvm::SmallVectorImpl<llvm::Value *> & PrefetchUses,
+                                  llvm::SmallVectorImpl<llvm::Value *> & PrefetechVariables);
 
 } // tas namespace
 
