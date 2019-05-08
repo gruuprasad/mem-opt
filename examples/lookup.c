@@ -70,14 +70,12 @@ void hash_lookup_v2(struct packet * pkt) __attribute__((annotate("tas_batch"))){
   return;
 }
 
-void hash_lookup(struct packet * pkt) __attribute__((annotate("tas_batch"))){
-  int n = N;
-  for (int i = 0; i < n; ++i) {
-    uint32_t h;
-    h = hashes[pkt->id];
-    printf("%d", h);
-    printf("loop 2\n");
-  }
+void hash_lookup(struct packet * pkt EXPENSIVE) __attribute__((annotate("tas_batch"))){
+  uint32_t h;
+  struct packet * p EXPENSIVE;
+  h = hashes[pkt->id];
+  printf("%d", h);
+  printf("loop 2\n");
   return;
 }
 
