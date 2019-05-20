@@ -41,16 +41,17 @@ void test_loop_function() {
   }
 }
 
-void hash_lookup_loopSplit(struct packet * pkt EXPENSIVE) TAS_BATCH {
+void hash_lookup_loopSplit(struct packet * pkt) TAS_BATCH {
   int n = N;
-  int * a EXPENSIVE;
+  struct packet * p EXPENSIVE;
   for (int i = 0; i < n; ++i) {
+    p = pkt;
     uint32_t h;
-    h = hashes[pkt->id];
+    h = hashes[p->id];
     printf("%d", h);
   }
 
-  printf("access %d", pkt->id);
+  printf("access %d", p->id);
   for (int i = 0; i < n; ++i) {
     printf("loop 2\n");
   }

@@ -1,7 +1,6 @@
 #include "catch.hpp"
 #include "test_util.h"
 #include "Util.h"
-#include "LoopFission.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/IR/Function.h>
