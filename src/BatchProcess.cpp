@@ -1,6 +1,8 @@
 #include "BatchProcess.h"
 #include "Util.h"
 
+#include <llvm/IR/IRBuilder.h>
+
 #include <iostream>
 
 using namespace llvm;
@@ -36,7 +38,36 @@ bool BatchProcess::run() {
     }
   }
 
-  return false;
+  errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
+
+  // Insert Prefetch call.
+  for (auto & V : AnnotatedVariables) {
+    for (auto * U : V->users()) {
+      if (auto * ST = dyn_cast<StoreInst>(U)) {
+
+        // Set prefetch instruction insertion point.
+        IRBuilder<> Builder(F->getContext());
+        Builder.SetInsertPoint(ST->getNextNode());
+
+        // Cast pointer value to i8* type
+        auto * PtrVal = cast<Instruction>(ST->getOperand(0));
+        auto CastI = Builder.CreateBitCast(PtrVal, Builder.getInt8PtrTy(), "TAS-inst1");
+
+        // Add llvm prefetch intrinsic call.
+        Type *I32 = Type::getInt32Ty(F->getContext());
+        Value *PrefetchFunc = Intrinsic::getDeclaration(F->getParent(), Intrinsic::prefetch);
+        Builder.CreateCall(
+            PrefetchFunc,
+            {CastI, /* Pointer Value */
+            ConstantInt::get(I32, 0), /* read (0) or write (1) */
+            ConstantInt::get(I32, 3), /* no_locality (0) to extreme temporal locality (3) */
+            ConstantInt::get(I32, 1)} /* data (1) or instruction (0)*/
+            );
+      }
+    }
+  }
+
+  return true;
 }
 
 }
