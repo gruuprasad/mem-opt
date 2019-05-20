@@ -26,6 +26,15 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
+  // Step 1
+  for (auto & I : F->front()) {
+    if (auto * CI = dyn_cast<CallInst>(&I)) {
+      auto * Callee = CI->getCalledFunction();
+      if (Callee->isIntrinsic()) {
+        AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      }
+    }
+  }
 
   return false;
 }
