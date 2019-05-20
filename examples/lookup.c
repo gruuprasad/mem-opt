@@ -43,6 +43,7 @@ void test_loop_function() {
 
 void hash_lookup_loopSplit(struct packet * pkt EXPENSIVE) TAS_BATCH {
   int n = N;
+  int * a EXPENSIVE;
   for (int i = 0; i < n; ++i) {
     uint32_t h;
     h = hashes[pkt->id];
@@ -56,7 +57,7 @@ void hash_lookup_loopSplit(struct packet * pkt EXPENSIVE) TAS_BATCH {
   return;
 }
 
-void hash_lookup_v2(struct packet * pkt) __attribute__((annotate("tas_batch"))){
+void hash_lookup_v2(struct packet * pkt) {
   int n = N;
   for (int i = 0; i < n; ++i) {
     uint32_t h;
@@ -70,7 +71,7 @@ void hash_lookup_v2(struct packet * pkt) __attribute__((annotate("tas_batch"))){
   return;
 }
 
-void hash_lookup(struct packet * pkt EXPENSIVE) __attribute__((annotate("tas_batch"))){
+void hash_lookup(struct packet * pkt EXPENSIVE) {
   uint32_t h;
   struct packet * p EXPENSIVE;
   h = hashes[pkt->id];

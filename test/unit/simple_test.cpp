@@ -55,6 +55,6 @@ TEST_CASE("Detect annotated variables") {
   Function &F = *M->begin();
 
   SmallVector<Value *, 8> AV;
-  tas::detectPrefetchVariables(&F, AV);
+  //tas::detectPrefetchVariables(&F, AV);
   REQUIRE (AV.size() == 2);
 }

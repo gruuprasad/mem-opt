@@ -1,3 +1,2 @@
-add_library(TASPass SHARED SimplePrototypePasses.cpp
-                                      LoopFission.cpp
-                                      Util.cpp)
+add_library(TASPass SHARED BatchProcess.cpp
+                           Util.cpp)
