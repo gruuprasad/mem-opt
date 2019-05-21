@@ -15,6 +15,7 @@ class BatchProcess {
   llvm::Function * F;
   llvm::LoopInfo * LI;
   llvm::SmallVector<llvm::Value *, 4> AnnotatedVariables;
+  llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
 
 public:
   BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_) :

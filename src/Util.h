@@ -31,6 +31,8 @@ namespace tas {
 void setAnnotationInFunctionObject(llvm::Module * M);
 
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValueMapTy & VMap);
+
+void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::StoreInst * I);
 } // namespace tas
 
 #endif

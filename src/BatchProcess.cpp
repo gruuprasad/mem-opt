@@ -32,41 +32,32 @@ bool BatchProcess::run() {
   for (auto & I : F->front()) {
     if (auto * CI = dyn_cast<CallInst>(&I)) {
       auto * Callee = CI->getCalledFunction();
-      if (Callee->isIntrinsic()) {
-        AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      if (!Callee->isIntrinsic()) continue;
+
+      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      for (auto * U : AnnotatedVariables.back()->users()) {
+        if (auto * ST = dyn_cast<StoreInst>(U))
+          AnnotatedVariableDefPoints.push_back(ST);
       }
     }
   }
 
   errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
+  errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
+
+  // Split basic block at annotated variable def points.
+  for (auto & DP : AnnotatedVariableDefPoints)
+    DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
 
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
     for (auto * U : V->users()) {
       if (auto * ST = dyn_cast<StoreInst>(U)) {
-
-        // Set prefetch instruction insertion point.
-        IRBuilder<> Builder(F->getContext());
-        Builder.SetInsertPoint(ST->getNextNode());
-
-        // Cast pointer value to i8* type
-        auto * PtrVal = cast<Instruction>(ST->getOperand(0));
-        auto CastI = Builder.CreateBitCast(PtrVal, Builder.getInt8PtrTy(), "TAS-inst1");
-
-        // Add llvm prefetch intrinsic call.
-        Type *I32 = Type::getInt32Ty(F->getContext());
-        Value *PrefetchFunc = Intrinsic::getDeclaration(F->getParent(), Intrinsic::prefetch);
-        Builder.CreateCall(
-            PrefetchFunc,
-            {CastI, /* Pointer Value */
-            ConstantInt::get(I32, 0), /* read (0) or write (1) */
-            ConstantInt::get(I32, 3), /* no_locality (0) to extreme temporal locality (3) */
-            ConstantInt::get(I32, 1)} /* data (1) or instruction (0)*/
-            );
+        insertLLVMPrefetchIntrinsic(F, ST);
       }
     }
   }
-
+ 
   return true;
 }
 

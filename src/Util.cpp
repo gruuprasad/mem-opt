@@ -4,6 +4,7 @@
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/InstIterator.h>
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
 #include <llvm/Support/Debug.h>
 #include <llvm/Transforms/Utils/Cloning.h>
@@ -54,5 +55,29 @@ void cloneLoopBasicBlocks(Function * F, Loop * L, ValueToValueMapTy & VMap) {
   auto LoopTerminator = LoopExitingBlock->getTerminator();
   assert(LoopTerminator != nullptr && "Loop Basicblock is not well formed");
   LoopTerminator->setSuccessor(1, ClonedBlocks.front());
+}
+
+// Insert Prefetch instruction after the instruction I.
+void insertLLVMPrefetchIntrinsic(Function * F, StoreInst * I) {
+  assert (isa<StoreInst>(I) == true && "Prefetch only after store instruction (def point)");
+
+  // Set prefetch instruction insertion point.
+  IRBuilder<> Builder(F->getContext());
+  Builder.SetInsertPoint(I->getNextNode());
+
+  // Cast pointer value to i8* type
+  auto * PtrVal = cast<Instruction>(I->getOperand(0));
+  auto CastI = Builder.CreateBitCast(PtrVal, Builder.getInt8PtrTy(), "TAS-inst1");
+
+  // Add llvm prefetch intrinsic call.
+  Type *I32 = Type::getInt32Ty(F->getContext());
+  Value *PrefetchFunc = Intrinsic::getDeclaration(F->getParent(), Intrinsic::prefetch);
+  Builder.CreateCall(
+      PrefetchFunc,
+      {CastI, // Pointer Value
+      ConstantInt::get(I32, 0), // read (0) or write (1)
+      ConstantInt::get(I32, 3), // no_locality (0) to extreme temporal locality (3)
+      ConstantInt::get(I32, 1)} // data (1) or instruction (0)
+      );
 }
 }
