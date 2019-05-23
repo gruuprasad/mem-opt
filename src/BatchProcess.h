@@ -16,12 +16,16 @@ class BatchProcess {
   llvm::LoopInfo * LI;
   llvm::SmallVector<llvm::Value *, 4> AnnotatedVariables;
   llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
+  llvm::Value * InductionVariable;
+
+
 
 public:
   BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_) :
     F(F_), LI(LI_) {}
 
   bool run();
+  void addEmptyLoop(llvm::BasicBlock * InsertBefore);
 };
 
 } // tas namespace

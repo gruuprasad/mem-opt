@@ -45,10 +45,13 @@ bool BatchProcess::run() {
   errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
   errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
 
+  /*
   // Split basic block at annotated variable def points.
   for (auto & DP : AnnotatedVariableDefPoints)
     DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
+    */
 
+  /*
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
     for (auto * U : V->users()) {
@@ -57,8 +60,36 @@ bool BatchProcess::run() {
       }
     }
   }
- 
+  */
+
+  addEmptyLoop(&F->back());
+
+
   return true;
+}
+
+void BatchProcess::addEmptyLoop(BasicBlock * InsertBefore) {
+  auto & Ctx = F->getContext();
+  auto * ForLoopPreHeader = BasicBlock::Create(Ctx, "tas.loop.0.preheader", F, InsertBefore);
+  auto * ForLoopHeader = BasicBlock::Create(Ctx, "tas.loop.0.header", F, InsertBefore);
+  auto * ForLoopLatch = BasicBlock::Create(Ctx, "tas.loop.0.latch", F, InsertBefore);
+
+  InsertBefore->replaceAllUsesWith(ForLoopPreHeader);
+  IRBuilder<> Builder(ForLoopPreHeader);
+  Builder.CreateBr(ForLoopHeader);
+
+  Builder.SetInsertPoint(ForLoopHeader);
+  auto * PN = Builder.CreatePHI(Type::getInt32Ty(Ctx), 2, "indV");
+
+  Builder.SetInsertPoint(ForLoopLatch);
+  auto *IVNext = Builder.CreateAdd(PN, Builder.getInt32(1));
+  auto * LatchToHeadBr = Builder.CreateBr(ForLoopHeader);
+
+  Builder.SetInsertPoint(ForLoopHeader);
+  PN->addIncoming(Builder.getInt32(0), ForLoopPreHeader);
+  PN->addIncoming(IVNext, ForLoopLatch);
+  auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt32(32), "loop-predicate");
+  Builder.CreateCondBr(icmp, ForLoopLatch, InsertBefore);
 }
 
 }
