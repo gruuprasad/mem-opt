@@ -1,6 +1,7 @@
 #include "BatchProcess.h"
 #include "Util.h"
 
+#include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
 #include <iostream>
@@ -46,14 +47,12 @@ bool BatchProcess::run() {
   errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
   errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
 
-  /*
   // Split basic block at annotated variable def points.
   for (auto & DP : AnnotatedVariableDefPoints)
     DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
-  */
 
-  auto & DP = AnnotatedVariableDefPoints.front();
-  auto * ParentBody = DP->getParent();
+  //auto & DP = AnnotatedVariableDefPoints.front();
+  //auto * ParentBody = DP->getParent();
   //auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
   //NewBody->removeFromParent();
 
@@ -68,14 +67,6 @@ bool BatchProcess::run() {
   }
   */
 
-  //auto * Body = BasicBlock::Create(F->getContext(), "tas.loop.body");
-  //IRBuilder<> Builder(Body);
-  //Builder.CreateBr(&F->back()); // Just for this example.
-
-  //auto * TL0 = TASForLoop::Create(F->getContext(), &F->back(), "tas.loop.0", F);
-  //TL0->setLoopBody(NewBody);
-  //NewBody->insertInto(F, TL0->getLatchBlock());
-
   return true;
 }
 
@@ -86,12 +77,17 @@ TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * InsertBefore,
   addEmptyLoop(Ctx, InsertBefore);
 }
 
-void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * InsertBefore) {
-  PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, InsertBefore);
-  Header = BasicBlock::Create(Ctx, Name + ".header", F, InsertBefore);
-  Latch = BasicBlock::Create(Ctx, Name + ".latch", F, InsertBefore);
+void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock * Next) {
+  // Insert for loop in a control flow graph with single entry point.
+  auto * Prev = &F->getEntryBlock();
 
-  InsertBefore->replaceAllUsesWith(PreHeader);
+  PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, Next);
+  Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
+  Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
+
+  if (!Next)
+    Next->replaceAllUsesWith(PreHeader);
+
   IRBuilder<> Builder(PreHeader);
   Builder.CreateBr(Header);
 
@@ -100,13 +96,19 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * InsertBefore) {
 
   Builder.SetInsertPoint(Latch);
   auto *IVNext = Builder.CreateAdd(PN, Builder.getInt32(1));
-  auto * LatchToHeadBr = Builder.CreateBr(Header);
+  Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
   PN->addIncoming(Builder.getInt32(0), PreHeader);
   PN->addIncoming(IVNext, Latch);
   auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt32(32), "loop-predicate");
-  Builder.CreateCondBr(icmp, Latch, InsertBefore);
+  
+  // Stitch entry point in control flow.
+  Prev->getTerminator()->setSuccessor(0, PreHeader);
+
+  /// FIXME If Exit block is not specified, set to latch.
+  /// This would be invalid loop, but works for now.
+  ExitInst = Builder.CreateCondBr(icmp, Latch, Next);
 }
 
 void TASForLoop::setLoopBody(BasicBlock * BodyBB) {

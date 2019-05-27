@@ -13,10 +13,12 @@
 
 namespace tas {
 
+/// For loop construct containing single logical body
 class TASForLoop {
   llvm::BasicBlock * PreHeader;
   llvm::BasicBlock * Header;
   llvm::BasicBlock * Latch;
+  llvm::BranchInst * ExitInst;
   llvm::Function * F;
   std::string Name;
 
@@ -31,9 +33,13 @@ public:
     return new TASForLoop(Ctx, InsertBefore, Name, F);
   }
 
-  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * InsertBefore);
+  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * InsertBefore = nullptr);
   void setLoopBody(llvm::BasicBlock * BodyBB);
   llvm::BasicBlock * getLatchBlock() {
+    return Latch;
+  }
+
+  llvm::BasicBlock * getLatch() {
     return Latch;
   }
 };
