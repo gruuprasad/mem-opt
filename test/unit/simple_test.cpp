@@ -27,7 +27,7 @@ TEST_CASE("Read IR file") {
   
   auto BB = F->begin();
   ++BB;
-  auto * TL0 = TASForLoop::Create(F->getContext(), &*BB, "tas.loop.0", F);
+  auto * TL0 = TASForLoop::Create(F->getContext(), &F->getEntryBlock(), &*BB, "tas.loop.0", F);
   F->print(errs());
 }
 

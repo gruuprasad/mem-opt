@@ -24,16 +24,18 @@ class TASForLoop {
 
   // Constructor
   explicit TASForLoop(llvm::LLVMContext & Ctx,
-      llvm::BasicBlock * InsertBefore, std::string & Name, llvm::Function * F = nullptr);
+      llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
+      std::string & Name, llvm::Function * F = nullptr);
 
 public:
   static TASForLoop * Create(llvm::LLVMContext & Ctx,
-      llvm::BasicBlock * InsertBefore, std::string Name = std::string(), 
+      llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
+      std::string Name = std::string(), 
       llvm::Function * F = nullptr) {
-    return new TASForLoop(Ctx, InsertBefore, Name, F);
+    return new TASForLoop(Ctx, Prev, Next, Name, F);
   }
 
-  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * InsertBefore = nullptr);
+  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * Prev, llvm::BasicBlock * Next);
   void setLoopBody(llvm::BasicBlock * BodyBB);
   llvm::BasicBlock * getLatchBlock() {
     return Latch;
@@ -41,6 +43,9 @@ public:
 
   llvm::BasicBlock * getLatch() {
     return Latch;
+  }
+  llvm::BasicBlock * getHeader() {
+    return Header;
   }
 };
 

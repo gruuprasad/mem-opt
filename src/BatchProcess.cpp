@@ -47,16 +47,23 @@ bool BatchProcess::run() {
   errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
   errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
 
+  /*
   // Split basic block at annotated variable def points.
   for (auto & DP : AnnotatedVariableDefPoints)
     DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
+    */
 
-  //auto & DP = AnnotatedVariableDefPoints.front();
-  //auto * ParentBody = DP->getParent();
-  //auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
-  //NewBody->removeFromParent();
+  auto & DP = AnnotatedVariableDefPoints.front();
+  auto * ParentBody = DP->getParent();
+  auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
+  ParentBody->replaceAllUsesWith(NewBody);
+  //ParentBody->removeFromParent();
 
-  /*
+  auto BB = F->begin(); ++BB;
+  auto * TL0 = TASForLoop::Create(F->getContext(), &F->getEntryBlock(), &*BB, "tas.loop.0", F);
+  TL0->setLoopBody(ParentBody);
+
+  
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
     for (auto * U : V->users()) {
@@ -65,22 +72,19 @@ bool BatchProcess::run() {
       }
     }
   }
-  */
+
 
   return true;
 }
 
-TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * InsertBefore,
-    std::string & Name, Function * F)
+TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
+    BasicBlock * Next, std::string & Name, Function * F)
   : F(F), Name (std::move(Name))
 {
-  addEmptyLoop(Ctx, InsertBefore);
+  addEmptyLoop(Ctx, Prev, Next);
 }
 
 void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock * Next) {
-  // Insert for loop in a control flow graph with single entry point.
-  auto * Prev = &F->getEntryBlock();
-
   PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, Next);
   Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
   Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
