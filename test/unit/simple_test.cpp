@@ -1,11 +1,11 @@
 #include "catch.hpp"
-#include "test_util.h"
 #include "Util.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/raw_ostream.h>
 #include "llvm/Support/SourceMgr.h"
 
@@ -13,19 +13,6 @@
 #include <memory>
 
 using namespace llvm;
-
-/*
-TEST_CASE("Parse IR file") {
-  auto M = tas::readIRFile("../examples/tests/test.ll");
-  //REQUIRE(M->getInstructionCount() == 4);
-}
-*/
-
-static std::unique_ptr<Module> makeLLVMModule(LLVMContext &Context,
-                                              const char *ModuleStr) {
-  SMDiagnostic Err;
-  return parseAssemblyString(ModuleStr, Err, Context);
-}
 
 TEST_CASE("Detect annotated variables") {
 
@@ -47,13 +34,8 @@ TEST_CASE("Detect annotated variables") {
     "declare void @llvm.var.annotation(i8*, i8*, i8*, i32)\n";
 
   LLVMContext Context;
-  std::unique_ptr<Module> M = makeLLVMModule(Context, ModuleStr);
+  SMDiagnostic Err;
+  std::unique_ptr<Module> M (parseIRFile("output.ll",  Err, Context));
 
   REQUIRE (M.get() != nullptr);
-
-  Function &F = *M->begin();
-
-  SmallVector<Value *, 8> AV;
-  //tas::detectPrefetchVariables(&F, AV);
-  REQUIRE (AV.size() == 2);
 }

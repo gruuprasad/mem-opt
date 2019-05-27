@@ -11,12 +11,6 @@
 
 namespace tas {
 
-std::unique_ptr<llvm::Module> readIRFile(const char * fname) {
-  llvm::SMDiagnostic Err;
-  llvm::LLVMContext Context;
-  auto M = parseIRFile(fname, Err, Context);
-  return std::move(M);
-}
 
 }
 
