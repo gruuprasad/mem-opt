@@ -29,6 +29,7 @@ bool BatchProcess::run() {
  */
 
   // Step 1
+  // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
     if (auto * CI = dyn_cast<CallInst>(&I)) {
       auto * Callee = CI->getCalledFunction();
@@ -49,7 +50,12 @@ bool BatchProcess::run() {
   // Split basic block at annotated variable def points.
   for (auto & DP : AnnotatedVariableDefPoints)
     DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
-    */
+  */
+
+  auto & DP = AnnotatedVariableDefPoints.front();
+  auto * ParentBody = DP->getParent();
+  //auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
+  //NewBody->removeFromParent();
 
   /*
   // Insert Prefetch call.
@@ -62,34 +68,50 @@ bool BatchProcess::run() {
   }
   */
 
-  addEmptyLoop(&F->back());
+  //auto * Body = BasicBlock::Create(F->getContext(), "tas.loop.body");
+  //IRBuilder<> Builder(Body);
+  //Builder.CreateBr(&F->back()); // Just for this example.
 
+  //auto * TL0 = TASForLoop::Create(F->getContext(), &F->back(), "tas.loop.0", F);
+  //TL0->setLoopBody(NewBody);
+  //NewBody->insertInto(F, TL0->getLatchBlock());
 
   return true;
 }
 
-void BatchProcess::addEmptyLoop(BasicBlock * InsertBefore) {
-  auto & Ctx = F->getContext();
-  auto * ForLoopPreHeader = BasicBlock::Create(Ctx, "tas.loop.0.preheader", F, InsertBefore);
-  auto * ForLoopHeader = BasicBlock::Create(Ctx, "tas.loop.0.header", F, InsertBefore);
-  auto * ForLoopLatch = BasicBlock::Create(Ctx, "tas.loop.0.latch", F, InsertBefore);
+TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * InsertBefore,
+    std::string & Name, Function * F)
+  : F(F), Name (std::move(Name))
+{
+  addEmptyLoop(Ctx, InsertBefore);
+}
 
-  InsertBefore->replaceAllUsesWith(ForLoopPreHeader);
-  IRBuilder<> Builder(ForLoopPreHeader);
-  Builder.CreateBr(ForLoopHeader);
+void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * InsertBefore) {
+  PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, InsertBefore);
+  Header = BasicBlock::Create(Ctx, Name + ".header", F, InsertBefore);
+  Latch = BasicBlock::Create(Ctx, Name + ".latch", F, InsertBefore);
 
-  Builder.SetInsertPoint(ForLoopHeader);
+  InsertBefore->replaceAllUsesWith(PreHeader);
+  IRBuilder<> Builder(PreHeader);
+  Builder.CreateBr(Header);
+
+  Builder.SetInsertPoint(Header);
   auto * PN = Builder.CreatePHI(Type::getInt32Ty(Ctx), 2, "indV");
 
-  Builder.SetInsertPoint(ForLoopLatch);
+  Builder.SetInsertPoint(Latch);
   auto *IVNext = Builder.CreateAdd(PN, Builder.getInt32(1));
-  auto * LatchToHeadBr = Builder.CreateBr(ForLoopHeader);
+  auto * LatchToHeadBr = Builder.CreateBr(Header);
 
-  Builder.SetInsertPoint(ForLoopHeader);
-  PN->addIncoming(Builder.getInt32(0), ForLoopPreHeader);
-  PN->addIncoming(IVNext, ForLoopLatch);
+  Builder.SetInsertPoint(Header);
+  PN->addIncoming(Builder.getInt32(0), PreHeader);
+  PN->addIncoming(IVNext, Latch);
   auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt32(32), "loop-predicate");
-  Builder.CreateCondBr(icmp, ForLoopLatch, InsertBefore);
+  Builder.CreateCondBr(icmp, Latch, InsertBefore);
+}
+
+void TASForLoop::setLoopBody(BasicBlock * BodyBB) {
+  Header->getTerminator()->setSuccessor(0, BodyBB);
+  BodyBB->getTerminator()->setSuccessor(0, Latch);
 }
 
 }

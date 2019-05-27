@@ -1,6 +1,8 @@
 #ifndef TAS_BATCHPROCESS_H
 #define TAS_BATCHPROCESS_H
 
+#include <string>
+
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/Function.h>
@@ -11,6 +13,31 @@
 
 namespace tas {
 
+class TASForLoop {
+  llvm::BasicBlock * PreHeader;
+  llvm::BasicBlock * Header;
+  llvm::BasicBlock * Latch;
+  llvm::Function * F;
+  std::string Name;
+
+  // Constructor
+  explicit TASForLoop(llvm::LLVMContext & Ctx,
+      llvm::BasicBlock * InsertBefore, std::string & Name, llvm::Function * F = nullptr);
+
+public:
+  static TASForLoop * Create(llvm::LLVMContext & Ctx,
+      llvm::BasicBlock * InsertBefore, std::string Name = std::string(), 
+      llvm::Function * F = nullptr) {
+    return new TASForLoop(Ctx, InsertBefore, Name, F);
+  }
+
+  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * InsertBefore);
+  void setLoopBody(llvm::BasicBlock * BodyBB);
+  llvm::BasicBlock * getLatchBlock() {
+    return Latch;
+  }
+};
+
 class BatchProcess {
   llvm::Function * F;
   llvm::LoopInfo * LI;
@@ -18,9 +45,7 @@ class BatchProcess {
   llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
   llvm::Value * InductionVariable;
 
-
-
-public:
+  public:
   BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_) :
     F(F_), LI(LI_) {}
 
