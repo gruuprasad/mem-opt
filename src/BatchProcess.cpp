@@ -5,6 +5,7 @@
 #include <llvm/IR/IRBuilder.h>
 
 #include <iostream>
+#include <string>
 
 using namespace llvm;
 
@@ -47,50 +48,34 @@ bool BatchProcess::run() {
   errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
   errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
 
-  /*
-  // Split basic block at annotated variable def points.
-  for (auto & DP : AnnotatedVariableDefPoints)
-    DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
-    */
-  
-  // Assume Loop contains single entry edge.
   auto * L0 = *LI->begin();
-  auto * L0_Head = L0->getHeader();
-  BasicBlock * L0_PreHeader;
-  Instruction * LoopEntryEdgeInst;
-  unsigned operand_i = 0;
   auto * OldIndexVariable = L0->getCanonicalInductionVariable();
-  for (auto * B : predecessors(L0_Head)) {
-    if (!L0->contains(B)) {
-      L0_PreHeader = B;
-      LoopEntryEdgeInst = L0_PreHeader->getTerminator();
-      for (auto i = 0; i != LoopEntryEdgeInst->getNumSuccessors(); ++i) {
-        if (LoopEntryEdgeInst->getSuccessor(i) == L0_Head) {
-          operand_i = i;
-          break;
-        }
+  auto * PN1 = &*(L0->getHeader()->phis().begin());
+  PN1->removeIncomingValue(L0->getLoopPreheader());
+  unsigned int i = 0;
+  // Split basic block at annotated variable def points.
+  for (auto & DP : AnnotatedVariableDefPoints) {
+    
+    // Assume Loop contains single entry edge.
+    auto * L0_Head = L0->getHeader();
+    BasicBlock * L0_PreHeader;
+    for (auto * B : predecessors(L0_Head)) {
+      if (!L0->contains(B)) {
+        L0_PreHeader = B;
+        break;
       }
     }
-  }
-  
-  auto * TL0 = TASForLoop::Create(F->getContext(), L0_PreHeader, L0_Head, "tas.loop.0", F);
 
-  auto & DP = AnnotatedVariableDefPoints.front();
-  auto * ParentBody = DP->getParent();
-  auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
-  ParentBody->replaceAllUsesWith(NewBody);
-  
-  Value::use_iterator UI = OldIndexVariable->use_begin(), E = OldIndexVariable->use_end();
-  for (; UI != E;) {
-    Use &U = *UI;
-    ++UI;
-    auto *Usr = dyn_cast<Instruction>(U.getUser());
-    if (Usr && Usr->getParent() != ParentBody)
-      continue;
-    U.set(TL0->getIndexVariable());
-  }
+    auto * TL0 = TASForLoop::Create(F->getContext(), L0_PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
 
-  TL0->setLoopBody(ParentBody);
+    auto * ParentBody = DP->getParent();
+    auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_" + std::to_string(i));
+    ParentBody->replaceAllUsesWith(NewBody);
+
+    replaceUsesWithinBB(OldIndexVariable, TL0->getIndexVariable(), ParentBody);
+    TL0->setLoopBody(ParentBody);
+    ++i;
+  }
 
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
@@ -119,10 +104,11 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   if (!Next)
     Next->replaceAllUsesWith(PreHeader);
 
+  IRBuilder<> Builder(Next);
   auto * PN1 = &*(Next->phis().begin());
-  PN1->setIncomingBlock(0, Header);
+  PN1->addIncoming(Builder.getInt16(0), Header);
 
-  IRBuilder<> Builder(PreHeader);
+  Builder.SetInsertPoint(PreHeader);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);

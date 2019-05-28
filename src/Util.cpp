@@ -80,4 +80,13 @@ void insertLLVMPrefetchIntrinsic(Function * F, StoreInst * I) {
       ConstantInt::get(I32, 1)} // data (1) or instruction (0)
       );
 }
+
+void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
+  for (Use & U : From->uses()) {
+    auto *Usr = dyn_cast<Instruction>(U.getUser());
+    if (Usr && Usr->getParent() != BB)
+      continue;
+    U.set(To);
+  }
+}
 }
