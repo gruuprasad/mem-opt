@@ -4,6 +4,7 @@
 #include <string>
 
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
@@ -19,6 +20,7 @@ class TASForLoop {
   llvm::BasicBlock * Header;
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
+  llvm::Value * IndexVariable;
   llvm::Function * F;
   std::string Name;
 
@@ -46,6 +48,9 @@ public:
   }
   llvm::BasicBlock * getHeader() {
     return Header;
+  }
+  llvm::Value * getIndexVariable() {
+    return IndexVariable;
   }
 };
 

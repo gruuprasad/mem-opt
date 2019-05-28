@@ -52,18 +52,46 @@ bool BatchProcess::run() {
   for (auto & DP : AnnotatedVariableDefPoints)
     DP->getParent()->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
     */
+  
+  // Assume Loop contains single entry edge.
+  auto * L0 = *LI->begin();
+  auto * L0_Head = L0->getHeader();
+  BasicBlock * L0_PreHeader;
+  Instruction * LoopEntryEdgeInst;
+  unsigned operand_i = 0;
+  auto * OldIndexVariable = L0->getCanonicalInductionVariable();
+  for (auto * B : predecessors(L0_Head)) {
+    if (!L0->contains(B)) {
+      L0_PreHeader = B;
+      LoopEntryEdgeInst = L0_PreHeader->getTerminator();
+      for (auto i = 0; i != LoopEntryEdgeInst->getNumSuccessors(); ++i) {
+        if (LoopEntryEdgeInst->getSuccessor(i) == L0_Head) {
+          operand_i = i;
+          break;
+        }
+      }
+    }
+  }
+  
+  auto * TL0 = TASForLoop::Create(F->getContext(), L0_PreHeader, L0_Head, "tas.loop.0", F);
 
   auto & DP = AnnotatedVariableDefPoints.front();
   auto * ParentBody = DP->getParent();
   auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_0");
   ParentBody->replaceAllUsesWith(NewBody);
-  //ParentBody->removeFromParent();
+  
+  Value::use_iterator UI = OldIndexVariable->use_begin(), E = OldIndexVariable->use_end();
+  for (; UI != E;) {
+    Use &U = *UI;
+    ++UI;
+    auto *Usr = dyn_cast<Instruction>(U.getUser());
+    if (Usr && Usr->getParent() != ParentBody)
+      continue;
+    U.set(TL0->getIndexVariable());
+  }
 
-  auto BB = F->begin(); ++BB;
-  auto * TL0 = TASForLoop::Create(F->getContext(), &F->getEntryBlock(), &*BB, "tas.loop.0", F);
   TL0->setLoopBody(ParentBody);
 
-  
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
     for (auto * U : V->users()) {
@@ -72,8 +100,7 @@ bool BatchProcess::run() {
       }
     }
   }
-
-
+ 
   return true;
 }
 
@@ -92,20 +119,24 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   if (!Next)
     Next->replaceAllUsesWith(PreHeader);
 
+  auto * PN1 = &*(Next->phis().begin());
+  PN1->setIncomingBlock(0, Header);
+
   IRBuilder<> Builder(PreHeader);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  auto * PN = Builder.CreatePHI(Type::getInt32Ty(Ctx), 2, "indV");
+  auto * PN = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
+  IndexVariable = PN;
 
   Builder.SetInsertPoint(Latch);
-  auto *IVNext = Builder.CreateAdd(PN, Builder.getInt32(1));
+  auto *IVNext = Builder.CreateAdd(PN, Builder.getInt16(1));
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  PN->addIncoming(Builder.getInt32(0), PreHeader);
+  PN->addIncoming(Builder.getInt16(0), PreHeader);
   PN->addIncoming(IVNext, Latch);
-  auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt32(32), "loop-predicate");
+  auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt16(32), "loop-predicate");
   
   // Stitch entry point in control flow.
   Prev->getTerminator()->setSuccessor(0, PreHeader);
