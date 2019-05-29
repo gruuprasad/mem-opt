@@ -30,23 +30,7 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
-  // Step 1
-  // XXX Checking only entry basic block for annotated variables.
-  for (auto & I : F->front()) {
-    if (auto * CI = dyn_cast<CallInst>(&I)) {
-      auto * Callee = CI->getCalledFunction();
-      if (!Callee->isIntrinsic()) continue;
-
-      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
-      for (auto * U : AnnotatedVariables.back()->users()) {
-        if (auto * ST = dyn_cast<StoreInst>(U))
-          AnnotatedVariableDefPoints.push_back(ST);
-      }
-    }
-  }
-
-  errs() << "Number of annotated Variables: " << AnnotatedVariables.size() << "\n";
-  errs() << "Number of annotated Variables Defs: " << AnnotatedVariableDefPoints.size() << "\n";
+  detectAnnotatedVariableDefs();
 
   auto * L0 = *LI->begin();
   auto * OldIndexVariable = L0->getCanonicalInductionVariable();
@@ -77,6 +61,29 @@ bool BatchProcess::run() {
     ++i;
   }
 
+  insertPrefetchCalls();
+  //F->print(errs());
+ 
+  return true;
+}
+
+void BatchProcess::detectAnnotatedVariableDefs() {
+  // XXX Checking only entry basic block for annotated variables.
+  for (auto & I : F->front()) {
+    if (auto * CI = dyn_cast<CallInst>(&I)) {
+      auto * Callee = CI->getCalledFunction();
+      if (!Callee->isIntrinsic()) continue;
+
+      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      for (auto * U : AnnotatedVariables.back()->users()) {
+        if (auto * ST = dyn_cast<StoreInst>(U))
+          AnnotatedVariableDefPoints.push_back(ST);
+      }
+    }
+  }
+}
+
+void BatchProcess::insertPrefetchCalls() {
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
     for (auto * U : V->users()) {
@@ -85,56 +92,6 @@ bool BatchProcess::run() {
       }
     }
   }
- 
-  return true;
-}
-
-TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
-    BasicBlock * Next, std::string & Name, Function * F)
-  : F(F), Name (std::move(Name))
-{
-  addEmptyLoop(Ctx, Prev, Next);
-}
-
-void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock * Next) {
-  PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, Next);
-  Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
-  Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
-
-  if (!Next)
-    Next->replaceAllUsesWith(PreHeader);
-
-  IRBuilder<> Builder(Next);
-  auto * PN1 = &*(Next->phis().begin());
-  PN1->addIncoming(Builder.getInt16(0), Header);
-
-  Builder.SetInsertPoint(PreHeader);
-  Builder.CreateBr(Header);
-
-  Builder.SetInsertPoint(Header);
-  auto * PN = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
-  IndexVariable = PN;
-
-  Builder.SetInsertPoint(Latch);
-  auto *IVNext = Builder.CreateAdd(PN, Builder.getInt16(1));
-  Builder.CreateBr(Header);
-
-  Builder.SetInsertPoint(Header);
-  PN->addIncoming(Builder.getInt16(0), PreHeader);
-  PN->addIncoming(IVNext, Latch);
-  auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt16(32), "loop-predicate");
-  
-  // Stitch entry point in control flow.
-  Prev->getTerminator()->setSuccessor(0, PreHeader);
-
-  /// FIXME If Exit block is not specified, set to latch.
-  /// This would be invalid loop, but works for now.
-  ExitInst = Builder.CreateCondBr(icmp, Latch, Next);
-}
-
-void TASForLoop::setLoopBody(BasicBlock * BodyBB) {
-  Header->getTerminator()->setSuccessor(0, BodyBB);
-  BodyBB->getTerminator()->setSuccessor(0, Latch);
 }
 
 }
