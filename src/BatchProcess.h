@@ -14,46 +14,6 @@
 
 namespace tas {
 
-/// For loop construct containing single logical body
-class TASForLoop {
-  llvm::BasicBlock * PreHeader;
-  llvm::BasicBlock * Header;
-  llvm::BasicBlock * Latch;
-  llvm::BranchInst * ExitInst;
-  llvm::Value * IndexVariable;
-  llvm::Function * F;
-  std::string Name;
-
-  // Constructor
-  explicit TASForLoop(llvm::LLVMContext & Ctx,
-      llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
-      std::string & Name, llvm::Function * F = nullptr);
-
-public:
-  static TASForLoop * Create(llvm::LLVMContext & Ctx,
-      llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
-      std::string Name = std::string(), 
-      llvm::Function * F = nullptr) {
-    return new TASForLoop(Ctx, Prev, Next, Name, F);
-  }
-
-  void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * Prev, llvm::BasicBlock * Next);
-  void setLoopBody(llvm::BasicBlock * BodyBB);
-  llvm::BasicBlock * getLatchBlock() {
-    return Latch;
-  }
-
-  llvm::BasicBlock * getLatch() {
-    return Latch;
-  }
-  llvm::BasicBlock * getHeader() {
-    return Header;
-  }
-  llvm::Value * getIndexVariable() {
-    return IndexVariable;
-  }
-};
-
 class BatchProcess {
   llvm::Function * F;
   llvm::LoopInfo * LI;

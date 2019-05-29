@@ -1,4 +1,5 @@
 #include "BatchProcess.h"
+#include "ForLoop.h"
 #include "Util.h"
 
 #include <llvm/IR/CFG.h>
