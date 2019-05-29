@@ -33,7 +33,16 @@ bool BatchProcess::run() {
 
   detectAnnotatedVariableDefs();
 
-  auto * L0 = *LI->begin();
+  Loop * L0 = *LI->begin();
+  splitLoop(L0);
+
+  insertPrefetchCalls();
+  //F->print(errs());
+ 
+  return true;
+}
+
+void BatchProcess::splitLoop(Loop * L0) {
   // Original loop is retained, but it's body is split on each iteration.
   // One part becomes part of the new loop and rest remains with the old loop.
   auto * L0_Head = L0->getHeader(); //Doesn't change.
@@ -76,11 +85,6 @@ bool BatchProcess::run() {
 
   // Add new phi node edge.
   PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
-
-  insertPrefetchCalls();
-  //F->print(errs());
- 
-  return true;
 }
 
 void BatchProcess::detectAnnotatedVariableDefs() {

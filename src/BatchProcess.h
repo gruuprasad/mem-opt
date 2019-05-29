@@ -29,6 +29,7 @@ class BatchProcess {
   void addEmptyLoop(llvm::BasicBlock * InsertBefore);
   void detectAnnotatedVariableDefs();
   void insertPrefetchCalls();
+  void splitLoop(llvm::Loop * L0);
 };
 
 } // tas namespace
