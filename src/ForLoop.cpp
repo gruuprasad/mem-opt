@@ -19,9 +19,6 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
   Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
 
-  if (!Next)
-    Next->replaceAllUsesWith(PreHeader);
-
   // Update phi node edge if any
   IRBuilder<> Builder(Next);
   auto * PN = &*(Next->phis().begin());
@@ -44,7 +41,10 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(32), "loop-predicate");
   
   // Stitch entry point in control flow.
-  Prev->getTerminator()->setSuccessor(0, PreHeader);
+  if (Prev->getTerminator()->getNumOperands() == 3) 
+    Prev->getTerminator()->setSuccessor(1, PreHeader);
+  else
+    Prev->getTerminator()->setSuccessor(0, PreHeader);
 
   /// FIXME If Exit block is not specified, set to latch.
   /// This would be invalid loop, but works for now.
