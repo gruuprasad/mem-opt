@@ -33,33 +33,48 @@ bool BatchProcess::run() {
   detectAnnotatedVariableDefs();
 
   auto * L0 = *LI->begin();
-  auto * OldIndexVariable = L0->getCanonicalInductionVariable();
-  auto * PN1 = &*(L0->getHeader()->phis().begin());
-  PN1->removeIncomingValue(L0->getLoopPreheader());
-  unsigned int i = 0;
+  // Original loop is retained, but it's body is split on each iteration.
+  // One part becomes part of the new loop and rest remains with the old loop.
+  auto * L0_Head = L0->getHeader(); //Doesn't change.
+  auto * L0_IndexVar = L0->getCanonicalInductionVariable();
+
+  //TODO Add check for loop-simplified form.
+  // Preheader changes on every new loop insertion
+  auto * PreHeader = L0->getLoopPreheader();  
+
+  // Remove phi node entries if any
+  auto * PN = &*(L0->getHeader()->phis().begin());
+  PN->removeIncomingValue(L0->getLoopPreheader());
+
+  // Control flow before loop split op.
+  // L0_PreHeader --> [L0_Head --> L0_body-->L0_Latch] --> Block outside loop
+  // control flow edges between loops: [L0_PreHeader --> L0_Head] [L0_Head --> Block outside loop].
+  // After Loop split op
+  // L0_PreHeader --> [L1_PreHeader --> L1_Head -----L1_Latch] --> [L0_Head ------- L0_Latch] 
+  // control flow edge between loops: [L0_PreHeader --> L1_preheader] [L1_Head --> L0_Head] [L0_Head --> Block outside loop]
+  
   // Split basic block at annotated variable def points.
+  unsigned int i = 0;
   for (auto & DP : AnnotatedVariableDefPoints) {
     
-    // Assume Loop contains single entry edge.
-    auto * L0_Head = L0->getHeader();
-    BasicBlock * L0_PreHeader;
-    for (auto * B : predecessors(L0_Head)) {
-      if (!L0->contains(B)) {
-        L0_PreHeader = B;
-        break;
-      }
-    }
+    // Insert new loop
+    auto * TL0 = TASForLoop::Create(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
 
-    auto * TL0 = TASForLoop::Create(F->getContext(), L0_PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
-
+    // Split old loop body into two parts. Add one part to newly created loop.
     auto * ParentBody = DP->getParent();
     auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
 
-    replaceUsesWithinBB(OldIndexVariable, TL0->getIndexVariable(), ParentBody);
+    replaceUsesWithinBB(L0_IndexVar, TL0->getIndexVariable(), ParentBody);
     TL0->setLoopBody(ParentBody);
+
+    // Update old loop preheader block
+    PreHeader = TL0->getHeader();
     ++i;
   }
+
+  // Add new phi node edge.
+  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
 
   insertPrefetchCalls();
   //F->print(errs());
