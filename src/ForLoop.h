@@ -14,7 +14,7 @@ class TASForLoop {
   llvm::BasicBlock * Header;
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
-  llvm::Value * IndexVar;
+  llvm::PHINode * IndexVar;
   llvm::Function * F;
   std::string Name;
 
@@ -44,7 +44,7 @@ public:
     return Header;
   }
   llvm::Value * getIndexVariable() {
-    return IndexVariable;
+    return IndexVar;
   }
 };
 
