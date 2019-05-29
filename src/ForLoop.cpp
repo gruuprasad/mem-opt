@@ -22,25 +22,26 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   if (!Next)
     Next->replaceAllUsesWith(PreHeader);
 
+  // Update phi node edge if any
   IRBuilder<> Builder(Next);
-  auto * PN1 = &*(Next->phis().begin());
-  PN1->addIncoming(Builder.getInt16(0), Header);
+  auto * PN = &*(Next->phis().begin());
+  if (!PN)
+    PN->addIncoming(Builder.getInt16(0), Header);
 
   Builder.SetInsertPoint(PreHeader);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  auto * PN = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
-  IndexVariable = PN;
+  IndexVar = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
 
   Builder.SetInsertPoint(Latch);
-  auto *IVNext = Builder.CreateAdd(PN, Builder.getInt16(1));
+  auto *IVNext = Builder.CreateAdd(IndexVar, Builder.getInt16(1));
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  PN->addIncoming(Builder.getInt16(0), PreHeader);
-  PN->addIncoming(IVNext, Latch);
-  auto * icmp = Builder.CreateICmpSLT(PN, Builder.getInt16(32), "loop-predicate");
+  IndexVar->addIncoming(Builder.getInt16(0), PreHeader);
+  IndexVar->addIncoming(IVNext, Latch);
+  auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(32), "loop-predicate");
   
   // Stitch entry point in control flow.
   Prev->getTerminator()->setSuccessor(0, PreHeader);

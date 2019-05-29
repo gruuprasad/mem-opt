@@ -14,7 +14,7 @@ class TASForLoop {
   llvm::BasicBlock * Header;
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
-  llvm::Value * IndexVariable;
+  llvm::Value * IndexVar;
   llvm::Function * F;
   std::string Name;
 
