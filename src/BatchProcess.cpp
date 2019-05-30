@@ -68,6 +68,7 @@ void BatchProcess::splitLoop(Loop * L0) {
   for (auto & DP : AnnotatedVariableDefPoints) {
     
     // Insert new loop
+    // FIXME Memory Leak!!
     auto * TL0 = TASForLoop::Create(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
 
     // Split old loop body into two parts. Add one part to newly created loop.
@@ -78,6 +79,12 @@ void BatchProcess::splitLoop(Loop * L0) {
     replaceUsesWithinBB(L0_IndexVar, TL0->getIndexVariable(), ParentBody);
     TL0->setLoopBody(ParentBody);
 
+    // XXX Assumption here is that each loop body will be single basic block.
+    // Otherwise, further analysis need to be made to set proper index 
+    // variable when temporary array access at different use instructions.
+    // check if there is a value dependence between two loops.
+    fixValueDependenceBetWeenLoops(TL0, L0_IndexVar);
+
     // Update old loop preheader block
     PreHeader = TL0->getHeader();
     ++i;
@@ -85,6 +92,49 @@ void BatchProcess::splitLoop(Loop * L0) {
 
   // Add new phi node edge.
   PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
+}
+
+void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * OldIndex) {
+  BasicBlock * Body = NewLoop->getBody();
+  assert (Body != nullptr && "Loop must have a body");
+  for (Instruction & I : *Body) {
+    for (auto * U : I.users()) {
+      if (Instruction * Inst = dyn_cast<Instruction>(U)) {
+        if (Inst->getParent() != Body) {
+          auto arrayPtr = createArray(I.getType(), NewLoop->getLoopTripCount());
+
+          IRBuilder<> Builder(F->getContext());
+          // Store in temporary variable
+          Builder.SetInsertPoint(I.getNextNode());
+          auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), NewLoop->getIndexVariable()});
+          Builder.CreateStore(&I, ptr);
+
+          Builder.SetInsertPoint(Inst);
+          auto * PN = dyn_cast<PHINode>(Inst);
+          unsigned i = 0;
+          if (PN) {
+            for (; i < PN->getNumIncomingValues(); ++i) {
+              if (PN->getIncomingValue(i) == &I) {
+                Builder.SetInsertPoint(PN->getIncomingBlock(i)->getTerminator());
+                break;
+              }
+            }
+          } 
+          ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), OldIndex});
+          PN->setIncomingValue(i, Builder.CreateLoad(ptr));
+        }
+      }
+    }
+  }
+}
+
+Value * BatchProcess::createArray(Type * Ty, unsigned size) {
+  // Allocate temporary array
+  IRBuilder<> Builder (F->getContext());
+  auto BB = F->begin();
+  auto TermI = (*BB).getTerminator();
+  Builder.SetInsertPoint(TermI);
+  return Builder.CreateAlloca(ArrayType::get(Ty, size));
 }
 
 void BatchProcess::detectAnnotatedVariableDefs() {

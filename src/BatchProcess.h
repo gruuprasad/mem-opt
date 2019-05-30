@@ -14,6 +14,8 @@
 
 namespace tas {
 
+class TASForLoop;
+
 class BatchProcess {
   llvm::Function * F;
   llvm::LoopInfo * LI;
@@ -30,6 +32,8 @@ class BatchProcess {
   void detectAnnotatedVariableDefs();
   void insertPrefetchCalls();
   void splitLoop(llvm::Loop * L0);
+  void fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, llvm::Value * OldIndex);
+  llvm::Value * createArray(llvm::Type * Ty, unsigned size);
 };
 
 } // tas namespace

@@ -38,7 +38,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Builder.SetInsertPoint(Header);
   IndexVar->addIncoming(Builder.getInt16(0), PreHeader);
   IndexVar->addIncoming(IVNext, Latch);
-  auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(32), "loop-predicate");
+  auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(BATCH_SIZE), "loop-predicate");
   
   // Stitch entry point in control flow.
   if (Prev->getTerminator()->getNumOperands() == 3) 
@@ -52,6 +52,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
 }
 
 void TASForLoop::setLoopBody(BasicBlock * BodyBB) {
+  Body = BodyBB;
   Header->getTerminator()->setSuccessor(0, BodyBB);
   BodyBB->getTerminator()->setSuccessor(0, Latch);
 }

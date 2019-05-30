@@ -8,15 +8,18 @@
 
 namespace tas {
 
+
 /// For loop construct containing single logical body
 class TASForLoop {
   llvm::BasicBlock * PreHeader;
   llvm::BasicBlock * Header;
+  llvm::BasicBlock * Body;
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
   llvm::PHINode * IndexVar;
   llvm::Function * F;
   std::string Name;
+  unsigned BATCH_SIZE = 32;
 
   // Constructor
   explicit TASForLoop(llvm::LLVMContext & Ctx,
@@ -45,6 +48,14 @@ public:
   }
   llvm::Value * getIndexVariable() {
     return IndexVar;
+  }
+
+  llvm::BasicBlock * getBody() {
+    return Body;
+  }
+
+  unsigned getLoopTripCount() {
+    return BATCH_SIZE;
   }
 };
 
