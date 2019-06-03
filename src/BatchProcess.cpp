@@ -38,7 +38,7 @@ bool BatchProcess::run() {
   splitLoop(L0);
 
   insertPrefetchCalls();
-  //F->print(errs());
+ //F->print(errs());
  
   return true;
 }
@@ -91,7 +91,9 @@ void BatchProcess::splitLoop(Loop * L0) {
   }
 
   // Add new phi node edge.
-  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
+  // TODO Check whether index variable type matches, otherwise apply cast.
+  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(32, 0, true)), PreHeader);
+  //F->print(errs());
 }
 
 void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * OldIndex) {
