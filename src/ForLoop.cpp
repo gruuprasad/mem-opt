@@ -8,7 +8,7 @@ using namespace llvm;
 namespace tas {
 
 TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
-    BasicBlock * Next, std::string & Name, Function * F)
+    BasicBlock * Next, const std::string & Name, Function * F)
   : F(F), Name (std::move(Name))
 {
   addEmptyLoop(Ctx, Prev, Next);

@@ -33,7 +33,8 @@ bool BatchProcess::run() {
 
   detectAnnotatedVariableDefs();
 
-  Loop * L0 = *LI->begin();
+  auto LIt = LI->begin();
+  Loop * L0 = *LIt; // XXX Split only first top level loop
   splitLoop(L0);
 
   insertPrefetchCalls();
@@ -68,25 +69,24 @@ void BatchProcess::splitLoop(Loop * L0) {
   for (auto & DP : AnnotatedVariableDefPoints) {
     
     // Insert new loop
-    // FIXME Memory Leak!!
-    auto * TL0 = TASForLoop::Create(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
+    auto TL0 = TASForLoop(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
 
     // Split old loop body into two parts. Add one part to newly created loop.
     auto * ParentBody = DP->getParent();
     auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
 
-    replaceUsesWithinBB(L0_IndexVar, TL0->getIndexVariable(), ParentBody);
-    TL0->setLoopBody(ParentBody);
+    replaceUsesWithinBB(L0_IndexVar, TL0.getIndexVariable(), ParentBody);
+    TL0.setLoopBody(ParentBody);
 
     // XXX Assumption here is that each loop body will be single basic block.
     // Otherwise, further analysis need to be made to set proper index 
     // variable when temporary array access at different use instructions.
     // check if there is a value dependence between two loops.
-    fixValueDependenceBetWeenLoops(TL0, L0_IndexVar);
+    fixValueDependenceBetWeenLoops(&TL0, L0_IndexVar);
 
     // Update old loop preheader block
-    PreHeader = TL0->getHeader();
+    PreHeader = TL0.getHeader();
     ++i;
   }
 

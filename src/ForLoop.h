@@ -21,12 +21,12 @@ class TASForLoop {
   std::string Name;
   unsigned BATCH_SIZE = 32;
 
-  // Constructor
+public:
+// Constructor
   explicit TASForLoop(llvm::LLVMContext & Ctx,
       llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
-      std::string & Name, llvm::Function * F = nullptr);
+      const std::string & Name, llvm::Function * F = nullptr);
 
-public:
   static TASForLoop * Create(llvm::LLVMContext & Ctx,
       llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
       std::string Name = std::string(), 
