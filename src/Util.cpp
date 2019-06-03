@@ -66,7 +66,7 @@ void insertLLVMPrefetchIntrinsic(Function * F, StoreInst * I) {
   Builder.SetInsertPoint(I->getNextNode());
 
   // Cast pointer value to i8* type
-  auto * PtrVal = cast<Instruction>(I->getOperand(0));
+  auto * PtrVal = cast<Value>(I->getOperand(0));
   auto CastI = Builder.CreateBitCast(PtrVal, Builder.getInt8PtrTy(), "TAS-inst1");
 
   // Add llvm prefetch intrinsic call.
