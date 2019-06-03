@@ -38,6 +38,8 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Builder.SetInsertPoint(Header);
   IndexVar->addIncoming(Builder.getInt16(0), PreHeader);
   IndexVar->addIncoming(IVNext, Latch);
+  // FIXME Assume batch size is BATCH_SIZE in TAS function
+  // later take this value as input paremeter.
   auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(BATCH_SIZE), "loop-predicate");
   
   // Stitch entry point in control flow.
