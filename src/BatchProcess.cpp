@@ -30,6 +30,11 @@ bool BatchProcess::run() {
  */
 
   detectAnnotatedVariableDefs();
+  errs() << "No. Var = " << AnnotatedVariables.size() << "\n";
+  errs() << "No. split = " << AnnotatedVariableDefPoints.size() << "\n";
+  for (auto & I : AnnotatedVariableDefPoints) {
+    errs() << *I << "\n";
+  }
 
   if (AnnotatedVariables.empty())
     return false;
@@ -80,7 +85,7 @@ void BatchProcess::splitLoop(Loop * L0) {
 
     // Split old loop body into two parts. Add one part to newly created loop.
     auto * ParentBody = DP->getParent();
-    auto * NewBody = ParentBody->splitBasicBlock(DP->getNextNode(), "batch_edge_" + std::to_string(i));
+    auto * NewBody = ParentBody->splitBasicBlock(DP->getPrevNode(), "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
 
     replaceUsesWithinBB(L0_IndexVar, TL0.getIndexVariable(), ParentBody);
@@ -110,6 +115,7 @@ void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * 
     for (auto * U : I.users()) {
       if (Instruction * Inst = dyn_cast<Instruction>(U)) {
         if (Inst->getParent() != Body) {
+          errs() << "Value dependence variable = " << I <<"\n";
           auto arrayPtr = createArray(I.getType(), NewLoop->getLoopTripCount());
 
           IRBuilder<> Builder(F->getContext());
@@ -155,8 +161,10 @@ void BatchProcess::detectAnnotatedVariableDefs() {
 
       AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
       for (auto * U : AnnotatedVariables.back()->users()) {
-        if (auto * ST = dyn_cast<StoreInst>(U))
+        if (auto * ST = dyn_cast<LoadInst>(U)) {
           AnnotatedVariableDefPoints.push_back(ST);
+          break;
+        }
       }
     }
   }

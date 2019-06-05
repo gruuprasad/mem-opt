@@ -26,7 +26,7 @@ void setAnnotationInFunctionObject(Module * M) {
 
   auto CA = cast<ConstantArray>(AnnotationList->getOperand(0));
   for (unsigned int i = 0; i < CA->getNumOperands(); ++i) {
-    auto CAStruct =cast<ConstantStruct>(CA->getOperand(i));
+    auto CAStruct = cast<ConstantStruct>(CA->getOperand(i));
     auto CAFunc = dyn_cast<Function>(CAStruct->getOperand(0)->getOperand(0));
     if (!CAFunc) continue;
     auto CAAnnotation = cast<ConstantDataArray>(
