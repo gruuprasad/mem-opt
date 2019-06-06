@@ -31,6 +31,9 @@ bool BatchProcess::run() {
 
   detectAnnotatedVariableDefs();
 
+  if (AnnotatedVariables.empty())
+    return false;
+
   auto LIt = LI->begin();
   Loop * L0 = *LIt; // XXX Split only first top level loop
   splitLoop(L0);
