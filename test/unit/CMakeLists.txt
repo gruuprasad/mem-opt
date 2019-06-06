@@ -13,7 +13,6 @@ set(LLVM_LINK_COMPONENTS
   TransformUtils)
 
 target_link_libraries(tests
-                      TASPass
                       catch_LIB
                       LLVMCore
                       LLVMAnalysis

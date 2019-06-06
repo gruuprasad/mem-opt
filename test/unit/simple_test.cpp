@@ -1,6 +1,5 @@
 #include "catch.hpp"
 #include "Util.h"
-#include "BatchProcess.h"
 
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/Function.h>
