@@ -30,20 +30,9 @@ bool BatchProcess::run() {
  */
 
   detectAnnotatedVariableDefs();
-  errs() << "No. Var = " << AnnotatedVariables.size() << "\n";
-  errs() << "No. split = " << AnnotatedVariableDefPoints.size() << "\n";
-  for (auto & I : AnnotatedVariableDefPoints) {
-    errs() << *I << "\n";
-  }
 
   if (AnnotatedVariables.empty())
     return false;
-
-  errs() << "No. Var = " << AnnotatedVariables.size() << "\n";
-  errs() << "No. split = " << AnnotatedVariableDefPoints.size() << "\n";
-  for (auto & I : AnnotatedVariableDefPoints) {
-    errs() << *I << "\n";
-  }
 
   auto LIt = LI->begin();
   Loop * L0 = *LIt; // XXX Split only first top level loop
