@@ -99,7 +99,7 @@ void BatchProcess::splitLoop(Loop * L0) {
 
   // Add new phi node edge.
   // TODO Check whether index variable type matches, otherwise apply cast.
-  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(32, 0, true)), PreHeader);
+  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
   //F->print(errs());
 }
 
