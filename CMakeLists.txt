@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.4.3)
+
+set(CMAKE_INSTALL_PREFIX "/usr/")
 project(tas-opt)
 
 #Script debug purpose: print to check cmake variable value
