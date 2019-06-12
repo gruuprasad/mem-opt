@@ -31,7 +31,7 @@ bool BatchProcess::run() {
 
   F->print(errs());
 
-  detectAnnotatedVariableDefs();
+  detectAnnotatedVariable();
 
   if (AnnotatedVariables.empty())
     return false;
@@ -148,7 +148,7 @@ Value * BatchProcess::createArray(Type * Ty, unsigned size) {
   return Builder.CreateAlloca(ArrayType::get(Ty, size));
 }
 
-void BatchProcess::detectAnnotatedVariableDefs() {
+void BatchProcess::detectAnnotatedVariable() {
 
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
@@ -158,12 +158,22 @@ void BatchProcess::detectAnnotatedVariableDefs() {
       if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
       AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
-      for (auto * U : AnnotatedVariables.back()->users()) {
-        if (auto * ST = dyn_cast<LoadInst>(U)) {
-          AnnotatedVariableDefPoints.push_back(ST);
-          break;
-        }
+    }
+  }
+  errs() << "detect uses\n";
+  findVariableUsePoints();
+}
+
+void BatchProcess::findVariableUsePoints() {
+  LoadInst * LastLoadI = nullptr;
+  for (auto * V : AnnotatedVariables) {
+    for (auto * U : V->users()) {
+      if (auto * I = dyn_cast<LoadInst>(U)) {
+        LastLoadI = I;
       }
+    }
+    if (LastLoadI) {
+      AnnotatedVariableDefPoints.push_back(LastLoadI);
     }
   }
 }

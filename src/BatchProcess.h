@@ -17,17 +17,19 @@ class TASForLoop;
 class BatchProcess {
   llvm::Function * F;
   llvm::LoopInfo * LI;
+  llvm::DominatorTree * DT;
   llvm::SmallVector<llvm::Value *, 4> AnnotatedVariables;
   llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
   llvm::Value * InductionVariable;
 
   public:
-  BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_) :
-    F(F_), LI(LI_) {}
+  BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_) :
+    F(F_), LI(LI_), DT(DT_) {}
 
   bool run();
   void addEmptyLoop(llvm::BasicBlock * InsertBefore);
-  void detectAnnotatedVariableDefs();
+  void detectAnnotatedVariable();
+  void findVariableUsePoints();
   void insertPrefetchCalls();
   void splitLoop(llvm::Loop * L0);
   void fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, llvm::Value * OldIndex);

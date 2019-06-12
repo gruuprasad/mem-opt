@@ -4,6 +4,7 @@
 
 #include "llvm/Transforms/Utils.h"
 #include "llvm/Transforms/Scalar.h"
+#include <llvm/IR/Dominators.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/PassRegistry.h>
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
@@ -15,6 +16,7 @@ static const std::string fn_mark = "tas_batch";
 namespace {
 
 void TASBatchProcess::getAnalysisUsage(AnalysisUsage &AU) const {
+  AU.addRequired<DominatorTreeWrapperPass>();
   AU.addRequired<LoopInfoWrapperPass>();
   //AU.setPreservesAll();
 }
@@ -30,7 +32,8 @@ bool TASBatchProcess::runOnFunction(Function &F) {
 
   errs() << "BatchProcess pass: " << F.getName() << "\n";
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
-  tas::BatchProcess BP(&F, &LI);
+  DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
+  tas::BatchProcess BP(&F, &LI, &DT);
   return BP.run();
 }
 
