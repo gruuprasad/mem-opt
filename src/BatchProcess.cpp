@@ -61,6 +61,22 @@ void BatchProcess::splitLoop(Loop * L0) {
   if (!isa<PHINode>(L0->getHeader()->begin()))
       return;
 
+  // Convert scalar alloca variable into array form
+  auto tripCount = TASForLoop::getLoopTripCount();
+  IRBuilder<> Builder(F->getContext());
+  for (auto & AI : AnnotatedVariables) {
+    auto arrayPtr = createArray(cast<AllocaInst>(AI)->getAllocatedType(), tripCount);
+    while (AI->getNumUses() > 0) {
+      User * U = AI->user_back();
+      errs() << "old User:" << *U << "\n";
+      Builder.SetInsertPoint(cast<Instruction>(U));
+      auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), L0_IndexVar});
+      errs() << "GEP instruction = " << *ptr << "\n";
+      U->replaceUsesOfWith(AI, ptr);
+      errs() << "new user = " << *U << "\n";
+    }
+  }
+
   // Remove phi node entries if any
   auto * PN = &*(L0->getHeader()->phis().begin());
   PN->removeIncomingValue(L0->getLoopPreheader());
