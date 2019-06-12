@@ -66,14 +66,17 @@ void BatchProcess::splitLoop(Loop * L0) {
   IRBuilder<> Builder(F->getContext());
   for (auto & AI : AnnotatedVariables) {
     auto arrayPtr = createArray(cast<AllocaInst>(AI)->getAllocatedType(), tripCount);
-    while (AI->getNumUses() > 0) {
+    auto NumUses = AI->getNumUses();
+    while (NumUses > 0) {
       User * U = AI->user_back();
-      errs() << "old User:" << *U << "\n";
+      if (cast<Instruction>(U)->getParent() == &F->getEntryBlock()) {
+        NumUses--;
+        continue;
+      }
       Builder.SetInsertPoint(cast<Instruction>(U));
       auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), L0_IndexVar});
-      errs() << "GEP instruction = " << *ptr << "\n";
       U->replaceUsesOfWith(AI, ptr);
-      errs() << "new user = " << *U << "\n";
+      NumUses--;
     }
   }
 
