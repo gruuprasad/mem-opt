@@ -82,11 +82,18 @@ void insertLLVMPrefetchIntrinsic(Function * F, StoreInst * I) {
 }
 
 void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
-  for (Use & U : From->uses()) {
-    auto *Usr = dyn_cast<Instruction>(U.getUser());
-    if (Usr && Usr->getParent() != BB)
+  auto UI = From->use_begin();
+  while (UI != From->use_end()) {
+    auto * Usr = dyn_cast<Instruction>(UI->getUser());
+    if (Usr && Usr->getParent() != BB) {
+      ++UI;
       continue;
-    U.set(To);
+    }
+    // We should advance iterator first, because changing user modifies use list hence
+    // invalidates the iterator.
+    auto U = UI;
+    ++UI;
+    U->set(To);
   }
 }
 }
