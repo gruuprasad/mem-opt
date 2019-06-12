@@ -29,6 +29,8 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
+  F->print(errs());
+
   detectAnnotatedVariableDefs();
 
   if (AnnotatedVariables.empty())
