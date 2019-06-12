@@ -19,7 +19,7 @@ class TASForLoop {
   llvm::PHINode * IndexVar;
   llvm::Function * F;
   std::string Name;
-  unsigned BATCH_SIZE = 32;
+  static const unsigned BATCH_SIZE = 32;
 
 public:
 // Constructor
@@ -54,7 +54,7 @@ public:
     return Body;
   }
 
-  unsigned getLoopTripCount() {
+  static unsigned getLoopTripCount() {
     return BATCH_SIZE;
   }
 };
