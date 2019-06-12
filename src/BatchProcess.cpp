@@ -58,7 +58,12 @@ void BatchProcess::splitLoop(Loop * L0) {
 
   //TODO Add check for loop-simplified form.
   // Preheader changes on every new loop insertion
-  auto * PreHeader = L0->getLoopPreheader();  
+  auto * PreHeader = L0->getLoopPreheader();
+
+  // If there is no phi node, that means loop is not in loop-simplified form.
+  // we don't do anything in that case.
+  if (!isa<PHINode>(L0->getHeader()->begin()))
+      return;
 
   // Remove phi node entries if any
   auto * PN = &*(L0->getHeader()->phis().begin());
