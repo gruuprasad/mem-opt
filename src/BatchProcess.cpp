@@ -100,7 +100,19 @@ void BatchProcess::splitLoop(Loop * L0) {
 
     // Split old loop body into two parts. Add one part to newly created loop.
     auto * ParentBody = DP->getParent();
-    auto * NewBody = ParentBody->splitBasicBlock(DP->getPrevNode(), "batch_edge_" + std::to_string(i));
+
+    // XXX Revisit this point
+    // Currently at split point odd GEP instruction appears. If we split at that point strictly,
+    // then it introduces silly value dependence between two loops.
+    // GEP in itself not a computation, it must be assoicated with following instruction. hence it will not
+    // be considered for split point, rather instruction above GEP instruction is the possible candidate.
+    auto * SplitPoint = DP;
+    while (isa<GetElementPtrInst>(SplitPoint->getPrevNode())) {
+      SplitPoint = SplitPoint->getPrevNode();
+    }
+    errs() << "Split point = " << *SplitPoint << "\n";
+
+    auto * NewBody = ParentBody->splitBasicBlock(SplitPoint, "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
 
     replaceUsesWithinBB(L0_IndexVar, TL0.getIndexVariable(), ParentBody);
