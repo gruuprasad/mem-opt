@@ -29,6 +29,8 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
+  F->print(errs());
+
   detectAnnotatedVariableDefs();
 
   if (AnnotatedVariables.empty())
@@ -52,7 +54,12 @@ void BatchProcess::splitLoop(Loop * L0) {
 
   //TODO Add check for loop-simplified form.
   // Preheader changes on every new loop insertion
-  auto * PreHeader = L0->getLoopPreheader();  
+  auto * PreHeader = L0->getLoopPreheader();
+
+  // If there is no phi node, that means loop is not in loop-simplified form.
+  // we don't do anything in that case.
+  if (!isa<PHINode>(L0->getHeader()->begin()))
+      return;
 
   // Remove phi node entries if any
   auto * PN = &*(L0->getHeader()->phis().begin());
@@ -93,7 +100,7 @@ void BatchProcess::splitLoop(Loop * L0) {
 
   // Add new phi node edge.
   // TODO Check whether index variable type matches, otherwise apply cast.
-  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(32, 0, true)), PreHeader);
+  PN->addIncoming(ConstantInt::get(F->getContext(), APInt(16, 0, true)), PreHeader);
   //F->print(errs());
 }
 
@@ -142,11 +149,13 @@ Value * BatchProcess::createArray(Type * Ty, unsigned size) {
 }
 
 void BatchProcess::detectAnnotatedVariableDefs() {
+
+  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
     if (auto * CI = dyn_cast<CallInst>(&I)) {
       auto * Callee = CI->getCalledFunction();
-      if (!Callee->isIntrinsic()) continue;
+      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
       AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
       for (auto * U : AnnotatedVariables.back()->users()) {

@@ -44,6 +44,7 @@ static void registerTASPass(const PassManagerBuilder & Builder,
                            legacy::PassManagerBase &PM) {
   PM.add(createIndVarSimplifyPass());        // Canonicalize indvars
   PM.add(createLoopSimplifyPass());          // Loop simplify
+  PM.add(createLCSSAPass());
   PM.add(new TASBatchProcess());
 }
 
