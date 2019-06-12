@@ -6,6 +6,7 @@
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Value.h>
 #include <llvm/Transforms/Utils/ValueMapper.h>
 
 #define DEBUG_TYPE "tas"
@@ -32,7 +33,7 @@ void setAnnotationInFunctionObject(llvm::Module * M);
 
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValueMapTy & VMap);
 
-void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::StoreInst * I);
+void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I, llvm::Value * PtrVal);
 
 void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock * BB);
 } // namespace tas

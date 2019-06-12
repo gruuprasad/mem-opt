@@ -20,6 +20,7 @@ class BatchProcess {
   llvm::DominatorTree * DT;
   llvm::SmallVector<llvm::Value *, 4> AnnotatedVariables;
   llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
+  llvm::SmallVector<llvm::Value *, 4> PrefetchAddresses;
   llvm::Value * InductionVariable;
 
   public:

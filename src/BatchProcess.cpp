@@ -2,6 +2,7 @@
 #include "ForLoop.h"
 #include "Util.h"
 
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
@@ -29,8 +30,6 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
-  F->print(errs());
-
   detectAnnotatedVariable();
 
   if (AnnotatedVariables.empty())
@@ -40,7 +39,7 @@ bool BatchProcess::run() {
   Loop * L0 = *LIt; // XXX Split only first top level loop
   splitLoop(L0);
 
-  insertPrefetchCalls();
+  //insertPrefetchCalls();
  //F->print(errs());
  
   return true;
@@ -73,6 +72,9 @@ void BatchProcess::splitLoop(Loop * L0) {
         NumUses--;
         continue;
       }
+      if (isa<StoreInst>(U)) {
+        PrefetchAddresses.push_back(cast<StoreInst>(U)->getOperand(0));
+      }
       Builder.SetInsertPoint(cast<Instruction>(U));
       auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), L0_IndexVar});
       U->replaceUsesOfWith(AI, ptr);
@@ -93,6 +95,7 @@ void BatchProcess::splitLoop(Loop * L0) {
   
   // Split basic block at annotated variable def points.
   unsigned int i = 0;
+  auto PA_It= PrefetchAddresses.begin();
   for (auto & DP : AnnotatedVariableDefPoints) {
     
     // Insert new loop
@@ -110,7 +113,10 @@ void BatchProcess::splitLoop(Loop * L0) {
     while (isa<GetElementPtrInst>(SplitPoint->getPrevNode())) {
       SplitPoint = SplitPoint->getPrevNode();
     }
-    errs() << "Split point = " << *SplitPoint << "\n";
+
+    // Insert Prefetch instruction
+    assert (PA_It != PrefetchAddresses.end());
+    insertLLVMPrefetchIntrinsic(F, SplitPoint, *PA_It);
 
     auto * NewBody = ParentBody->splitBasicBlock(SplitPoint, "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
@@ -127,6 +133,7 @@ void BatchProcess::splitLoop(Loop * L0) {
     // Update old loop preheader block
     PreHeader = TL0.getHeader();
     ++i;
+    ++PA_It;
   }
 
   // Add new phi node edge.
@@ -180,7 +187,6 @@ Value * BatchProcess::createArray(Type * Ty, unsigned size) {
 }
 
 void BatchProcess::detectAnnotatedVariable() {
-
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
@@ -191,7 +197,6 @@ void BatchProcess::detectAnnotatedVariable() {
       AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
     }
   }
-  errs() << "detect uses\n";
   findVariableUsePoints();
 }
 
@@ -209,6 +214,7 @@ void BatchProcess::findVariableUsePoints() {
   }
 }
 
+/*
 void BatchProcess::insertPrefetchCalls() {
   // Insert Prefetch call.
   for (auto & V : AnnotatedVariables) {
@@ -219,5 +225,6 @@ void BatchProcess::insertPrefetchCalls() {
     }
   }
 }
+*/
 
 }
