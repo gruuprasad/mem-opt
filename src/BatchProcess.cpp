@@ -70,6 +70,12 @@ void BatchProcess::splitLoop(Loop * L0) {
   auto tripCount = TASForLoop::getLoopTripCount();
   IRBuilder<> Builder(F->getContext());
   for (auto & AI : AnnotatedVariables) {
+    // Check the size of the struct type
+    auto ElementType = AI->getType();
+    while (ElementType->isPointerTy()) {
+      ElementType = ElementType->getPointerElementType();
+    }
+
     auto arrayPtr = createArray(cast<AllocaInst>(AI)->getAllocatedType(), tripCount);
     auto NumUses = AI->getNumUses();
     while (NumUses > 0) {

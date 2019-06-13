@@ -92,4 +92,16 @@ void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
     U->set(To);
   }
 }
+
+unsigned getTypeSizeInBits(Type * Ty) {
+  if (!Ty->isAggregateType())
+    return Ty->getPrimitiveSizeInBits();
+
+  unsigned Total = 0;
+  for (auto & subT : Ty->subtypes()) {
+    Total += getTypeSizeInBits(subT);
+  }
+  return Total;
+}
+
 }

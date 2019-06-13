@@ -34,6 +34,8 @@ void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValue
 void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I, llvm::Value * PtrVal);
 
 void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock * BB);
+
+unsigned getTypeSizeInBits(llvm::Type * Ty);
 } // namespace tas
 
 #endif
