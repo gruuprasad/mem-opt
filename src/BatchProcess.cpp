@@ -42,6 +42,9 @@ bool BatchProcess::run() {
     return false;
 
   auto LIt = LI->begin();
+  // If there is no loop, then do nothing.
+  if (LIt == LI->end())
+    return false;
   Loop * L0 = *LIt; // XXX Split only first top level loop
   splitLoop(L0);
 
