@@ -3,6 +3,7 @@
 #include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/Statistic.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
@@ -10,6 +11,11 @@
 #include <string>
 
 using namespace llvm;
+
+#define DEBUG_TYPE "batch-process"
+
+STATISTIC(NumAnnotatedVariables, "Number of annotated variables detected");
+STATISTIC(NumPrefetchInsts, "Number of Prefetch instructions added");
 
 namespace tas {
 
@@ -97,7 +103,7 @@ void BatchProcess::splitLoop(Loop * L0) {
   unsigned int i = 0;
   auto PA_It= PrefetchAddresses.begin();
   for (auto & DP : AnnotatedVariableDefPoints) {
-    
+ 
     // Insert new loop
     auto TL0 = TASForLoop(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
 
@@ -117,6 +123,7 @@ void BatchProcess::splitLoop(Loop * L0) {
     // Insert Prefetch instruction
     assert (PA_It != PrefetchAddresses.end());
     insertLLVMPrefetchIntrinsic(F, SplitPoint, *PA_It);
+    ++NumPrefetchInsts;
 
     auto * NewBody = ParentBody->splitBasicBlock(SplitPoint, "batch_edge_" + std::to_string(i));
     ParentBody->replaceAllUsesWith(NewBody);
@@ -149,7 +156,6 @@ void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * 
     for (auto * U : I.users()) {
       if (Instruction * Inst = dyn_cast<Instruction>(U)) {
         if (Inst->getParent() != Body) {
-          errs() << "Value dependence variable = " << I <<"\n";
           auto arrayPtr = createArray(I.getType(), NewLoop->getLoopTripCount());
 
           IRBuilder<> Builder(F->getContext());
@@ -195,6 +201,7 @@ void BatchProcess::detectAnnotatedVariable() {
       if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
       AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      ++NumAnnotatedVariables;
     }
   }
   findVariableUsePoints();

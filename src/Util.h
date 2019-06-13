@@ -9,8 +9,6 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Transforms/Utils/ValueMapper.h>
 
-#define DEBUG_TYPE "tas"
-
 namespace tas {
 
 // Custom annotations added to the source code is stored as global value in LLVM IR
