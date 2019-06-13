@@ -12,7 +12,7 @@
 
 using namespace llvm;
 
-#define DEBUG_TYPE "batch-process"
+#define DEBUG_TYPE "tas-batch-process"
 
 STATISTIC(NumAnnotatedVariables, "Number of annotated variables detected");
 STATISTIC(NumPrefetchInsts, "Number of Prefetch instructions added");
