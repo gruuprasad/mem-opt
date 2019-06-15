@@ -16,23 +16,22 @@ static const std::string fn_mark = "tas_batch_maker";
 namespace {
 
 void TASBatchMaker::getAnalysisUsage(AnalysisUsage &AU) const {
-  AU.addRequired<DominatorTreeWrapperPass>();
+  //AU.addRequired<DominatorTreeWrapperPass>();
   //AU.setPreservesAll();
 }
 
-bool TASBatchMaker::doInitialization(Module &M) {
-  tas::setAnnotationInFunctionObject(&M);
-  return true;
-}
+bool TASBatchMaker::runOnModule(Module &M) {
 
-bool TASBatchMaker::runOnFunction(Function &F) {
-  if (!F.hasFnAttribute(fn_mark)) 
-    return false;
+  errs() << "BatchMaker pass: " << M.getSourceFileName() << "\n";
+  DenseMap<Function *, StringRef> AnnotatedFnList;
+  tas::getAnnotatedFunctionList(&M, AnnotatedFnList);
 
-  errs() << "BatchMaker pass: " << F.getName() << "\n";
-  DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  tas::BatchMaker BM(&F, &DT);
-  return BM.run();
+  bool changed = false;
+  for (auto & FnStr : AnnotatedFnList) {
+    tas::BatchMaker BM(FnStr.getFirst());
+    changed |= BM.run();
+  }
+  return changed;
 }
 
 char TASBatchMaker::ID = 0;

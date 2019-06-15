@@ -2,6 +2,7 @@
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>
+#include <llvm/IR/Argument.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
@@ -16,8 +17,17 @@ namespace tas {
 
 bool BatchMaker::run() {
 
-  // TODO
+  
+  makeFnPrototypeBatchedForm();
+
   return false;
+}
+
+void BatchMaker::makeFnPrototypeBatchedForm() {
+  for (auto & A : F->args()) {
+    errs() << "Argument = " << A << "\n";
+  }
+
 }
 
 } // tas namespace

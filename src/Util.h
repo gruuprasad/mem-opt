@@ -11,6 +11,8 @@
 
 namespace tas {
 
+void getAnnotatedFunctionList(llvm::Module * M, llvm::DenseMap<llvm::Function * , llvm::StringRef> & FnList);
+
 // Custom annotations added to the source code is stored as global value in LLVM IR
 // under the identifer "llvm.global.annotations".
 // This function adds the annotation identifier to the attribute list of Function object

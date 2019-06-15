@@ -16,13 +16,13 @@ class TASForLoop;
 
 class BatchMaker {
   llvm::Function * F;
-  llvm::DominatorTree * DT;
 
   public:
-  BatchMaker(llvm::Function * F_, llvm::DominatorTree * DT_) :
-    F(F_), DT(DT_) {}
+  BatchMaker(llvm::Function * F_) :
+    F(F_) {}
 
   bool run();
+  void makeFnPrototypeBatchedForm();
 
 }; // tas namespace
 

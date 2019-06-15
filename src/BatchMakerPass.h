@@ -7,15 +7,13 @@
 
 namespace {
 
-struct TASBatchMaker : public llvm::FunctionPass {
+struct TASBatchMaker : public llvm::ModulePass {
   static char ID;
-  TASBatchMaker() : FunctionPass(ID) {}
+  TASBatchMaker() : ModulePass(ID) {}
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
  
-  bool doInitialization(llvm::Module &M) override;
-
-  bool runOnFunction(llvm::Function &F) override;
+  bool runOnModule(llvm::Module &M) override;
 };
 
 }

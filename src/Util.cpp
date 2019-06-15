@@ -20,6 +20,21 @@ namespace tas {
 // FIXME Use intrinsic call name for detection instead of enum value
 std::string VarAnnotationStr = "llvm.var.annotation";
 
+void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnList) {
+  auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
+  if (!AnnotationList) return;
+
+  auto CA = cast<ConstantArray>(AnnotationList->getOperand(0));
+  for (unsigned int i = 0; i < CA->getNumOperands(); ++i) {
+    auto CAStruct = cast<ConstantStruct>(CA->getOperand(i));
+    auto CAFunc = dyn_cast<Function>(CAStruct->getOperand(0)->getOperand(0));
+    if (!CAFunc) continue;
+    auto CAAnnotation = cast<ConstantDataArray>(
+        cast<GlobalVariable>(CAStruct->getOperand(1)->getOperand(0))->getOperand(0));
+    FnList[CAFunc] = CAAnnotation->getAsCString();
+  }
+}
+
 void setAnnotationInFunctionObject(Module * M) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
   if (!AnnotationList) return;
