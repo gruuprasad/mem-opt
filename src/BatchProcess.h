@@ -29,7 +29,6 @@ class BatchProcess {
 
   bool run();
   void addEmptyLoop(llvm::BasicBlock * InsertBefore);
-  void detectAnnotatedVariable();
   void findVariableUsePoints();
   void insertPrefetchCalls();
   void splitLoop(llvm::Loop * L0);

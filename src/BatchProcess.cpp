@@ -36,7 +36,9 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
-  detectAnnotatedVariable();
+  detectAnnotatedVariable(F, AnnotatedVariables);
+  NumAnnotatedVariables += AnnotatedVariables.size();
+  findVariableUsePoints();
 
   if (AnnotatedVariables.empty())
     return false;
@@ -199,20 +201,7 @@ Value * BatchProcess::createArray(Type * Ty, unsigned size) {
   return Builder.CreateAlloca(ArrayType::get(Ty, size));
 }
 
-void BatchProcess::detectAnnotatedVariable() {
-  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
-  // XXX Checking only entry basic block for annotated variables.
-  for (auto & I : F->front()) {
-    if (auto * CI = dyn_cast<CallInst>(&I)) {
-      auto * Callee = CI->getCalledFunction();
-      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
-      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
-      ++NumAnnotatedVariables;
-    }
-  }
-  findVariableUsePoints();
-}
 
 void BatchProcess::findVariableUsePoints() {
   LoadInst * LastLoadI = nullptr;

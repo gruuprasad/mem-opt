@@ -38,6 +38,8 @@ void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I, llvm
 void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock * BB);
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
+
+void detectAnnotatedVariable(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & AnnotatedVariables);
 } // namespace tas
 
 #endif

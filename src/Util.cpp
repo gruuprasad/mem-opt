@@ -119,4 +119,17 @@ unsigned getTypeSizeInBits(Type * Ty) {
   return Total;
 }
 
+void detectAnnotatedVariable(Function * F, SmallVector<Value *, 4> & AnnotatedVariables) {
+  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
+  // XXX Checking only entry basic block for annotated variables.
+  for (auto & I : F->front()) {
+    if (auto * CI = dyn_cast<CallInst>(&I)) {
+      auto * Callee = CI->getCalledFunction();
+      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+
+      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+    }
+  }
+}
+
 }
