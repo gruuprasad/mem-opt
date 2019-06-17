@@ -15,14 +15,16 @@ namespace tas {
 class TASForLoop;
 
 class BatchMaker {
-  llvm::Function * F;
+  llvm::Function * OldFunc;
+  llvm::Function * NewFunc;
 
   public:
   BatchMaker(llvm::Function * F_) :
-    F(F_) {}
+    OldFunc(F_), NewFunc(nullptr) {}
 
   bool run();
-  void makeFnPrototypeBatchedForm();
+  void createBatchedFormFn();
+  llvm::SmallVector<llvm::Argument *, 4> getBatchArgs();
 
 }; // tas namespace
 
