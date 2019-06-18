@@ -132,4 +132,13 @@ void detectAnnotatedVariable(Function * F, SmallVector<Value *, 4> & AnnotatedVa
   }
 }
 
+Value * createArray(Function * F, Type * Ty, unsigned size) {
+  // Allocate temporary array
+  IRBuilder<> Builder (F->getContext());
+  auto BB = F->begin();
+  auto TermI = (*BB).getTerminator();
+  Builder.SetInsertPoint(TermI);
+  return Builder.CreateAlloca(ArrayType::get(Ty, size));
+}
+
 }

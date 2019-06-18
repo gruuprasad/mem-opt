@@ -33,7 +33,6 @@ class BatchProcess {
   void insertPrefetchCalls();
   void splitLoop(llvm::Loop * L0);
   void fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, llvm::Value * OldIndex);
-  llvm::Value * createArray(llvm::Type * Ty, unsigned size);
 };
 
 } // tas namespace

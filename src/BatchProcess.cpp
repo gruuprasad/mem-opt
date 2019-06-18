@@ -81,7 +81,7 @@ void BatchProcess::splitLoop(Loop * L0) {
       ElementType = ElementType->getPointerElementType();
     }
 
-    auto arrayPtr = createArray(cast<AllocaInst>(AI)->getAllocatedType(), tripCount);
+    auto arrayPtr = createArray(F, cast<AllocaInst>(AI)->getAllocatedType(), tripCount);
     auto NumUses = AI->getNumUses();
     while (NumUses > 0) {
       User * U = AI->user_back();
@@ -165,7 +165,7 @@ void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * 
     for (auto * U : I.users()) {
       if (Instruction * Inst = dyn_cast<Instruction>(U)) {
         if (Inst->getParent() != Body) {
-          auto arrayPtr = createArray(I.getType(), NewLoop->getLoopTripCount());
+          auto arrayPtr = createArray(F, I.getType(), NewLoop->getLoopTripCount());
 
           IRBuilder<> Builder(F->getContext());
           // Store in temporary variable
@@ -191,17 +191,6 @@ void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * 
     }
   }
 }
-
-Value * BatchProcess::createArray(Type * Ty, unsigned size) {
-  // Allocate temporary array
-  IRBuilder<> Builder (F->getContext());
-  auto BB = F->begin();
-  auto TermI = (*BB).getTerminator();
-  Builder.SetInsertPoint(TermI);
-  return Builder.CreateAlloca(ArrayType::get(Ty, size));
-}
-
-
 
 void BatchProcess::findVariableUsePoints() {
   LoadInst * LastLoadI = nullptr;
