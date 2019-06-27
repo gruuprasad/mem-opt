@@ -6,26 +6,28 @@
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
-#include "llvm/IR/Verifier.h"              /* verifyFunction, verifyModule */
+#include <llvm/IR/Verifier.h>              /* verifyFunction, verifyModule */
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/raw_ostream.h>
-#include "llvm/Support/SourceMgr.h"
+#include <llvm/Support/SourceMgr.h>
 
-#include <memory>
+#include <string>
+
+extern std::string input_dir;
 
 using namespace llvm;
 
 namespace tas {
 
+
 TEST_CASE("Read IR file") {
   LLVMContext Context;
   SMDiagnostic Err;
-  std::unique_ptr<Module> M (parseIRFile("array_create.ll",  Err, Context));
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("array_create.ll"),  Err, Context));
 
   REQUIRE (M.get() != nullptr);
   auto * F = M->getFunction("main");
   errs() << F->getName() << ":\n";
-  
 
   IRBuilder<> Builder (Context);
   auto BB = F->begin();
