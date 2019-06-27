@@ -1,8 +1,10 @@
 add_library(TASPass SHARED BatchProcess.cpp
                            BatchProcessPass.cpp
                            BatchMaker.cpp
-                           BatchMakerPass.cpp
-                           ForLoop.cpp
-                           Util.cpp)
+                           BatchMakerPass.cpp)
+
+add_library(TASUtil SHARED ForLoop.cpp Util.cpp)
+
+target_link_libraries(TASPass TASUtil)
 
 install(TARGETS TASPass DESTINATION lib)

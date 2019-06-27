@@ -11,6 +11,12 @@
 
 namespace tas {
 
+enum class AnnotationType {
+  UNKNOWN,
+  EXPENSIVE_PTR,
+  BATCH_ARG
+};
+
 void getAnnotatedFunctionList(llvm::Module * M, llvm::DenseMap<llvm::Function * , llvm::StringRef> & FnList);
 
 // Custom annotations added to the source code is stored as global value in LLVM IR
@@ -39,7 +45,8 @@ void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock 
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
 
-void detectAnnotatedVariable(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & AnnotatedVariables);
+void detectAnnotatedVariable(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & ExpensivePointers,
+                            llvm::SmallVector<llvm::Value *, 4> & BatchParameters);
 
 llvm::Value * createArray(llvm::Function * F, llvm::Type * Ty, unsigned size);
 } // namespace tas

@@ -36,7 +36,8 @@ bool BatchProcess::run() {
  * Step 8: In each loop insert prefetch instruction for memory access of next loop.
  */
 
-  detectAnnotatedVariable(F, AnnotatedVariables);
+  SmallVector<Value *, 4> ExpensivePointers;
+  detectAnnotatedVariable(F, AnnotatedVariables, ExpensivePointers);
   NumAnnotatedVariables += AnnotatedVariables.size();
   findVariableUsePoints();
 

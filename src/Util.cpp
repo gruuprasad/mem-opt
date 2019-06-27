@@ -119,15 +119,35 @@ unsigned getTypeSizeInBits(Type * Ty) {
   return Total;
 }
 
-void detectAnnotatedVariable(Function * F, SmallVector<Value *, 4> & AnnotatedVariables) {
+void detectAnnotatedVariable(Function * F, SmallVector<Value *, 4> & ExpensivePointers,
+                              SmallVector<Value *, 4> & BatchParameters) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
     if (auto * CI = dyn_cast<CallInst>(&I)) {
+
+      // Check whether var.annotation or not
       auto * Callee = CI->getCalledFunction();
       if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
-      AnnotatedVariables.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      // Get annotation string literal
+      auto StringTag = cast<ConstantDataArray>(
+          cast<GlobalVariable>(
+            CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
+
+      if (StringTag.compare("expensive") == 0) {
+        ExpensivePointers.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      }
+
+      if (StringTag.compare("batch_arg") == 0) {
+        auto AllocaVar = cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0);
+        for (auto & I : F->front()) {
+          if (auto * Store = dyn_cast<StoreInst>(&I)) {
+            if (Store->getPointerOperand() == AllocaVar)
+              BatchParameters.push_back(Store->getValueOperand());
+          }
+        }
+      }
     }
   }
 }
