@@ -1,4 +1,5 @@
 #include "BatchMaker.h"
+#include "ForLoop.h"
 #include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
@@ -6,6 +7,7 @@
 #include <llvm/IR/Argument.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/Transforms/Utils/Cloning.h>
 
 #include <iostream>
 #include <string>
@@ -63,8 +65,28 @@ void BatchMaker::createBatchedFormFn() {
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         "batch_fn", OldFunc->getParent());
 
-  BasicBlock *ReturnBlock = BasicBlock::Create(OldFunc->getContext(), "RET_BLOCK", NewFunc, 0);
-  ReturnInst::Create(NewFunc->getContext(), Constant::getNullValue(RetType), ReturnBlock);
+  // Create empty entry basic block
+  auto * EntryBB = BasicBlock::Create(NewFunc->getContext(), "entry", NewFunc);
+  IRBuilder<> Builder(EntryBB);
+  Builder.CreateRet(Constant::getNullValue(RetType));
+
+  // For each batch argument, store value on stack using alloca.
+  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
+  for (auto & A : NewFunc->args()) {
+    auto APtr = Builder.CreateAlloca(A.getType());
+    Builder.CreateStore(&A, APtr);
+  }
+
+  /*
+  auto NewArgIt = NewFunc->arg_begin();
+  for (auto & A : OldFunc->args()) {
+    auto & NewValue = *NewArgIt++;
+    errs() << "Old Argument = " << A << "New argument = " << NewValue << "\n";
+    replaceUsesWithinBB(&A, &NewValue, EntryBB);
+  }
+  */
+
+  //auto TL0 = TASForLoop(NewFunc->getContext(), , ReturnBlock, "tas.loop." + std::to_string(i), F);
 }
 
 } // tas namespace

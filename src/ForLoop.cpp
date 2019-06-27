@@ -43,10 +43,12 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(BATCH_SIZE), "loop-predicate");
   
   // Stitch entry point in control flow.
-  if (Prev->getTerminator()->getNumOperands() == 3) 
-    Prev->getTerminator()->setSuccessor(1, PreHeader);
-  else
-    Prev->getTerminator()->setSuccessor(0, PreHeader);
+  if (Prev) {
+    if (Prev->getTerminator()->getNumOperands() == 3) 
+      Prev->getTerminator()->setSuccessor(1, PreHeader);
+    else
+      Prev->getTerminator()->setSuccessor(0, PreHeader);
+  }
 
   /// FIXME If Exit block is not specified, set to latch.
   /// This would be invalid loop, but works for now.
