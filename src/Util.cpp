@@ -119,7 +119,7 @@ unsigned getTypeSizeInBits(Type * Ty) {
   return Total;
 }
 
-void detectExpensivePointerVariables(Function * F, SmallVector<Value *, 4> & ExpensivePointers) {
+void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {

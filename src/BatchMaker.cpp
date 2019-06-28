@@ -69,6 +69,7 @@ void BatchMaker::createBatchedFormFn() {
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         "batch_fn", OldFunc->getParent());
 
+  // Set argument names.
   auto NewArgIt = NewFunc->arg_begin();
   for (int i = 0; i < NewFunc->arg_size(); ++i) {
     NewArgIt->setName(ArgNames[i]);
@@ -86,10 +87,8 @@ void BatchMaker::createBatchedFormFn() {
     auto APtr = Builder.CreateAlloca(A.getType());
     Builder.CreateStore(&A, APtr);
   }
-  NewFunc->print(errs());
 
   /*
-  auto NewArgIt = NewFunc->arg_begin();
   for (auto & A : OldFunc->args()) {
     auto & NewValue = *NewArgIt++;
     errs() << "Old Argument = " << A << "New argument = " << NewValue << "\n";

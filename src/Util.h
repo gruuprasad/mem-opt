@@ -45,7 +45,7 @@ void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock 
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
 
-void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & ExpensivePointers);
+void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVectorImpl<llvm::Value *> & ExpensivePointers);
 
 void detectBatchingParameters(llvm::Function * F, llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
 
