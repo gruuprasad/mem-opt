@@ -28,9 +28,11 @@ TEST_CASE("detect annotated variables") {
   auto * F = M->getFunction("test_fn");
 
   SmallVector<Value *, 4> EP;  // Expensive pointers
-  SmallVector<Value *, 4> BP; // Batch parameters
-  detectAnnotatedVariable(F, EP, BP);
+  detectExpensivePointerVariables(F, EP);
   REQUIRE(EP.size() == 1);
+
+  SmallVector<Value *, 4> BP; // Batch parameters
+  detectBatchingParameters(F, BP);
   REQUIRE(BP.size() == 2);
 }
 

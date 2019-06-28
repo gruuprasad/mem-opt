@@ -41,19 +41,13 @@ bool BatchMaker::run() {
   return true;
 }
 
-SmallVector<Argument *, 4> BatchMaker::getBatchArgs() {
-  SmallVector<Argument *, 4> BatchParams;
-  for (auto & A : OldFunc->args())
-      BatchParams.push_back(&A);
-  return BatchParams;
-}
-
 void BatchMaker::createBatchedFormFn() {
-  auto BatchParams = getBatchArgs();
+  SmallVector<Value *, 4> BatchArgs;
+  detectBatchingParameters(OldFunc, BatchArgs);
 
   // Create batch parameters
   SmallVector<Type *, 4> NewArgs;
-  for (auto & Param : BatchParams) {
+  for (auto & Param : BatchArgs) {
     NewArgs.push_back(PointerType::get(Param->getType(), 0));
     errs() << "New type = " << *NewArgs.back() << "\n";
   }
@@ -61,7 +55,6 @@ void BatchMaker::createBatchedFormFn() {
   // Create Function prototype
   auto RetType = OldFunc->getReturnType();
   FunctionType *BatchFuncType = FunctionType::get(RetType, NewArgs, false);
-
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         "batch_fn", OldFunc->getParent());
 

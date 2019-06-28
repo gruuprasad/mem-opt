@@ -45,8 +45,9 @@ void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock 
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
 
-void detectAnnotatedVariable(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & ExpensivePointers,
-                            llvm::SmallVector<llvm::Value *, 4> & BatchParameters);
+void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & ExpensivePointers);
+
+void detectBatchingParameters(llvm::Function * F, llvm::SmallVector<llvm::Value *, 4> & BatchParameters);
 
 llvm::Value * createArray(llvm::Function * F, llvm::Type * Ty, unsigned size);
 } // namespace tas

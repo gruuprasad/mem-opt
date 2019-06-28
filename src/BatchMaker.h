@@ -24,8 +24,6 @@ class BatchMaker {
 
   bool run();
   void createBatchedFormFn();
-  llvm::SmallVector<llvm::Argument *, 4> getBatchArgs();
-
 }; // tas namespace
 
 }
