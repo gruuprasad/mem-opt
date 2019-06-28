@@ -31,7 +31,7 @@ TEST_CASE("detect annotated variables") {
   detectExpensivePointerVariables(F, EP);
   REQUIRE(EP.size() == 1);
 
-  SmallVector<Value *, 4> BP; // Batch parameters
+  SmallPtrSet<Value *, 4> BP; // Batch parameters
   detectBatchingParameters(F, BP);
   REQUIRE(BP.size() == 2);
 }

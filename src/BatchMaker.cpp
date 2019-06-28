@@ -42,21 +42,38 @@ bool BatchMaker::run() {
 }
 
 void BatchMaker::createBatchedFormFn() {
-  SmallVector<Value *, 4> BatchArgs;
+  SmallPtrSet<Value *, 4> BatchArgs;
   detectBatchingParameters(OldFunc, BatchArgs);
 
   // Create batch parameters
-  SmallVector<Type *, 4> NewArgs;
-  for (auto & Param : BatchArgs) {
-    NewArgs.push_back(PointerType::get(Param->getType(), 0));
-    errs() << "New type = " << *NewArgs.back() << "\n";
+  SmallVector<Type *, 4> NewParams;
+  SmallVector<std::string, 4> ArgNames;
+  std::string prefix { "batch_arg_" }; int i = 1;
+  for (auto & Arg : OldFunc->args()) {
+    if (BatchArgs.find(&Arg) != BatchArgs.end()) {
+      NewParams.push_back(PointerType::get(Arg.getType(), 0));
+      ArgNames.push_back(prefix + std::to_string(i++));
+    } else {
+      NewParams.push_back(Arg.getType());
+      ArgNames.push_back(Arg.getName());
+    }
   }
+
+  // Adding Parameter representing actual batch size during run time
+  NewParams.push_back(Type::getInt32Ty(OldFunc->getContext()));
+  ArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
   // Create Function prototype
   auto RetType = OldFunc->getReturnType();
-  FunctionType *BatchFuncType = FunctionType::get(RetType, NewArgs, false);
+  FunctionType *BatchFuncType = FunctionType::get(RetType, NewParams, false);
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         "batch_fn", OldFunc->getParent());
+
+  auto NewArgIt = NewFunc->arg_begin();
+  for (int i = 0; i < NewFunc->arg_size(); ++i) {
+    NewArgIt->setName(ArgNames[i]);
+    ++NewArgIt;
+  }
 
   // Create empty entry basic block
   auto * EntryBB = BasicBlock::Create(NewFunc->getContext(), "entry", NewFunc);
@@ -69,6 +86,7 @@ void BatchMaker::createBatchedFormFn() {
     auto APtr = Builder.CreateAlloca(A.getType());
     Builder.CreateStore(&A, APtr);
   }
+  NewFunc->print(errs());
 
   /*
   auto NewArgIt = NewFunc->arg_begin();

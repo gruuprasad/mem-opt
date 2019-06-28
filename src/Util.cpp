@@ -141,7 +141,7 @@ void detectExpensivePointerVariables(Function * F, SmallVector<Value *, 4> & Exp
   }
 }
 
-void detectBatchingParameters(Function * F, SmallVector<Value *, 4> & BatchParameters) {
+void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
@@ -161,7 +161,7 @@ void detectBatchingParameters(Function * F, SmallVector<Value *, 4> & BatchParam
         for (auto & I : F->front()) {
           if (auto * Store = dyn_cast<StoreInst>(&I)) {
             if (Store->getPointerOperand() == AllocaVar)
-              BatchParameters.push_back(Store->getValueOperand());
+              BatchParameters.insert(Store->getValueOperand());
           }
         }
       }
