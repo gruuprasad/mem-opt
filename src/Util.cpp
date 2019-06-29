@@ -178,4 +178,15 @@ Value * createArray(Function * F, Type * Ty, unsigned size) {
   return Builder.CreateAlloca(ArrayType::get(Ty, size));
 }
 
+template <typename InstType>
+Instruction * findValueFirstUseInInstruction(Value * V) {
+  InstType * FirstUse = nullptr;
+  for (auto * U : V->users()) {
+    if (auto * I = dyn_cast<InstType>(U)) {
+      FirstUse = I;
+    }
+  }
+  return FirstUse;
+}
+
 }

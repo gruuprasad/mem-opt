@@ -50,7 +50,9 @@ void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVectorImpl<l
 void detectBatchingParameters(llvm::Function * F, llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
 
 llvm::Value * createArray(llvm::Function * F, llvm::Type * Ty, unsigned size);
+
+template <typename InstType>
+llvm::Instruction * findValueFirstUseInInstruction(llvm::Value * V);
 } // namespace tas
 
 #endif
-
