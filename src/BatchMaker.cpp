@@ -37,7 +37,6 @@ bool BatchMaker::run() {
  */
 
   createBatchedFormFn();
-  OldFunc->getParent()->dump();
 
   return true;
 }
@@ -126,7 +125,6 @@ void BatchMaker::createBatchedFormFn() {
     auto NumUses = OldAlloca->getNumUses();
     while (NumUses > 0) {
       User * U = OldAlloca->user_back();
-      errs() << "User " << *U << "\n";
       Builder.SetInsertPoint(cast<Instruction>(U));
       auto DerefAPtr = Builder.CreateLoad(APtr);
       auto ElemPtr = Builder.CreateGEP(DerefAPtr, Builder.getInt64(0) /*FIXME add index var*/);
