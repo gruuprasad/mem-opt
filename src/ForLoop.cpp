@@ -22,7 +22,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   // Update phi node edge if any
   IRBuilder<> Builder(Next);
   auto * PN = &*(Next->phis().begin());
-  if (!PN)
+  if (PN)
     PN->addIncoming(Builder.getInt16(0), Header);
 
   Builder.SetInsertPoint(PreHeader);
