@@ -6,6 +6,7 @@
 #include <llvm/ADT/Statistic.h>
 #include <llvm/IR/Argument.h>
 #include <llvm/IR/CFG.h>
+#include "llvm/IR/InstIterator.h"
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
@@ -99,9 +100,11 @@ void BatchMaker::createBatchedFormFn() {
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
 
   // For each argument, replace all uses.
+  SmallPtrSet<Value *, 4> BatchedAllocas;
   for (auto & A : BatchedArgs) {
     auto APtr = Builder.CreateAlloca(A->getType());
-    Builder.CreateStore(A, APtr);
+    BatchedAllocas.insert(APtr);
+    //Builder.CreateStore(A, APtr);
     StoreInst * StoreI = nullptr;
     for (auto * U : A->users()) {
       if (auto * I = dyn_cast<StoreInst>(U)) {
@@ -133,53 +136,25 @@ void BatchMaker::createBatchedFormFn() {
     }
   }
 
-  /*
-  // Create empty entry basic block
-  auto * EntryBB = BasicBlock::Create(NewFunc->getContext(), "entry", NewFunc);
-  IRBuilder<> Builder(EntryBB);
-  Builder.CreateRet(Constant::getNullValue(RetType));
+  // Find first use of batch alloca and split there.
+  // New basic block going to be part of batch processing loop.
+  for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
+    if (isa<LoadInst>(*I) && isa<GetElementPtrInst>(I->getNextNode()) &&
+        isa<LoadInst>(I->getNextNode()->getNextNode())) {
 
-  // For each batch argument, store value on stack using alloca.
-  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
-  for (auto & A : NewFunc->args()) {
-    auto APtr = Builder.CreateAlloca(A.getType());
-    Builder.CreateStore(&A, APtr);
-  }
-  */
-
-  /*
-  SmallVector<BasicBlock *, 4> ClonedBlocks (OldFunc->getBasicBlockList().size());
-  for (Function::const_iterator BI = OldFunc->begin(), BE = OldFunc->end();
-       BI != BE; ++BI) {
-    const BasicBlock &BB = *BI;
-
-    // Create a new basic block and copy instructions into it!
-    BasicBlock *CBB = CloneBasicBlock(&BB, VMap, "_batch", NewFunc);
-    ClonedBlocks.push_back(CBB);
-
-    // Add basic block mapping.
-    VMap[&BB] = CBB;
-
-    if (BB.hasAddressTaken()) {
-      Constant *OldBBAddr = BlockAddress::get(const_cast<Function*>(OldFunc),
-                                              const_cast<BasicBlock*>(&BB));
-      VMap[OldBBAddr] = BlockAddress::get(NewFunc, CBB);
+      bool Found = false;
+      for (const auto * V : I->operand_values()) {
+        if (BatchedAllocas.find(V) != BatchedAllocas.end()) {
+          I->getParent()->splitBasicBlock(BasicBlock::iterator(*I), "BatchBlock_begin");
+          Found = true;
+          break;
+        }
+      }
+      if (Found) break;
     }
   }
 
-  remapInstructionsInBlocks(ClonedBlocks, VMap);
-  */
-
-
-  /*
-  for (auto & A : OldFunc->args()) {
-    auto & NewValue = *NewArgIt++;
-    errs() << "Old Argument = " << A << "New argument = " << NewValue << "\n";
-    replaceUsesWithinBB(&A, &NewValue, EntryBB);
-  }
-  */
-
-  //auto TL0 = TASForLoop(NewFunc->getContext(), , ReturnBlock, "tas.loop." + std::to_string(i), F);
+  //auto TL0 = TASForLoop(NewFunc->getContext(), NewFunc->getEntryBlock(), , "tas.loop." + std::to_string(i), F);
 }
 
 } // tas namespace

@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -eu
 
+cur_dir=`pwd`
+
+cd ../../../build
 make
+cd $cur_dir
 
 # Run using debug build
 LLVM_PATH=/home/gp/llvm_projects/llvm/install/bin
