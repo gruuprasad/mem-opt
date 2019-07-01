@@ -18,6 +18,7 @@ class TASForLoop {
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
   llvm::PHINode * IndexVar;
+  llvm::Value * IndexVar64;
   llvm::Function * F;
   std::string Name;
   static const unsigned BATCH_SIZE = 32;
@@ -47,11 +48,17 @@ public:
   llvm::BasicBlock * getLatch() {
     return Latch;
   }
+
   llvm::BasicBlock * getHeader() {
     return Header;
   }
+
   llvm::Value * getIndexVariable() {
     return IndexVar;
+  }
+
+  llvm::Value * getIndexVariable64Bit() {
+    return IndexVar64;
   }
 
   llvm::BasicBlock * getBody() {

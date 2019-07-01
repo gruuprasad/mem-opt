@@ -55,8 +55,102 @@ if.end:                                           ; preds = %if.else, %if.then
 ; Function Attrs: nounwind
 declare void @llvm.var.annotation(i8*, i8*, i8*, i32) #1
 
+; Function Attrs: nounwind uwtable
+define dso_local i32 @batchRefFn(i32 %c, i32** %b, i32** %a, i32 %n) #0 {
+entry:
+  %c.addr = alloca i32, align 4
+  %b.addr = alloca i32**, align 8
+  %a.addr = alloca i32**, align 8
+  %n.addr = alloca i32, align 4
+  %i = alloca i32, align 4
+  store i32 %c, i32* %c.addr, align 4, !tbaa !2
+  store i32** %b, i32*** %b.addr, align 8, !tbaa !6
+  store i32** %a, i32*** %a.addr, align 8, !tbaa !6
+  store i32 %n, i32* %n.addr, align 4, !tbaa !2
+  %0 = bitcast i32* %i to i8*
+  call void @llvm.lifetime.start.p0i8(i64 4, i8* %0) #1
+  store i32 0, i32* %i, align 4, !tbaa !2
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.inc, %entry
+  %1 = load i32, i32* %i, align 4, !tbaa !2
+  %2 = load i32, i32* %n.addr, align 4, !tbaa !2
+  %cmp = icmp slt i32 %1, %2
+  br i1 %cmp, label %for.body, label %for.cond.cleanup
+
+for.cond.cleanup:                                 ; preds = %for.cond
+  %3 = bitcast i32* %i to i8*
+  call void @llvm.lifetime.end.p0i8(i64 4, i8* %3) #1
+  br label %for.end
+
+for.body:                                         ; preds = %for.cond
+  %4 = load i32**, i32*** %a.addr, align 8, !tbaa !6
+  %5 = load i32, i32* %i, align 4, !tbaa !2
+  %idxprom = sext i32 %5 to i64
+  %arrayidx = getelementptr inbounds i32*, i32** %4, i64 %idxprom
+  %6 = load i32*, i32** %arrayidx, align 8, !tbaa !6
+  %7 = load i32, i32* %6, align 4, !tbaa !2
+  %cmp1 = icmp sgt i32 %7, 10
+  br i1 %cmp1, label %if.then, label %if.else
+
+if.then:                                          ; preds = %for.body
+  %8 = load i32**, i32*** %a.addr, align 8, !tbaa !6
+  %9 = load i32, i32* %i, align 4, !tbaa !2
+  %idxprom2 = sext i32 %9 to i64
+  %arrayidx3 = getelementptr inbounds i32*, i32** %8, i64 %idxprom2
+  %10 = load i32*, i32** %arrayidx3, align 8, !tbaa !6
+  %11 = load i32, i32* %10, align 4, !tbaa !2
+  %12 = load i32, i32* %c.addr, align 4, !tbaa !2
+  %add = add nsw i32 %11, %12
+  %add4 = add nsw i32 %add, 10
+  %13 = load i32**, i32*** %a.addr, align 8, !tbaa !6
+  %14 = load i32, i32* %i, align 4, !tbaa !2
+  %idxprom5 = sext i32 %14 to i64
+  %arrayidx6 = getelementptr inbounds i32*, i32** %13, i64 %idxprom5
+  %15 = load i32*, i32** %arrayidx6, align 8, !tbaa !6
+  store i32 %add4, i32* %15, align 4, !tbaa !2
+  br label %if.end
+
+if.else:                                          ; preds = %for.body
+  %16 = load i32**, i32*** %a.addr, align 8, !tbaa !6
+  %17 = load i32, i32* %i, align 4, !tbaa !2
+  %idxprom7 = sext i32 %17 to i64
+  %arrayidx8 = getelementptr inbounds i32*, i32** %16, i64 %idxprom7
+  %18 = load i32*, i32** %arrayidx8, align 8, !tbaa !6
+  %19 = load i32, i32* %18, align 4, !tbaa !2
+  %20 = load i32, i32* %c.addr, align 4, !tbaa !2
+  %add9 = add nsw i32 %19, %20
+  %add10 = add nsw i32 %add9, 20
+  %21 = load i32**, i32*** %a.addr, align 8, !tbaa !6
+  %22 = load i32, i32* %i, align 4, !tbaa !2
+  %idxprom11 = sext i32 %22 to i64
+  %arrayidx12 = getelementptr inbounds i32*, i32** %21, i64 %idxprom11
+  %23 = load i32*, i32** %arrayidx12, align 8, !tbaa !6
+  store i32 %add10, i32* %23, align 4, !tbaa !2
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.end
+  %24 = load i32, i32* %i, align 4, !tbaa !2
+  %inc = add nsw i32 %24, 1
+  store i32 %inc, i32* %i, align 4, !tbaa !2
+  br label %for.cond
+
+for.end:                                          ; preds = %for.cond.cleanup
+  ret i32 0
+}
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.start.p0i8(i64, i8* nocapture) #2
+
+; Function Attrs: argmemonly nounwind
+declare void @llvm.lifetime.end.p0i8(i64, i8* nocapture) #2
+
 attributes #0 = { nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind }
+attributes #2 = { argmemonly nounwind }
 
 !llvm.module.flags = !{!0}
 !llvm.ident = !{!1}

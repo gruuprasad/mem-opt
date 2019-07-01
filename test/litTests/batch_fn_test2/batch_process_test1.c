@@ -12,3 +12,16 @@ int singlularFn(int c, int * b BATCH_ARG, int *a BATCH_ARG) TAS_MAKE_BATCH {
 
   return 0;
 }
+
+int batchRefFn(int c, int ** b, int **a, int n) {
+  for (int i = 0; i < n; ++i) {
+    if (*a[i] > 10) {
+      *a[i] = *a[i] + c + 10;
+    }
+    else {
+      *a[i] = *a[i] + c + 20;
+    }
+  }
+
+  return 0;
+}

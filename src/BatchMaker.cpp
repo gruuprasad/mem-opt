@@ -103,6 +103,7 @@ void BatchMaker::createBatchedFormFn() {
 
   // For each argument, replace all uses.
   SmallPtrSet<Value *, 4> BatchedAllocas;
+  SmallVector<Value *, 4> BatchGEPs;
   for (auto & A : BatchedArgs) {
     auto APtr = Builder.CreateAlloca(A->getType());
     BatchedAllocas.insert(APtr);
@@ -133,6 +134,7 @@ void BatchMaker::createBatchedFormFn() {
       Builder.SetInsertPoint(cast<Instruction>(U));
       auto DerefAPtr = Builder.CreateLoad(APtr);
       auto ElemPtr = Builder.CreateGEP(DerefAPtr, Builder.getInt64(0) /*FIXME add index var*/);
+      BatchGEPs.push_back(ElemPtr);
       U->replaceUsesOfWith(OldAlloca, ElemPtr);
       NumUses--;
     }
@@ -178,12 +180,22 @@ void BatchMaker::createBatchedFormFn() {
     ReplaceInstWithInst(BB->getTerminator(), BranchInst::Create(KnotBlock));
   }
 
+  // Use Dominator tree to decide which alloca index need to be replaced.
+  auto DT = DominatorTree(*NewFunc);
+
   auto * TripCount = NewFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
   assert (TripCount && "Trip count argument must be given");
   if (BatchCodeStartBlock) {
     auto TL0 = TASForLoop(NewFunc->getContext(), &NewFunc->getEntryBlock(), EndBlock,
                           "tas.loop." + std::to_string(i), NewFunc, TripCount);
     TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
+    // Set offset as loop index variable in BatchGEPs.
+    auto IndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
+    for (auto & V : BatchGEPs) {
+      auto GI = cast<Instruction>(V);
+      if (!DT.dominates(GI, BatchCodeStartBlock))
+        GI->setOperand(GI->getNumOperands() - 1, IndexVar);
+    }
   }
 
 }
