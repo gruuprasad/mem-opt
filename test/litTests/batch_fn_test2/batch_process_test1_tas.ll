@@ -128,60 +128,63 @@ entry:
   %5 = getelementptr i32*, i32** %4, i64 0
   %a.addr2 = bitcast i32** %5 to i8*
   call void @llvm.var.annotation(i8* %a.addr2, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1, i32 0, i32 0), i32 4)
+  %6 = alloca [32 x i32]
   br label %tas.loop.3.preheader
 
 BatchBlock_begin:                                 ; preds = %tas.loop.3.header
-  %6 = load i32**, i32*** %0
-  %7 = getelementptr i32*, i32** %6, i64 %27
-  %8 = load i32*, i32** %7, align 8, !tbaa !2
-  store i32 10, i32* %8, align 4, !tbaa !6
-  %9 = load i32**, i32*** %3
-  %10 = getelementptr i32*, i32** %9, i64 %27
-  %11 = load i32*, i32** %10, align 8, !tbaa !2
-  %12 = load i32, i32* %11, align 4, !tbaa !6
-  %cmp = icmp sgt i32 %12, 10
+  %7 = load i32**, i32*** %0
+  %8 = getelementptr i32*, i32** %7, i64 %29
+  %9 = load i32*, i32** %8, align 8, !tbaa !2
+  store i32 10, i32* %9, align 4, !tbaa !6
+  %10 = load i32**, i32*** %3
+  %11 = getelementptr i32*, i32** %10, i64 %29
+  %12 = load i32*, i32** %11, align 8, !tbaa !2
+  %13 = load i32, i32* %12, align 4, !tbaa !6
+  %cmp = icmp sgt i32 %13, 10
   br i1 %cmp, label %if.then, label %if.else
 
 if.then:                                          ; preds = %BatchBlock_begin
-  %13 = load i32**, i32*** %3
-  %14 = getelementptr i32*, i32** %13, i64 %27
-  %15 = load i32*, i32** %14, align 8, !tbaa !2
-  %16 = load i32, i32* %15, align 4, !tbaa !6
-  %add = add nsw i32 %16, %c
+  %14 = load i32**, i32*** %3
+  %15 = getelementptr i32*, i32** %14, i64 %29
+  %16 = load i32*, i32** %15, align 8, !tbaa !2
+  %17 = load i32, i32* %16, align 4, !tbaa !6
+  %add = add nsw i32 %17, %c
   %add3 = add nsw i32 %add, 10
-  %17 = load i32**, i32*** %3
-  %18 = getelementptr i32*, i32** %17, i64 %27
-  %19 = load i32*, i32** %18, align 8, !tbaa !2
-  store i32 %add3, i32* %19, align 4, !tbaa !6
+  %18 = load i32**, i32*** %3
+  %19 = getelementptr i32*, i32** %18, i64 %29
+  %20 = load i32*, i32** %19, align 8, !tbaa !2
+  store i32 %add3, i32* %20, align 4, !tbaa !6
   br label %if.end
 
 if.else:                                          ; preds = %BatchBlock_begin
-  %20 = load i32**, i32*** %3
-  %21 = getelementptr i32*, i32** %20, i64 %27
-  %22 = load i32*, i32** %21, align 8, !tbaa !2
-  %23 = load i32, i32* %22, align 4, !tbaa !6
-  %add4 = add nsw i32 %23, %c
+  %21 = load i32**, i32*** %3
+  %22 = getelementptr i32*, i32** %21, i64 %29
+  %23 = load i32*, i32** %22, align 8, !tbaa !2
+  %24 = load i32, i32* %23, align 4, !tbaa !6
+  %add4 = add nsw i32 %24, %c
   %add5 = add nsw i32 %add4, 20
-  %24 = load i32**, i32*** %3
-  %25 = getelementptr i32*, i32** %24, i64 %27
-  %26 = load i32*, i32** %25, align 8, !tbaa !2
-  store i32 %add5, i32* %26, align 4, !tbaa !6
+  %25 = load i32**, i32*** %3
+  %26 = getelementptr i32*, i32** %25, i64 %29
+  %27 = load i32*, i32** %26, align 8, !tbaa !2
+  store i32 %add5, i32* %27, align 4, !tbaa !6
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
+  %28 = getelementptr [32 x i32], [32 x i32]* %6, i64 0, i16 %indV
+  store i32 0, i32* %28
   br label %Knotblock
 
 tas.loop.3.preheader:                             ; preds = %entry
   br label %tas.loop.3.header
 
 tas.loop.3.header:                                ; preds = %tas.loop.3.latch, %tas.loop.3.preheader
-  %indV = phi i16 [ 0, %tas.loop.3.preheader ], [ %28, %tas.loop.3.latch ]
-  %27 = sext i16 %indV to i64
+  %indV = phi i16 [ 0, %tas.loop.3.preheader ], [ %30, %tas.loop.3.latch ]
+  %29 = sext i16 %indV to i64
   %loop-predicate = icmp slt i16 %indV, %TAS_BATCHSIZE
   br i1 %loop-predicate, label %BatchBlock_begin, label %EndBlock
 
 tas.loop.3.latch:                                 ; preds = %Knotblock
-  %28 = add i16 %indV, 1
+  %30 = add i16 %indV, 1
   br label %tas.loop.3.header
 
 EndBlock:                                         ; preds = %tas.loop.3.header

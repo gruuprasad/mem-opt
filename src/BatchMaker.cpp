@@ -176,7 +176,9 @@ void BatchMaker::createBatchedFormFn() {
   auto KnotBlock = BasicBlock::Create(NewFunc->getContext(), "Knotblock", NewFunc);
   BranchInst::Create(EndBlock, KnotBlock);
 
+  SmallVector<Value *, 4> RetVals;
   for (auto & BB : TerminatingBB) {
+    RetVals.push_back(BB->getTerminator()->getOperand(0));
     ReplaceInstWithInst(BB->getTerminator(), BranchInst::Create(KnotBlock));
   }
 
@@ -187,7 +189,7 @@ void BatchMaker::createBatchedFormFn() {
   assert (TripCount && "Trip count argument must be given");
   if (BatchCodeStartBlock) {
     auto TL0 = TASForLoop(NewFunc->getContext(), &NewFunc->getEntryBlock(), EndBlock,
-                          "tas.loop." + std::to_string(i), NewFunc, TripCount);
+        "tas.loop." + std::to_string(i), NewFunc, TripCount);
     TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
     // Set offset as loop index variable in BatchGEPs.
     auto IndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
@@ -196,8 +198,16 @@ void BatchMaker::createBatchedFormFn() {
       if (!DT.dominates(GI, BatchCodeStartBlock))
         GI->setOperand(GI->getNumOperands() - 1, IndexVar);
     }
-  }
 
+    // Store return value in a temporary variable.
+    auto RetValAlloca = createArray(NewFunc, RetType, TASForLoop::getLoopTripCount());
+    auto RetVal = RetVals.begin();
+    for (auto & BB : TerminatingBB) {
+      Builder.SetInsertPoint(BB->getTerminator());
+      auto ptr = Builder.CreateGEP(RetValAlloca, {Builder.getInt64(0), TL0.getIndexVariable()});
+      Builder.CreateStore(*RetVal++, ptr);
+    }
+  }
 }
 
 } // tas namespace
