@@ -70,8 +70,12 @@ void BatchMaker::createBatchedFormFn() {
   NewParams.push_back(Type::getInt16Ty(OldFunc->getContext()));
   ArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
-  // Create Function prototype
   auto RetType = OldFunc->getReturnType();
+  // Add pointer as output parameter, where return value is stored.
+  NewParams.push_back(PointerType::get(RetType, 0));
+  ArgNames.push_back(std::string("TAS_RETURNS"));
+
+  // Create Function prototype
   FunctionType *BatchFuncType = FunctionType::get(RetType, NewParams, false);
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         "batch_fn", OldFunc->getParent());
@@ -79,7 +83,7 @@ void BatchMaker::createBatchedFormFn() {
   // Set argument names.
   SmallVector<Value *, 4> BatchedArgs;
   auto NewArgIt = NewFunc->arg_begin();
-  for (int i = 0; i < NewFunc->arg_size(); ++i) {
+  for (int i = 0; i < NewFunc->arg_size() - 1; ++i) {
     NewArgIt->setName(ArgNames[i]);
     if (i == BatchParamIndices.front()) {
       BatchedArgs.push_back(&*NewArgIt);
@@ -87,6 +91,9 @@ void BatchMaker::createBatchedFormFn() {
     }
     ++NewArgIt;
   }
+
+  NewArgIt->setName(ArgNames[NewFunc->arg_size() - 1]);
+  auto * RetParam = &*NewArgIt;
 
   ValueToValueMapTy VMap;
   auto NewA = NewFunc->arg_begin();
@@ -140,6 +147,10 @@ void BatchMaker::createBatchedFormFn() {
     }
   }
 
+  // Store Ret parameter in alloca.
+  auto RetAlloca = Builder.CreateAlloca(RetParam->getType());
+  Builder.CreateStore(RetParam, RetAlloca);
+
   // Find first use of batch alloca and split there.
   // New basic block going to be part of batch processing loop.
   BasicBlock * BatchCodeStartBlock = nullptr;
@@ -187,6 +198,7 @@ void BatchMaker::createBatchedFormFn() {
 
   auto * TripCount = NewFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
   assert (TripCount && "Trip count argument must be given");
+
   if (BatchCodeStartBlock) {
     auto TL0 = TASForLoop(NewFunc->getContext(), &NewFunc->getEntryBlock(), EndBlock,
         "tas.loop." + std::to_string(i), NewFunc, TripCount);
@@ -200,12 +212,12 @@ void BatchMaker::createBatchedFormFn() {
     }
 
     // Store return value in a temporary variable.
-    auto RetValAlloca = createArray(NewFunc, RetType, TASForLoop::getLoopTripCount());
     auto RetVal = RetVals.begin();
     for (auto & BB : TerminatingBB) {
       Builder.SetInsertPoint(BB->getTerminator());
-      auto ptr = Builder.CreateGEP(RetValAlloca, {Builder.getInt64(0), TL0.getIndexVariable()});
-      Builder.CreateStore(*RetVal++, ptr);
+      auto ptr = Builder.CreateLoad(RetAlloca);
+      auto offset = Builder.CreateGEP(ptr, IndexVar);
+      Builder.CreateStore(*RetVal++, offset);
     }
   }
 }
