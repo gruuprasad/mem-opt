@@ -45,6 +45,7 @@ bool BatchMaker::run() {
 }
 
 void BatchMaker::createBatchedFormFn() {
+  errs() << "Function = " << OldFunc->getName() << "\n";
   SmallPtrSet<Value *, 4> ArgsToBatch;
   detectBatchingParameters(OldFunc, ArgsToBatch);
 
