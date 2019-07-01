@@ -52,7 +52,7 @@ if.end:                                           ; preds = %if.else, %if.then
 declare void @llvm.var.annotation(i8*, i8*, i8*, i32) #1
 
 ; Function Attrs: nounwind uwtable
-define dso_local i32 @batch_fn(i32 %c, i32** %batch_arg_1, i32** %batch_arg_2, i32 %TAS_BATCHSIZE) #0 {
+define dso_local i32 @batch_fn(i32 %c, i32** %batch_arg_1, i32** %batch_arg_2, i16 %TAS_BATCHSIZE) #0 {
 entry:
   %0 = alloca i32**
   %b.addr = alloca i32*, align 8
@@ -68,9 +68,9 @@ entry:
   %5 = getelementptr i32*, i32** %4, i64 0
   %a.addr2 = bitcast i32** %5 to i8*
   call void @llvm.var.annotation(i8* %a.addr2, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.1, i32 0, i32 0), i32 4)
-  br label %BatchBlock_begin
+  br label %tas.loop.3.preheader
 
-BatchBlock_begin:                                 ; preds = %entry
+BatchBlock_begin:                                 ; preds = %tas.loop.3.header
   %6 = load i32**, i32*** %0
   %7 = getelementptr i32*, i32** %6, i64 0
   %8 = load i32*, i32** %7, align 8, !tbaa !2
@@ -109,7 +109,25 @@ if.else:                                          ; preds = %BatchBlock_begin
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
+  br label %Knotblock
+
+tas.loop.3.preheader:                             ; preds = %entry
+  br label %tas.loop.3.header
+
+tas.loop.3.header:                                ; preds = %tas.loop.3.latch, %tas.loop.3.preheader
+  %indV = phi i16 [ 0, %tas.loop.3.preheader ], [ %27, %tas.loop.3.latch ]
+  %loop-predicate = icmp slt i16 %indV, %TAS_BATCHSIZE
+  br i1 %loop-predicate, label %BatchBlock_begin, label %EndBlock
+
+tas.loop.3.latch:                                 ; preds = %Knotblock
+  %27 = add i16 %indV, 1
+  br label %tas.loop.3.header
+
+EndBlock:                                         ; preds = %tas.loop.3.header
   ret i32 0
+
+Knotblock:                                        ; preds = %if.end
+  br label %tas.loop.3.latch
 }
 
 attributes #0 = { nounwind uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "tas_batch_maker" "unsafe-fp-math"="false" "use-soft-float"="false" }

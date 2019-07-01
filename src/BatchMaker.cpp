@@ -6,8 +6,10 @@
 #include <llvm/ADT/Statistic.h>
 #include <llvm/IR/Argument.h>
 #include <llvm/IR/CFG.h>
-#include "llvm/IR/InstIterator.h"
+#include <llvm/IR/InstIterator.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/ValueSymbolTable.h>
+#include <llvm/Transforms/Utils/BasicBlockUtils.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
 #include <deque>
@@ -65,7 +67,7 @@ void BatchMaker::createBatchedFormFn() {
   }
 
   // Adding Parameter representing actual batch size during run time
-  NewParams.push_back(Type::getInt32Ty(OldFunc->getContext()));
+  NewParams.push_back(Type::getInt16Ty(OldFunc->getContext()));
   ArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
   // Create Function prototype
@@ -138,6 +140,7 @@ void BatchMaker::createBatchedFormFn() {
 
   // Find first use of batch alloca and split there.
   // New basic block going to be part of batch processing loop.
+  BasicBlock * BatchCodeStartBlock = nullptr;
   for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
     if (isa<LoadInst>(*I) && isa<GetElementPtrInst>(I->getNextNode()) &&
         isa<LoadInst>(I->getNextNode()->getNextNode())) {
@@ -145,7 +148,7 @@ void BatchMaker::createBatchedFormFn() {
       bool Found = false;
       for (const auto * V : I->operand_values()) {
         if (BatchedAllocas.find(V) != BatchedAllocas.end()) {
-          I->getParent()->splitBasicBlock(BasicBlock::iterator(*I), "BatchBlock_begin");
+          BatchCodeStartBlock = I->getParent()->splitBasicBlock(BasicBlock::iterator(*I), "BatchBlock_begin");
           Found = true;
           break;
         }
@@ -154,7 +157,35 @@ void BatchMaker::createBatchedFormFn() {
     }
   }
 
-  //auto TL0 = TASForLoop(NewFunc->getContext(), NewFunc->getEntryBlock(), , "tas.loop." + std::to_string(i), F);
+
+  // Make loop body to have a single backedge.
+  // For that we need to tie all exiting edges and point it to single block.
+  SmallVector<BasicBlock *, 4> TerminatingBB;
+  for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
+    if (ReturnInst * Return = dyn_cast<ReturnInst>(&*I)) {
+      TerminatingBB.push_back(Return->getParent());
+    }
+  }
+
+  auto EndBlock = BasicBlock::Create(NewFunc->getContext(), "EndBlock", NewFunc);
+  ReturnInst::Create(NewFunc->getContext(), Constant::getNullValue(RetType), EndBlock);
+
+  // XXX Can be improved, if there is one terminating block, then that itself be knot block.
+  auto KnotBlock = BasicBlock::Create(NewFunc->getContext(), "Knotblock", NewFunc);
+  BranchInst::Create(EndBlock, KnotBlock);
+
+  for (auto & BB : TerminatingBB) {
+    ReplaceInstWithInst(BB->getTerminator(), BranchInst::Create(KnotBlock));
+  }
+
+  auto * TripCount = NewFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
+  assert (TripCount && "Trip count argument must be given");
+  if (BatchCodeStartBlock) {
+    auto TL0 = TASForLoop(NewFunc->getContext(), &NewFunc->getEntryBlock(), EndBlock,
+                          "tas.loop." + std::to_string(i), NewFunc, TripCount);
+    TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
+  }
+
 }
 
 } // tas namespace

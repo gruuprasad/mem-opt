@@ -13,29 +13,33 @@ namespace tas {
 class TASForLoop {
   llvm::BasicBlock * PreHeader;
   llvm::BasicBlock * Header;
-  llvm::BasicBlock * Body;
+  llvm::BasicBlock * EntryBody;
+  llvm::BasicBlock * ExitingBody;
   llvm::BasicBlock * Latch;
   llvm::BranchInst * ExitInst;
   llvm::PHINode * IndexVar;
   llvm::Function * F;
   std::string Name;
   static const unsigned BATCH_SIZE = 32;
+  llvm::Value * TripCount;
 
 public:
 // Constructor
   explicit TASForLoop(llvm::LLVMContext & Ctx,
       llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
-      const std::string & Name, llvm::Function * F = nullptr);
+      const std::string & Name, llvm::Function * F = nullptr, llvm::Value * TC = nullptr);
 
   static TASForLoop * Create(llvm::LLVMContext & Ctx,
       llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
       std::string Name = std::string(), 
-      llvm::Function * F = nullptr) {
-    return new TASForLoop(Ctx, Prev, Next, Name, F);
+      llvm::Function * F = nullptr, llvm::Value * TC = nullptr) {
+    return new TASForLoop(Ctx, Prev, Next, Name, F, TC);
   }
 
   void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * Prev, llvm::BasicBlock * Next);
   void setLoopBody(llvm::BasicBlock * BodyBB);
+  void setLoopBody(llvm::BasicBlock * EntryBB, llvm::BasicBlock * ExitingBB);
+
   llvm::BasicBlock * getLatchBlock() {
     return Latch;
   }
@@ -51,7 +55,9 @@ public:
   }
 
   llvm::BasicBlock * getBody() {
-    return Body;
+    if (EntryBody != ExitingBody)
+      return nullptr;
+    return EntryBody;
   }
 
   static unsigned getLoopTripCount() {

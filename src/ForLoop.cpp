@@ -8,8 +8,8 @@ using namespace llvm;
 namespace tas {
 
 TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
-    BasicBlock * Next, const std::string & Name, Function * F)
-  : F(F), Name (std::move(Name))
+    BasicBlock * Next, const std::string & Name, Function * F, llvm::Value * TC)
+  : F(F), Name (std::move(Name)), TripCount(TC)
 {
   addEmptyLoop(Ctx, Prev, Next);
 }
@@ -38,9 +38,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Builder.SetInsertPoint(Header);
   IndexVar->addIncoming(Builder.getInt16(0), PreHeader);
   IndexVar->addIncoming(IVNext, Latch);
-  // FIXME Assume batch size is BATCH_SIZE in TAS function
-  // later take this value as input paremeter.
-  auto * icmp = Builder.CreateICmpSLT(IndexVar, Builder.getInt16(BATCH_SIZE), "loop-predicate");
+  auto * icmp = Builder.CreateICmpSLT(IndexVar, TripCount, "loop-predicate");
   
   // Stitch entry point in control flow.
   if (Prev) {
@@ -56,9 +54,16 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
 }
 
 void TASForLoop::setLoopBody(BasicBlock * BodyBB) {
-  Body = BodyBB;
+  EntryBody = ExitingBody = BodyBB;
   Header->getTerminator()->setSuccessor(0, BodyBB);
   BodyBB->getTerminator()->setSuccessor(0, Latch);
+}
+
+void TASForLoop::setLoopBody(BasicBlock * EntryBB, BasicBlock * ExitingBB) {
+  EntryBody = EntryBB;
+  ExitingBody = ExitingBB;
+  Header->getTerminator()->setSuccessor(0, EntryBody);
+  ExitingBody->getTerminator()->setSuccessor(0, Latch);
 }
 
 }
