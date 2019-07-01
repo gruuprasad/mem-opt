@@ -28,6 +28,7 @@ bool TASBatchMaker::runOnModule(Module &M) {
 
   bool changed = false;
   for (auto & FnStr : AnnotatedFnList) {
+    if (FnStr.getSecond().compare("tas_batch_maker") != 0) continue;
     tas::BatchMaker BM(FnStr.getFirst());
     changed |= BM.run();
   }
