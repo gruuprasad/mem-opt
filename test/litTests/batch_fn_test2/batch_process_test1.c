@@ -19,8 +19,10 @@ int singlularFn(int c, int * a BATCH_ARG, int *b BATCH_ARG) TAS_MAKE_BATCH {
   x = *a + 50;
 
 unlock:
+  x = x + 10;
   return 0;
 
 slowpath:
+  x = x + 30;
   return -1;
 }

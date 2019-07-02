@@ -3,7 +3,7 @@ add_library(TASPass SHARED BatchProcess.cpp
                            BatchMaker.cpp
                            BatchMakerPass.cpp)
 
-add_library(TASUtil SHARED ForLoop.cpp Util.cpp)
+add_library(TASUtil STATIC ForLoop.cpp Util.cpp)
 
 target_link_libraries(TASPass TASUtil)
 

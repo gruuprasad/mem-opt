@@ -79,7 +79,7 @@ void BatchMaker::createBatchedFormFn() {
   // Create Function prototype
   FunctionType *BatchFuncType = FunctionType::get(RetType, NewParams, false);
   NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
-                                        "batch_fn", OldFunc->getParent());
+                                        OldFunc->getName() + "_batch", OldFunc->getParent());
 
   // Set argument names.
   SmallVector<Value *, 4> BatchedArgs;
