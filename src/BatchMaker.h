@@ -17,10 +17,11 @@ class TASForLoop;
 class BatchMaker {
   llvm::Function * OldFunc;
   llvm::Function * NewFunc;
+  llvm::SmallVector<llvm::Value *, 4> PrefetchVars;
 
   public:
   BatchMaker(llvm::Function * F_) :
-    OldFunc(F_), NewFunc(nullptr) {}
+    OldFunc(F_), NewFunc(nullptr), PrefetchVars() {}
 
   bool run();
   void createBatchedFormFn();

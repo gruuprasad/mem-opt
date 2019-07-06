@@ -30,7 +30,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
 
   Builder.SetInsertPoint(Header);
   IndexVar = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
-  IndexVar64 = Builder.CreateSExtOrBitCast(IndexVar, Type::getInt64Ty(Ctx));
+  IndexVar64 = Builder.CreateSExtOrBitCast(IndexVar, Type::getInt64Ty(Ctx), "indV64");
 
   Builder.SetInsertPoint(Latch);
   auto *IVNext = Builder.CreateAdd(IndexVar, Builder.getInt16(1));

@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "batch_process_test1.h"
 
-int batch_fn(int, int **, int **, int, int *);
+int singlularFn_batch(int, int **, int **, int, int *);
 int main() {
   int a1 = 10;
   int a2 = 20;
@@ -17,9 +17,9 @@ int main() {
   int d = singlularFn(50, &a2, &b2);
 
   int * retVals = malloc(sizeof(int) * 2);
-  //printf("==============\n");
-  //printf("Calling batch_fn\n");
-  batch_fn(50, a_list, b_list, 2, retVals);
+  printf("Calling batch_fn\n");
+  printf("==============\n");
+  singlularFn_batch(50, a_list, b_list, 2, retVals);
 
   assert (c == retVals[0]);
   assert (d == retVals[1]);

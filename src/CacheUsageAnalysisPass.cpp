@@ -1,5 +1,5 @@
-#include "BatchProcess.h"
-#include "BatchProcessPass.h"
+#include "CacheUsageAnalysisPass.h"
+#include "CacheUsageAnalysis.h"
 #include "Util.h"
 
 #include <llvm/Transforms/Utils.h>
@@ -11,36 +11,35 @@
 
 using namespace llvm;
 
-static const std::string fn_mark = "tas_batch";
+static const std::string fn_mark = "tas_cache_analysis";
 
 namespace {
 
-void TASBatchProcess::getAnalysisUsage(AnalysisUsage &AU) const {
+void CacheUsageAnalysisPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<DominatorTreeWrapperPass>();
   AU.addRequired<LoopInfoWrapperPass>();
-  //AU.setPreservesAll();
+  AU.setPreservesAll();
 }
 
-bool TASBatchProcess::doInitialization(Module &M) {
+bool CacheUsageAnalysisPass::doInitialization(Module &M) {
   tas::setAnnotationInFunctionObject(&M);
   return true;
 }
 
-bool TASBatchProcess::runOnFunction(Function &F) {
+bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
   if (!F.hasFnAttribute(fn_mark)) 
     return false;
 
-  errs() << "BatchProcess pass: " << F.getName() << "\n";
+  errs() << "CacheUsageAnalysisPass pass: " << F.getName() << "\n";
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  tas::BatchProcess BP(&F, &LI, &DT);
-  return BP.run();
+  tas::CacheUsageAnalysis CA(&F, &LI, &DT);
+  CA.run();
+  return false;
 }
 
-char TASBatchProcess::ID = 0;
-static RegisterPass<TASBatchProcess> X("tas-batch-process", "Pass to convert sequential process to batch process of packets",
-                                   false,
-                                     false);
+char CacheUsageAnalysisPass::ID = 0;
+static RegisterPass<CacheUsageAnalysisPass> X("cache-usage-analysis", "Pass to analyze cache usage", false, false);
 } // Anonymous namespace
 
 static void registerTASPass(const PassManagerBuilder & Builder,
@@ -48,7 +47,7 @@ static void registerTASPass(const PassManagerBuilder & Builder,
   PM.add(createIndVarSimplifyPass());        // Canonicalize indvars
   PM.add(createLoopSimplifyPass());          // Loop simplify
   PM.add(createLCSSAPass());
-  PM.add(new TASBatchProcess());
+  PM.add(new CacheUsageAnalysisPass());
 }
 
 static RegisterStandardPasses
