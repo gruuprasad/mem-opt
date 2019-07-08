@@ -14,7 +14,7 @@
 
 #include <string>
 
-extern std::string input_dir;
+extern std::string input_dir; // This contains path to input test files
 
 using namespace llvm;
 
