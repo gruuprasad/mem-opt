@@ -13,7 +13,20 @@ using namespace llvm;
 namespace tas {
 
 bool CacheUsageAnalysis::run() {
-  return false;
+ auto Acc =  MSSA->getBlockAccesses(&F->getEntryBlock());
+ auto Defs = MSSA->getBlockDefs(&F->getEntryBlock());
+
+ for (auto & D : *Acc) {
+   errs() << "Access: ";
+   errs() << D << *cast<MemoryUseOrDef>(D).getMemoryInst() << "\n";
+ }
+
+ for (auto & D : *Defs) {
+   errs() << "Defs: ";
+   errs() << D << *cast<MemoryUseOrDef>(D).getMemoryInst() << "\n";
+ }
+
+ return false;
 }
 
 }
