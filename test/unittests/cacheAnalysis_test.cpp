@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "CacheUsageAnalysis.h"
 #include "Util.h"
 
 #include <llvm/AsmParser/Parser.h>
@@ -68,6 +69,7 @@ TEST_CASE("struct size test") {
   )");
 
   REQUIRE( M != nullptr);
+  /*
   TypeFinder types;
   types.run(*M, true);
 
@@ -83,6 +85,35 @@ TEST_CASE("struct size test") {
       errs() << TyLayout->getElementOffset(i) << ":" << TyLayout->getElementOffsetInBits(i) << "\n";
     }
   }
+  */
+}
+
+TEST_CASE("Struct fit in single cache line") {
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test1.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("test_fn");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 1);
+}
+
+TEST_CASE("Struct fit across two cache line") {
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test2.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("test_fn");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 3);
 }
 
 }

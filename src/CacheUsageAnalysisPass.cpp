@@ -12,7 +12,7 @@
 
 using namespace llvm;
 
-static const std::string fn_mark = "tas_cache_analysis";
+static const std::string fn_mark = "tas_cacheline_count";
 
 namespace {
 
@@ -36,8 +36,6 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
   MemorySSA &MSSA = getAnalysis<MemorySSAWrapperPass>().getMSSA();
-  tas::CacheUsageAnalysis CA(&F, &LI, &DT, &MSSA);
-  CA.run();
   return false;
 }
 

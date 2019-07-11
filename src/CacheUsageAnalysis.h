@@ -13,16 +13,17 @@ namespace tas {
 
 class CacheUsageAnalysis {
   llvm::Function * F;
-  llvm::LoopInfo * LI;
-  llvm::DominatorTree * DT;
-  llvm::MemorySSA * MSSA;
+  unsigned NumOfCacheLines = 0;
 
   public:
-  CacheUsageAnalysis(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_,
-                     llvm::MemorySSA * MSSA) :
-    F(F_), LI(LI_), DT(DT_), MSSA(MSSA) {}
+  CacheUsageAnalysis(llvm::Function * F)
+    : F(F) {}
 
   bool run();
+  unsigned getNumOfCacheLines() {
+    return NumOfCacheLines;
+  }
+  unsigned getCacheLineIdx(llvm::Type *, unsigned FieldIdx);
 }; // tas namespace
 
 }

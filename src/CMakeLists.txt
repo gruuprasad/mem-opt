@@ -1,7 +1,6 @@
-add_library(TASPass SHARED CacheUsageAnalysis.cpp
-                           CacheUsageAnalysisPass.cpp)
+add_library(TASPass SHARED CacheUsageAnalysisPass.cpp)
 
-add_library(TASUtil STATIC ForLoop.cpp Util.cpp)
+add_library(TASUtil SHARED CacheUsageAnalysis.cpp ForLoop.cpp Util.cpp)
 
 target_link_libraries(TASPass TASUtil)
 
