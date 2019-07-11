@@ -47,9 +47,6 @@ static RegisterPass<CacheUsageAnalysisPass> X("cache-usage-analysis", "Pass to a
 
 static void registerTASPass(const PassManagerBuilder & Builder,
                            legacy::PassManagerBase &PM) {
-  PM.add(createIndVarSimplifyPass());        // Canonicalize indvars
-  PM.add(createLoopSimplifyPass());          // Loop simplify
-  PM.add(createLCSSAPass());
   PM.add(new CacheUsageAnalysisPass());
 }
 
