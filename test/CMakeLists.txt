@@ -1,2 +1,2 @@
-add_subdirectory(unit/)
+add_subdirectory(unittests/)
 add_subdirectory(litTests/)
