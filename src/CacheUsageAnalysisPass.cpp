@@ -2,6 +2,7 @@
 #include "CacheUsageAnalysis.h"
 #include "Util.h"
 
+#include <llvm/Analysis/MemorySSA.h>
 #include <llvm/Transforms/Utils.h>
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/IR/Dominators.h>
@@ -18,6 +19,7 @@ namespace {
 void CacheUsageAnalysisPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<DominatorTreeWrapperPass>();
   AU.addRequired<LoopInfoWrapperPass>();
+  AU.addRequired<MemorySSAWrapperPass>();
   AU.setPreservesAll();
 }
 
@@ -33,7 +35,8 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
   errs() << "CacheUsageAnalysisPass pass: " << F.getName() << "\n";
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  tas::CacheUsageAnalysis CA(&F, &LI, &DT);
+  MemorySSA &MSSA = getAnalysis<MemorySSAWrapperPass>().getMSSA();
+  tas::CacheUsageAnalysis CA(&F, &LI, &DT, &MSSA);
   CA.run();
   return false;
 }

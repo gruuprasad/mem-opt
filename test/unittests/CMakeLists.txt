@@ -1,7 +1,8 @@
 add_library(catch_LIB OBJECT test_main.cpp)
 
 add_executable(tests
-                simple_test.cpp)
+                simple_test.cpp
+                cacheAnalysis_test.cpp)
 
 set(LLVM_LINK_COMPONENTS
   Analysis
@@ -17,6 +18,7 @@ target_link_libraries(tests
                       catch_LIB
                       LLVMCore
                       LLVMAnalysis
+                      LLVMAsmParser
                       LLVMSupport
                       LLVMIRReader
                       LLVMTransformUtils)
