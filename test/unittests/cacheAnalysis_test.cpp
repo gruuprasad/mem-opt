@@ -131,7 +131,6 @@ TEST_CASE("Nested struct [level 2]") {
 }
 
 TEST_CASE("Nested struct [level 3]") {
-  errs() << "Nested struct test\n";
   LLVMContext C;
   SMDiagnostic Err;
   
@@ -143,6 +142,20 @@ TEST_CASE("Nested struct [level 3]") {
   CA.run();
 
   REQUIRE(CA.getNumOfCacheLines() == 7);
+}
+
+TEST_CASE("arrasy of struct [level 3]", "[RUN]") {
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test5.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("test_fn");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 4);
 }
 
 }

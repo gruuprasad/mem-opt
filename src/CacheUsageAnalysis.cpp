@@ -15,12 +15,16 @@ using namespace llvm;
 namespace tas {
 
 unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx) {
-  // XXX Only struct type supported for this analysis for now.
-  if (!Ty->isStructTy())
+  if (Ty->isSingleValueType())
     return 0;
 
-  auto * TyLayout = DL->getStructLayout(cast<StructType>(Ty));
-  return TyLayout->getElementOffset(FieldIdx);
+  if (Ty->isStructTy()) {
+    auto * TyLayout = DL->getStructLayout(cast<StructType>(Ty));
+    return TyLayout->getElementOffset(FieldIdx);
+  }
+
+  // Array type
+  return DL->getTypeAllocSize(cast<ArrayType>(Ty)->getArrayElementType()) * FieldIdx;
 }
 
 unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
@@ -72,7 +76,7 @@ bool CacheUsageAnalysis::run() {
         /*
         errs() << "Alloca = " << *Alloca << "  " << " Offset = "
                << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
-        */
+               */
         MemoryCacheLineId.insert(std::make_pair(Alloca, ByteOffset/CACHELINESIZE_BYTES));
       }
     }
