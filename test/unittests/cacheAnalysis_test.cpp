@@ -88,7 +88,7 @@ TEST_CASE("struct size test") {
   */
 }
 
-TEST_CASE("Struct fit in single cache line") {
+TEST_CASE("Struct fit in single cache line", "[RUN]") {
   LLVMContext C;
   SMDiagnostic Err;
   
@@ -144,11 +144,25 @@ TEST_CASE("Nested struct [level 3]") {
   REQUIRE(CA.getNumOfCacheLines() == 7);
 }
 
-TEST_CASE("arrasy of struct [level 3]", "[RUN]") {
+TEST_CASE("array of struct [level 3]") {
   LLVMContext C;
   SMDiagnostic Err;
   
   std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test5.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("test_fn");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 4);
+}
+
+TEST_CASE("List of pointers") {
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test6.ll"),  Err, C));
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 

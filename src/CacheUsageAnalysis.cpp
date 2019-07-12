@@ -27,14 +27,19 @@ unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx)
   return DL->getTypeAllocSize(cast<ArrayType>(Ty)->getArrayElementType()) * FieldIdx;
 }
 
-unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
-  // XXX Assume 1-D compound type.
+static unsigned getGEPIndex(const GetElementPtrInst * GEP) {
   unsigned FieldIdx = 0;
-  if (auto * CI = dyn_cast<ConstantInt>(CurGEP->getOperand(CurGEP->getNumIndices()))) {
+  if (auto * CI = dyn_cast<ConstantInt>(GEP->getOperand(GEP->getNumIndices()))) {
     FieldIdx = CI->getZExtValue();
   } else {
     assert (0 && "Value has to be constant expression!");
   }
+  return FieldIdx;
+}
+
+unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
+  // XXX Assume 1-D compound type.
+  auto FieldIdx = getGEPIndex(CurGEP);
   CurOffset += getByteOffsetRelative(CurGEP->getSourceElementType(), FieldIdx);
 
   if (!isa<GetElementPtrInst>(CurGEP->getNextNode()))
@@ -43,10 +48,12 @@ unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * Cur
   return getByteOffsetAbsolute(cast<GetElementPtrInst>(CurGEP->getNextNode()), CurOffset);
 }
 
+
 bool CacheUsageAnalysis::run() {
+  using BasePtrType = std::pair<const llvm::Value *, unsigned>;
 
   // Each entry is unique and non-aliasing
-  DenseSet<std::pair<const Value *, unsigned>> MemoryCacheLineId;
+  DenseSet<std::pair<BasePtrType, unsigned>> MemoryCacheLineId;
   
   // Collect Alloca variable with content as pointer type.
   // We don't track explicitely stack allocated memory for now.
@@ -68,16 +75,25 @@ bool CacheUsageAnalysis::run() {
       
       for (auto * U : Alloca->users()) {
         if (!isa<LoadInst>(U)) continue;
-        auto BasePtr = cast<LoadInst>(U);
+        const Instruction * BasePtr = cast<LoadInst>(U);
+        BasePtrType Key = std::make_pair(Alloca, 0);
+
+        // Check whether ptr is double pointer, then update key and baseptr
+        // XXX Bit hacky, any elegant way?
+        if (Alloca->getAllocatedType()->getPointerElementType()->isPointerTy()) {
+          Key = std::make_pair(Alloca, getGEPIndex(cast<GetElementPtrInst>(BasePtr->getNextNode())));
+          BasePtr =  BasePtr->getNextNode()->getNextNode();
+        }
 
         if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
 
         unsigned ByteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
         /*
-        errs() << "Alloca = " << *Alloca << "  " << " Offset = "
+        errs() << "Key = " << *Key.first << " " << Key.second << "\n";
+        errs() << "Use= " << *U << "  " << " Offset = "
                << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
-               */
-        MemoryCacheLineId.insert(std::make_pair(Alloca, ByteOffset/CACHELINESIZE_BYTES));
+        */
+        MemoryCacheLineId.insert(std::make_pair(Key, ByteOffset/CACHELINESIZE_BYTES));
       }
     }
   }
