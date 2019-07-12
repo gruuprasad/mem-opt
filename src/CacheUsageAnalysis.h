@@ -13,17 +13,19 @@ namespace tas {
 
 class CacheUsageAnalysis {
   llvm::Function * F;
+  const llvm::DataLayout * DL;
   unsigned NumOfCacheLines = 0;
 
   public:
   CacheUsageAnalysis(llvm::Function * F)
-    : F(F) {}
+    : F(F), DL(&F->getParent()->getDataLayout()) {}
 
   bool run();
   unsigned getNumOfCacheLines() {
     return NumOfCacheLines;
   }
-  unsigned getCacheLineIdx(llvm::Type *, unsigned FieldIdx);
+  unsigned getByteOffsetRelative(llvm::Type *, unsigned FieldIdx);
+  unsigned getByteOffsetAbsolute(const llvm::GetElementPtrInst * BasePtr, unsigned CurOffset);
 }; // tas namespace
 
 }

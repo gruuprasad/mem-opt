@@ -116,4 +116,19 @@ TEST_CASE("Struct fit across two cache line") {
   REQUIRE(CA.getNumOfCacheLines() == 3);
 }
 
+TEST_CASE("Nested struct fit across three cache line") {
+  errs() << "Nested struct test\n";
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cache_test3.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("test_fn");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 6);
+}
+
 }

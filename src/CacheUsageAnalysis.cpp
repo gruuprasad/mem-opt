@@ -14,22 +14,35 @@ using namespace llvm;
 
 namespace tas {
 
-unsigned CacheUsageAnalysis::getCacheLineIdx(Type * Ty, unsigned FieldIdx) {
-  auto & DL = F->getParent()->getDataLayout();
-
-  StructType * StructTy;
-  if (Ty->isStructTy())
-    StructTy = cast<StructType>(Ty);
-  else
+unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx) {
+  // XXX Only struct type supported for this analysis for now.
+  if (!Ty->isStructTy())
     return 0;
-  auto * TyLayout = DL.getStructLayout(StructTy);
-  return std::floor(TyLayout->getElementOffset(FieldIdx) / CACHELINESIZE_BYTES);
+
+  auto * TyLayout = DL->getStructLayout(cast<StructType>(Ty));
+  return TyLayout->getElementOffset(FieldIdx);
+}
+
+unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
+  // XXX Assume 1-D compound type.
+  unsigned FieldIdx = 0;
+  if (auto * CI = dyn_cast<ConstantInt>(CurGEP->getOperand(CurGEP->getNumIndices()))) {
+    FieldIdx = CI->getZExtValue();
+  } else {
+    assert (0 && "Value has to be constant expression!");
+  }
+  CurOffset += getByteOffsetRelative(CurGEP->getSourceElementType(), FieldIdx);
+
+  if (!isa<GetElementPtrInst>(CurGEP->getNextNode()))
+    return CurOffset;
+
+  return getByteOffsetAbsolute(cast<GetElementPtrInst>(CurGEP->getNextNode()), CurOffset);
 }
 
 bool CacheUsageAnalysis::run() {
 
   // Each entry is unique and non-aliasing
-  DenseMap<const Value *, SmallVector<unsigned, 4>> MemoryLocValueToCacheIdx;
+  DenseSet<std::pair<const Value *, unsigned>> MemoryCacheLineId;
   
   // Collect Alloca variable with content as pointer type.
   // We don't track explicitely stack allocated memory for now.
@@ -48,14 +61,16 @@ bool CacheUsageAnalysis::run() {
       // * is accessed previously.
       // * it belongs to the same cache line as A.
       // * cache line is not replaced. (XXX We assume this condition met always).
-      // Hence we track each cache line number already accessed for a given
-      // Memory Object.
       
       for (auto * U : Alloca->users()) {
-        if (!isa<LoadInst>(U) || 
-            !isa<GetElementPtrInst>(cast<Instruction>(U)->getNextNode())) continue;
+        if (!isa<LoadInst>(U)) continue;
+        auto BasePtr = cast<LoadInst>(U);
 
-        auto GEPInst = cast<GetElementPtrInst>(cast<Instruction>(U)->getNextNode());
+        if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
+
+        unsigned ByteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
+        auto GEPInst = cast<GetElementPtrInst>(BasePtr->getNextNode());
+
         // XXX Assume 1-D compound type.
         unsigned FieldIdx = 0;
         if (auto * CI = dyn_cast<ConstantInt>(GEPInst->getOperand(GEPInst->getNumIndices()))) {
@@ -63,21 +78,17 @@ bool CacheUsageAnalysis::run() {
         } else {
           assert (0 && "Value has to be constant expression!");
         }
-        auto CacheLineIdx = getCacheLineIdx(Pointee->getPointerElementType(), FieldIdx);
-        auto & UsedCacheLines = MemoryLocValueToCacheIdx[Alloca];
-        auto Result = std::find(UsedCacheLines.begin(), UsedCacheLines.end(), CacheLineIdx);
-        if (Result == std::end(UsedCacheLines)) {
-          UsedCacheLines.push_back(CacheLineIdx);
-        }
+        /*
+        errs() << "Alloca = " << *Alloca << "  " << " Offset = "
+               << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
+        */
+        MemoryCacheLineId.insert(std::make_pair(Alloca, ByteOffset/CACHELINESIZE_BYTES));
       }
     }
   }
 
-  // Sum total number of cache lines tracked.
-  NumOfCacheLines = 0;
-  for (auto & KV : MemoryLocValueToCacheIdx) {
-    NumOfCacheLines += KV.getSecond().size();
-  }
+  // total number of cache lines tracked.
+  NumOfCacheLines = MemoryCacheLineId.size();
 
  return false;
 }
