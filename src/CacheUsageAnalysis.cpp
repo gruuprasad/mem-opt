@@ -69,15 +69,6 @@ bool CacheUsageAnalysis::run() {
         if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
 
         unsigned ByteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
-        auto GEPInst = cast<GetElementPtrInst>(BasePtr->getNextNode());
-
-        // XXX Assume 1-D compound type.
-        unsigned FieldIdx = 0;
-        if (auto * CI = dyn_cast<ConstantInt>(GEPInst->getOperand(GEPInst->getNumIndices()))) {
-          FieldIdx = CI->getZExtValue();
-        } else {
-          assert (0 && "Value has to be constant expression!");
-        }
         /*
         errs() << "Alloca = " << *Alloca << "  " << " Offset = "
                << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
