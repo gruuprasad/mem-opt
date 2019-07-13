@@ -53,6 +53,8 @@ llvm::Value * createArray(llvm::Function * F, llvm::Type * Ty, unsigned size);
 
 template <typename InstType>
 llvm::Instruction * findValueFirstUseInInstruction(llvm::Value * V);
+
+unsigned getGEPIndex(const llvm::GetElementPtrInst * GEP);
 } // namespace tas
 
 #endif

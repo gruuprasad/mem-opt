@@ -189,4 +189,14 @@ Instruction * findValueFirstUseInInstruction(Value * V) {
   return FirstUse;
 }
 
+unsigned getGEPIndex(const GetElementPtrInst * GEP) {
+  unsigned FieldIdx = 0;
+  if (auto * CI = dyn_cast<ConstantInt>(GEP->getOperand(GEP->getNumIndices()))) {
+    FieldIdx = CI->getZExtValue();
+  } else {
+    assert (0 && "Value has to be constant expression!");
+  }
+  return FieldIdx;
+}
+
 }

@@ -1,5 +1,6 @@
 #include "CacheUsageAnalysis.h"
 #include "Macros.h"
+#include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>
@@ -25,16 +26,6 @@ unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx)
 
   // Array type
   return DL->getTypeAllocSize(cast<ArrayType>(Ty)->getArrayElementType()) * FieldIdx;
-}
-
-static unsigned getGEPIndex(const GetElementPtrInst * GEP) {
-  unsigned FieldIdx = 0;
-  if (auto * CI = dyn_cast<ConstantInt>(GEP->getOperand(GEP->getNumIndices()))) {
-    FieldIdx = CI->getZExtValue();
-  } else {
-    assert (0 && "Value has to be constant expression!");
-  }
-  return FieldIdx;
 }
 
 unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
@@ -88,11 +79,9 @@ bool CacheUsageAnalysis::run() {
         if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
 
         unsigned ByteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
-        /*
         errs() << "Key = " << *Key.first << " " << Key.second << "\n";
         errs() << "Use= " << *U << "  " << " Offset = "
                << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
-        */
         MemoryCacheLineId.insert(std::make_pair(Key, ByteOffset/CACHELINESIZE_BYTES));
       }
     }
