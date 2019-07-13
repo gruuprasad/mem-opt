@@ -19,7 +19,10 @@ unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx)
   if (Ty->isSingleValueType())
     return 0;
 
+
+  // Struct type
   if (Ty->isStructTy()) {
+    errs() << "In getByteOffsetRelative() struct name = " << Ty->getStructName() << "\n";
     auto * TyLayout = DL->getStructLayout(cast<StructType>(Ty));
     return TyLayout->getElementOffset(FieldIdx);
   }
@@ -28,10 +31,16 @@ unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx)
   return DL->getTypeAllocSize(cast<ArrayType>(Ty)->getArrayElementType()) * FieldIdx;
 }
 
+/* This method recursively computes the byte offset of the field to be accessed.
+ * In a sequence of GEP instruction, for each instruction relative offset is
+ * computed and accumulated.
+ */
 unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * CurGEP, unsigned CurOffset) {
   // XXX Assume 1-D compound type.
   auto FieldIdx = getGEPIndex(CurGEP);
-  CurOffset += getByteOffsetRelative(CurGEP->getSourceElementType(), FieldIdx);
+  auto RelOffset = getByteOffsetRelative(CurGEP->getSourceElementType(), FieldIdx);
+  errs() << "CurGEP = " << *CurGEP << " Field Idx = " <<  FieldIdx << " RelOffset = " << RelOffset << "\n";
+  CurOffset += RelOffset;
 
   if (!isa<GetElementPtrInst>(CurGEP->getNextNode()))
     return CurOffset;
@@ -76,13 +85,14 @@ bool CacheUsageAnalysis::run() {
           BasePtr =  BasePtr->getNextNode()->getNextNode();
         }
 
+        errs() << "\nKey = " << *Key.first << " " << Key.second << "\n";
+        errs() << "Use = " << *U << "\n";
         if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
 
-        unsigned ByteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
-        errs() << "Key = " << *Key.first << " " << Key.second << "\n";
-        errs() << "Use= " << *U << "  " << " Offset = "
-               << ByteOffset << " Cacheline " << ByteOffset/CACHELINESIZE_BYTES << "\n";
-        MemoryCacheLineId.insert(std::make_pair(Key, ByteOffset/CACHELINESIZE_BYTES));
+        unsigned AbsoluteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
+        errs() << "Absolute Offset = " << AbsoluteOffset 
+               << " Cacheline " << AbsoluteOffset/CACHELINESIZE_BYTES << "\n";
+        MemoryCacheLineId.insert(std::make_pair(Key, AbsoluteOffset/CACHELINESIZE_BYTES));
       }
     }
   }

@@ -32,6 +32,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 enable_testing()
 
+find_package(glog 0.4.0 REQUIRED)
+
 set(LLVM_DIR "/home/gp/llvm_projects/llvm/install/lib/cmake/llvm")
 # Find LLVM libraries
 find_package(LLVM REQUIRED CONFIG)

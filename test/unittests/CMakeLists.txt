@@ -21,6 +21,7 @@ target_link_libraries(tests
                       LLVMAsmParser
                       LLVMSupport
                       LLVMIRReader
-                      LLVMTransformUtils)
+                      LLVMTransformUtils
+                      glog::glog)
 
 add_test(NAME TASTests COMMAND tests)

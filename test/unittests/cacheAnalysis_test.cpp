@@ -172,4 +172,18 @@ TEST_CASE("List of pointers") {
   REQUIRE(CA.getNumOfCacheLines() == 4);
 }
 
+TEST_CASE("fast_flows_packet", "[RUN]") {
+  LLVMContext C;
+  SMDiagnostic Err;
+  
+  std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("fast_flows.ll"),  Err, C));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("fast_flows_packet");
+
+  CacheUsageAnalysis CA (F);
+  CA.run();
+
+  REQUIRE(CA.getNumOfCacheLines() == 8);
+}
+
 }

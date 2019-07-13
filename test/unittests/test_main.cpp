@@ -1,12 +1,15 @@
 #define CATCH_CONFIG_RUNNER
 #include "catch.hpp"
 
+#include <glog/logging.h>
+
 #include <string>
 
 std::string input_dir;
 
 int main(int argc, char* argv[]) {
 
+  google::InitGoogleLogging(argv[0]);
    Catch::Session session;
 
    using namespace Catch::clara;
