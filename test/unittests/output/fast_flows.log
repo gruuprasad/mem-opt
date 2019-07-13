@@ -1,0 +1,944 @@
+
+Key =   %3 = alloca %struct.packet*, align 8 0
+Use =   %11 = load %struct.packet*, %struct.packet** %3, align 8
+In getByteOffsetRelative() struct name = struct.packet
+CurGEP =   %12 = getelementptr inbounds %struct.packet, %struct.packet* %11, i32 0, i32 3 Field Idx = 3 RelOffset = 12
+Absolute Offset = 12 Cacheline 0
+
+Key =   %3 = alloca %struct.packet*, align 8 0
+Use =   %9 = load %struct.packet*, %struct.packet** %3, align 8
+In getByteOffsetRelative() struct name = struct.packet
+CurGEP =   %10 = getelementptr inbounds %struct.packet, %struct.packet* %9, i32 0, i32 2 Field Idx = 2 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %3 = alloca %struct.packet*, align 8 0
+Use =   %7 = load %struct.packet*, %struct.packet** %3, align 8
+In getByteOffsetRelative() struct name = struct.packet
+CurGEP =   %8 = getelementptr inbounds %struct.packet, %struct.packet* %7, i32 0, i32 1 Field Idx = 1 RelOffset = 4
+Absolute Offset = 4 Cacheline 0
+
+Key =   %3 = alloca %struct.packet*, align 8 0
+Use =   %5 = load %struct.packet*, %struct.packet** %3, align 8
+In getByteOffsetRelative() struct name = struct.packet
+CurGEP =   %6 = getelementptr inbounds %struct.packet, %struct.packet* %5, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %ctx.addr = alloca %struct.dataplane_context*, align 8 0
+Use =   %376 = load %struct.dataplane_context*, %struct.dataplane_context** %ctx.addr, align 8
+
+Key =   %ctx.addr = alloca %struct.dataplane_context*, align 8 0
+Use =   %371 = load %struct.dataplane_context*, %struct.dataplane_context** %ctx.addr, align 8
+In getByteOffsetRelative() struct name = struct.dataplane_context
+CurGEP =   %qman_t540 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %371, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %ctx.addr = alloca %struct.dataplane_context*, align 8 0
+Use =   %362 = load %struct.dataplane_context*, %struct.dataplane_context** %ctx.addr, align 8
+In getByteOffsetRelative() struct name = struct.dataplane_context
+CurGEP =   %qman_t = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %362, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %ctx.addr = alloca %struct.dataplane_context*, align 8 0
+Use =   %348 = load %struct.dataplane_context*, %struct.dataplane_context** %ctx.addr, align 8
+
+Key =   %ctx.addr = alloca %struct.dataplane_context*, align 8 0
+Use =   %189 = load %struct.dataplane_context*, %struct.dataplane_context** %ctx.addr, align 8
+In getByteOffsetRelative() struct name = struct.dataplane_context
+CurGEP =   %id = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %189, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %nbh.addr = alloca %struct.network_buf_handle*, align 8 0
+Use =   %386 = load %struct.network_buf_handle*, %struct.network_buf_handle** %nbh.addr, align 8
+
+Key =   %nbh.addr = alloca %struct.network_buf_handle*, align 8 0
+Use =   %0 = load %struct.network_buf_handle*, %struct.network_buf_handle** %nbh.addr, align 8
+
+Key =   %fsp.addr = alloca i8*, align 8 0
+Use =   %2 = load i8*, i8** %fsp.addr, align 8
+
+Key =   %opts.addr = alloca %struct.tcp_opts*, align 8 0
+Use =   %387 = load %struct.tcp_opts*, %struct.tcp_opts** %opts.addr, align 8
+In getByteOffsetRelative() struct name = struct.tcp_opts
+CurGEP =   %ts557 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %387, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %opts.addr = alloca %struct.tcp_opts*, align 8 0
+Use =   %148 = load %struct.tcp_opts*, %struct.tcp_opts** %opts.addr, align 8
+In getByteOffsetRelative() struct name = struct.tcp_opts
+CurGEP =   %ts212 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %148, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %opts.addr = alloca %struct.tcp_opts*, align 8 0
+Use =   %143 = load %struct.tcp_opts*, %struct.tcp_opts** %opts.addr, align 8
+In getByteOffsetRelative() struct name = struct.tcp_opts
+CurGEP =   %ts202 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %143, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %opts.addr = alloca %struct.tcp_opts*, align 8 0
+Use =   %137 = load %struct.tcp_opts*, %struct.tcp_opts** %opts.addr, align 8
+In getByteOffsetRelative() struct name = struct.tcp_opts
+CurGEP =   %ts190 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %137, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %325 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp469 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %325, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags470 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp469, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %160 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp234 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %160, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %wnd = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp234, i32 0, i32 5 Field Idx = 5 RelOffset = 14
+In getByteOffsetRelative() struct name = struct.beui16
+CurGEP =   %coerce.dive235 = getelementptr inbounds %struct.beui16, %struct.beui16* %wnd, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 48 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %141 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp193 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %141, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags194 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp193, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %89 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %44 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp79 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %44, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags80 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp79, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %36 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp64 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %36, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags65 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp64, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %32 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp54 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %32, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags55 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp54, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %27 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp47 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %27, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %ackno = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp47, i32 0, i32 3 Field Idx = 3 RelOffset = 8
+In getByteOffsetRelative() struct name = struct.beui32
+CurGEP =   %coerce.dive48 = getelementptr inbounds %struct.beui32, %struct.beui32* %ackno, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 42 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %25 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp44 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %25, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %seqno = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp44, i32 0, i32 2 Field Idx = 2 RelOffset = 4
+In getByteOffsetRelative() struct name = struct.beui32
+CurGEP =   %coerce.dive45 = getelementptr inbounds %struct.beui32, %struct.beui32* %seqno, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 38 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %22 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp35 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %22, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags36 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp35, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %19 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp26 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %19, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags27 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp26, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %17 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp15 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %17, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags16 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp15, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %9 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %ip = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %9, i32 0, i32 1 Field Idx = 1 RelOffset = 14
+In getByteOffsetRelative() struct name = struct.ip_hdr
+CurGEP =   %len = getelementptr inbounds %struct.ip_hdr, %struct.ip_hdr* %ip, i32 0, i32 2 Field Idx = 2 RelOffset = 2
+In getByteOffsetRelative() struct name = struct.beui16
+CurGEP =   %coerce.dive = getelementptr inbounds %struct.beui16, %struct.beui16* %len, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 16 Cacheline 0
+
+Key =   %p = alloca %struct.pkt_tcp*, align 8 0
+Use =   %6 = load %struct.pkt_tcp*, %struct.pkt_tcp** %p, align 8
+In getByteOffsetRelative() struct name = struct.pkt_tcp
+CurGEP =   %tcp = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %6, i32 0, i32 2 Field Idx = 2 RelOffset = 34
+In getByteOffsetRelative() struct name = struct.tcp_hdr
+CurGEP =   %_hdrlen_rsvd_flags = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %tcp, i32 0, i32 4 Field Idx = 4 RelOffset = 12
+Absolute Offset = 46 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %394 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %lock565 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %394, i32 0, i32 13 Field Idx = 13 RelOffset = 56
+Absolute Offset = 56 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %392 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp562 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %392, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %389 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %lock559 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %389, i32 0, i32 13 Field Idx = 13 RelOffset = 56
+Absolute Offset = 56 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %383 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_ts556 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %383, i32 0, i32 25 Field Idx = 25 RelOffset = 104
+Absolute Offset = 104 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %381 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_avail555 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %381, i32 0, i32 14 Field Idx = 14 RelOffset = 60
+Absolute Offset = 60 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %379 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq554 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %379, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %377 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_seq553 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %377, i32 0, i32 23 Field Idx = 23 RelOffset = 96
+Absolute Offset = 96 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %365 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_rate = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %365, i32 0, i32 26 Field Idx = 26 RelOffset = 108
+Absolute Offset = 108 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %360 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp524 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %360, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %357 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %351 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %opaque = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %351, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %349 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %db_id518 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %349, i32 0, i32 10 Field Idx = 10 RelOffset = 50
+Absolute Offset = 50 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %344 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp506 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %344, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %337 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq491 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %337, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %335 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp490 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %335, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %333 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len487 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %333, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %329 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq482 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %329, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %327 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp478 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %327, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %324 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len464 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %324, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %322 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq462 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %322, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %320 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len461 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %320, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %318 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len455 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %318, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %316 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos454 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %316, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %314 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos451 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %314, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %312 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len450 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %312, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %310 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len446 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %310, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %308 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos445 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %308, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %306 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos443 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %306, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %304 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len442 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %304, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %302 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_avail440 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %302, i32 0, i32 14 Field Idx = 14 RelOffset = 60
+Absolute Offset = 60 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %300 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len439 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %300, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %297 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len437 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %297, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %295 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq433 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %295, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %293 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start432 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %293, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %291 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len428 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %291, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %289 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len426 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %289, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %285 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start421 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %285, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %283 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len418 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %283, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %281 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len412 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %281, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %279 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start411 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %279, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %278 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %276 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len405 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %276, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %274 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq403 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %274, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %271 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len397 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %271, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %269 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos396 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %269, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %267 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos393 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %267, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %265 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len392 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %265, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %263 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_len = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %263, i32 0, i32 3 Field Idx = 3 RelOffset = 24
+Absolute Offset = 24 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %261 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos388 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %261, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %259 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos386 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %259, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %256 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_avail = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %256, i32 0, i32 14 Field Idx = 14 RelOffset = 60
+Absolute Offset = 60 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %249 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos383 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %249, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %248 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %245 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_objrem377 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %245, i32 0, i32 33 Field Idx = 33 RelOffset = 132
+Absolute Offset = 132 Cacheline 2
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %242 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_objrem374 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %242, i32 0, i32 33 Field Idx = 33 RelOffset = 132
+Absolute Offset = 132 Cacheline 2
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %238 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_objrem370 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %238, i32 0, i32 33 Field Idx = 33 RelOffset = 132
+Absolute Offset = 132 Cacheline 2
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %236 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_objrem368 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %236, i32 0, i32 33 Field Idx = 33 RelOffset = 132
+Absolute Offset = 132 Cacheline 2
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %231 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %db_id358 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %231, i32 0, i32 10 Field Idx = 10 RelOffset = 50
+Absolute Offset = 50 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %201 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp313 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %201, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %191 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %db_id289 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %191, i32 0, i32 10 Field Idx = 10 RelOffset = 50
+Absolute Offset = 50 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %186 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %db_id = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %186, i32 0, i32 10 Field Idx = 10 RelOffset = 50
+Absolute Offset = 50 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %169 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_objrem = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %169, i32 0, i32 33 Field Idx = 33 RelOffset = 132
+Absolute Offset = 132 Cacheline 2
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %167 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp247 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %167, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %163 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp238 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %163, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %162 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_remote_avail = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %162, i32 0, i32 17 Field Idx = 17 RelOffset = 72
+Absolute Offset = 72 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %159 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rtt_est230 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %159, i32 0, i32 31 Field Idx = 31 RelOffset = 124
+Absolute Offset = 124 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %157 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rtt_est228 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %157, i32 0, i32 31 Field Idx = 31 RelOffset = 124
+Absolute Offset = 124 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %154 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rtt_est225 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %154, i32 0, i32 31 Field Idx = 31 RelOffset = 124
+Absolute Offset = 124 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %152 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rtt_est = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %152, i32 0, i32 31 Field Idx = 31 RelOffset = 124
+Absolute Offset = 124 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %140 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_ts = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %140, i32 0, i32 25 Field Idx = 25 RelOffset = 104
+Absolute Offset = 104 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %132 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %130 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len182 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %130, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %126 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len177 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %126, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %124 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start176 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %124, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %119 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %117 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len172 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %117, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %115 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start171 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %115, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %112 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start167 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %112, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %105 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %104 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len163 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %104, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %102 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_start = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %102, i32 0, i32 19 Field Idx = 19 RelOffset = 80
+Absolute Offset = 80 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %99 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_ooo_len = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %99, i32 0, i32 20 Field Idx = 20 RelOffset = 84
+Absolute Offset = 84 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %96 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_seq = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %96, i32 0, i32 16 Field Idx = 16 RelOffset = 68
+Absolute Offset = 68 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %81 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %80 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %77 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_dupack_cnt123 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %77, i32 0, i32 18 Field Idx = 18 RelOffset = 76
+Absolute Offset = 76 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %75 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_dupack_cnt = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %75, i32 0, i32 18 Field Idx = 18 RelOffset = 76
+Absolute Offset = 76 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %73 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_sent112 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %73, i32 0, i32 21 Field Idx = 21 RelOffset = 88
+Absolute Offset = 88 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %71 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_pos109 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %71, i32 0, i32 22 Field Idx = 22 RelOffset = 92
+Absolute Offset = 92 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %69 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_len108 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %69, i32 0, i32 4 Field Idx = 4 RelOffset = 28
+Absolute Offset = 28 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %67 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_len = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %67, i32 0, i32 4 Field Idx = 4 RelOffset = 28
+Absolute Offset = 28 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %65 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_pos104 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %65, i32 0, i32 22 Field Idx = 22 RelOffset = 92
+Absolute Offset = 92 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %63 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_pos = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %63, i32 0, i32 22 Field Idx = 22 RelOffset = 92
+Absolute Offset = 92 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %61 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_sent101 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %61, i32 0, i32 21 Field Idx = 21 RelOffset = 88
+Absolute Offset = 88 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %58 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_next_seq = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %58, i32 0, i32 23 Field Idx = 23 RelOffset = 96
+Absolute Offset = 96 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %56 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_sent98 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %56, i32 0, i32 21 Field Idx = 21 RelOffset = 88
+Absolute Offset = 88 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %53 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_sent95 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %53, i32 0, i32 21 Field Idx = 21 RelOffset = 88
+Absolute Offset = 88 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %50 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %tx_sent = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %50, i32 0, i32 21 Field Idx = 21 RelOffset = 88
+Absolute Offset = 88 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %47 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %cnt_rx_ecn_bytes = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %47, i32 0, i32 30 Field Idx = 30 RelOffset = 120
+Absolute Offset = 120 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %42 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %cnt_rx_ack_bytes = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %42, i32 0, i32 29 Field Idx = 29 RelOffset = 116
+Absolute Offset = 116 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %38 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %34 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %cnt_rx_acks = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %34, i32 0, i32 28 Field Idx = 28 RelOffset = 114
+Absolute Offset = 114 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %29 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_next_pos = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %29, i32 0, i32 15 Field Idx = 15 RelOffset = 64
+Absolute Offset = 64 Cacheline 1
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %24 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %14 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %rx_base_sp = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %14, i32 0, i32 1 Field Idx = 1 RelOffset = 8
+Absolute Offset = 8 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %13 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_flowst
+CurGEP =   %lock = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %13, i32 0, i32 13 Field Idx = 13 RelOffset = 56
+Absolute Offset = 56 Cacheline 0
+
+Key =   %fs = alloca %struct.flextcp_pl_flowst*, align 8 0
+Use =   %4 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %fs, align 8
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %226 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_ids = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %226, i32 0, i32 1 Field Idx = 1 RelOffset = 2
+Absolute Offset = 2 Cacheline 0
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %223 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_num343 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %223, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %219 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_num338 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %219, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %207 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_num322 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %207, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %199 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_num306 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %199, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %appst = alloca %struct.flextcp_pl_appst*, align 8 0
+Use =   %197 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %appst, align 8
+In getByteOffsetRelative() struct name = struct.flextcp_pl_appst
+CurGEP =   %ctx_num = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %197, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %252 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %234 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %len362 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %234, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+In getByteOffsetRelative() struct name = struct.beui32
+CurGEP =   %coerce.dive363 = getelementptr inbounds %struct.beui32, %struct.beui32* %len362, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 0 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %232 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen359 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %232, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %216 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen336 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %216, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %215 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dst334 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %215, i32 0, i32 4 Field Idx = 4 RelOffset = 8
+CurGEP =   %arraydecay335 = getelementptr inbounds [0 x i8], [0 x i8]* %dst334, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 8 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %212 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen330 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %212, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %209 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen325 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %209, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %204 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen319 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %204, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %203 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dst = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %203, i32 0, i32 4 Field Idx = 4 RelOffset = 8
+CurGEP =   %arraydecay318 = getelementptr inbounds [0 x i8], [0 x i8]* %dst, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 8 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %185 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %magic282 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %185, i32 0, i32 1 Field Idx = 1 RelOffset = 4
+In getByteOffsetRelative() struct name = struct.beui16
+CurGEP =   %x = getelementptr inbounds %struct.beui16, %struct.beui16* %magic282, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 4 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %183 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %magic276 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %183, i32 0, i32 1 Field Idx = 1 RelOffset = 4
+In getByteOffsetRelative() struct name = struct.beui16
+CurGEP =   %coerce.dive277 = getelementptr inbounds %struct.beui16, %struct.beui16* %magic276, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 4 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %180 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %magic = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %180, i32 0, i32 1 Field Idx = 1 RelOffset = 4
+In getByteOffsetRelative() struct name = struct.beui16
+CurGEP =   %coerce.dive270 = getelementptr inbounds %struct.beui16, %struct.beui16* %magic, i32 0, i32 0 Field Idx = 0 RelOffset = 0
+Absolute Offset = 4 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %178 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen266 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %178, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %174 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+In getByteOffsetRelative() struct name = struct.obj_hdr
+CurGEP =   %dstlen = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %174, i32 0, i32 3 Field Idx = 3 RelOffset = 7
+Absolute Offset = 7 Cacheline 0
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %135 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %122 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+
+Key =   %oh = alloca %struct.obj_hdr*, align 8 0
+Use =   %108 = load %struct.obj_hdr*, %struct.obj_hdr** %oh, align 8
+===============================================================================
+All tests passed (4 assertions in 2 test cases)
+
