@@ -48,12 +48,17 @@ unsigned CacheUsageAnalysis::getByteOffsetAbsolute(const GetElementPtrInst * Cur
   return getByteOffsetAbsolute(cast<GetElementPtrInst>(CurGEP->getNextNode()), CurOffset);
 }
 
-
 bool CacheUsageAnalysis::run() {
   using BasePtrType = std::pair<const llvm::Value *, unsigned>;
 
   // Each entry is unique and non-aliasing
   DenseSet<std::pair<BasePtrType, unsigned>> MemoryCacheLineId;
+
+  // Get LoopInfo
+  if (!LI.empty()) {
+    NumOfCacheLines = analyzeFunctionWithLoop();
+    return false;
+  }
   
   // Collect Alloca variable with content as pointer type.
   // We don't track explicitely stack allocated memory for now.
@@ -72,7 +77,7 @@ bool CacheUsageAnalysis::run() {
       // * is accessed previously.
       // * it belongs to the same cache line as A.
       // * cache line is not replaced. (XXX We assume this condition met always).
-      
+ 
       for (auto * U : Alloca->users()) {
         if (!isa<LoadInst>(U)) continue;
         const Instruction * BasePtr = cast<LoadInst>(U);
@@ -101,6 +106,14 @@ bool CacheUsageAnalysis::run() {
   NumOfCacheLines = MemoryCacheLineId.size();
 
  return false;
+}
+
+unsigned CacheUsageAnalysis::analyzeFunctionWithLoop() {
+  for (auto LIt = LI.begin(), E = LI.end(); LIt != E; ++LIt) {
+
+  }
+
+  return 0;
 }
 
 }

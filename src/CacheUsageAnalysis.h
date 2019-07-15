@@ -14,11 +14,14 @@ namespace tas {
 class CacheUsageAnalysis {
   llvm::Function * F;
   const llvm::DataLayout * DL;
+  llvm::DominatorTree DT;
+  llvm::LoopInfo LI;
   unsigned NumOfCacheLines = 0;
 
   public:
   CacheUsageAnalysis(llvm::Function * F)
-    : F(F), DL(&F->getParent()->getDataLayout()) {}
+    : F(F), DL(&F->getParent()->getDataLayout()),
+      DT(llvm::DominatorTree(*F)), LI(llvm::LoopInfo(DT)) {}
 
   bool run();
   unsigned getNumOfCacheLines() {
@@ -26,6 +29,7 @@ class CacheUsageAnalysis {
   }
   unsigned getByteOffsetRelative(llvm::Type *, unsigned FieldIdx);
   unsigned getByteOffsetAbsolute(const llvm::GetElementPtrInst * BasePtr, unsigned CurOffset);
+  unsigned analyzeFunctionWithLoop();
 }; // tas namespace
 
 }
