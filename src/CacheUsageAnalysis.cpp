@@ -64,6 +64,10 @@ bool CacheUsageAnalysis::run() {
     }
   }
 
+  // Check the presence of a loop
+  if (!LI.empty())
+    LoopExists = true;
+
   for (const auto & Alloca : PtrAllocas) {
     // Each Memory Object having compound data type like struct, its size
     // can be represented in terms of number of cache lines i.e suppose all 

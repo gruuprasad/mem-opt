@@ -22,17 +22,6 @@ using namespace llvm;
 
 namespace tas {
 
-bool BatchMaker::run() {
-
-  createBatchedFormFn();
-  DominatorTree DT (*NewFunc);
-  LoopInfo LI (DT);
-  auto BP = BatchProcess(NewFunc, &LI, &DT);
-  bool changed = BP.run();
-
-  return true;
-}
-
 void BatchMaker::constructBatchParameters() {
   // Create batch parameters
   std::string prefix { "batch_arg_" }; int i = 1;
@@ -84,12 +73,7 @@ void BatchMaker::setArgumentNames() {
   RetParam = &*NewArgIt;
 }
 
-void BatchMaker::createBatchedFormFn() {
-  detectBatchingParameters(OldFunc, ArgsToBatch);
-  detectExpensivePointerVariables(OldFunc, PrefetchVars);
-  auto NewFunc = createBatchFunction();
-  void setArgumentNames();
-
+void BatchMaker::setFunctionBody() {
   ValueToValueMapTy VMap;
   auto NewArg = NewFunc->arg_begin();
   for (const Argument & A : OldFunc->args()) {
@@ -104,8 +88,6 @@ void BatchMaker::createBatchedFormFn() {
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
 
   // For each argument, replace all uses.
-  SmallPtrSet<Value *, 4> BatchedAllocas;
-  SmallVector<Value *, 4> BatchGEPs;
   for (auto & A : BatchedArgs) {
     auto APtr = Builder.CreateAlloca(A->getType());
     BatchedAllocas.insert(APtr);
@@ -143,12 +125,12 @@ void BatchMaker::createBatchedFormFn() {
   }
 
   // Store Ret parameter in alloca.
-  auto RetAlloca = Builder.CreateAlloca(RetParam->getType());
+  RetAlloca = Builder.CreateAlloca(RetParam->getType());
   Builder.CreateStore(RetParam, RetAlloca);
 
   // Find first use of batch alloca and split there.
   // New basic block going to be part of batch processing loop.
-  BasicBlock * BatchCodeStartBlock = nullptr;
+  BatchCodeStartBlock = nullptr;
   for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
     if (isa<LoadInst>(*I) && isa<GetElementPtrInst>(I->getNextNode()) &&
         isa<LoadInst>(I->getNextNode()->getNextNode())) {
@@ -164,6 +146,14 @@ void BatchMaker::createBatchedFormFn() {
       if (Found) break;
     }
   }
+}
+
+void BatchMaker::createBatchedFormFn() {
+  detectBatchingParameters(OldFunc, ArgsToBatch);
+  detectExpensivePointerVariables(OldFunc, PrefetchVars);
+  auto NewFunc = createBatchFunction();
+  setArgumentNames();
+  setFunctionBody();
 
   // Make loop body to have a single backedge.
   // For that we need to tie all exiting edges and point it to single block.
@@ -207,6 +197,7 @@ void BatchMaker::createBatchedFormFn() {
     }
 
     // Store return value in a temporary variable.
+    IRBuilder<> Builder(NewFunc->getContext());
     auto RetVal = RetVals.begin();
     for (auto & BB : TerminatingBB) {
       Builder.SetInsertPoint(BB->getTerminator());
@@ -215,6 +206,15 @@ void BatchMaker::createBatchedFormFn() {
       Builder.CreateStore(*RetVal++, offset);
     }
   }
+}
+
+bool BatchMaker::run() {
+  createBatchedFormFn();
+  DominatorTree DT (*NewFunc);
+  LoopInfo LI (DT);
+  auto BP = BatchProcess(NewFunc, &LI, &DT);
+  bool changed = BP.run();
+  return changed;
 }
 
 } // tas namespace

@@ -186,7 +186,7 @@ TEST_CASE("fast_flows_packet") {
   REQUIRE(CA.getNumOfCacheLines() == 8);
 }
 
-TEST_CASE("fast_flows_packet_fss", "[RUN]") {
+TEST_CASE("fast_flows_packet_fss") {
   LLVMContext C;
   SMDiagnostic Err;
   
@@ -200,4 +200,4 @@ TEST_CASE("fast_flows_packet_fss", "[RUN]") {
   REQUIRE(CA.getNumOfCacheLines() == 3);
 }
 
-}
+} // namespace tas

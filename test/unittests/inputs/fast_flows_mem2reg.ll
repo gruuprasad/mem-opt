@@ -1,4 +1,4 @@
-; ModuleID = 'tas/fast/fast_flows.c'
+; ModuleID = '<stdin>'
 source_filename = "tas/fast/fast_flows.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
@@ -816,7 +816,7 @@ define dso_local i32 @fast_flows_qman(%struct.dataplane_context*, i32, %struct.n
   store i32 %361, i32* %362, align 4
   br label %363
 
-; <label>:363:                                    ; preds = %355, %358
+; <label>:363:                                    ; preds = %358, %355
   %364 = load i32, i32* %23, align 4
   %365 = icmp ne i32 %364, 0
   %366 = zext i1 %365 to i64
@@ -5953,7 +5953,7 @@ define internal void @dma_read(i64, i64, i8*) #0 {
   store i8* %45, i8** %4, align 8
   br label %46
 
-; <label>:46:                                     ; preds = %36, %41
+; <label>:46:                                     ; preds = %41, %36
   %47 = load i8*, i8** %4, align 8
   ret void
 }
@@ -13128,7 +13128,7 @@ define internal void @dma_write(i64, i64, i8*) #0 {
   store i8* %45, i8** %4, align 8
   br label %46
 
-; <label>:46:                                     ; preds = %36, %41
+; <label>:46:                                     ; preds = %41, %36
   %47 = load i8*, i8** %4, align 8
   ret void
 }

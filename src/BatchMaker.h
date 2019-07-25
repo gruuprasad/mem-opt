@@ -25,6 +25,10 @@ class BatchMaker {
   llvm::SmallVector<std::string, 4> ArgNames;
   std::deque<unsigned> BatchParamIndices;
   llvm::Value * RetParam;
+  llvm::BasicBlock * BatchCodeStartBlock;
+  llvm::SmallPtrSet<llvm::Value *, 4> BatchedAllocas;
+  llvm::SmallVector<llvm::Value *, 4> BatchGEPs;
+  llvm::AllocaInst * RetAlloca;
 
   public:
   BatchMaker(llvm::Function * F_) :
@@ -35,6 +39,7 @@ class BatchMaker {
   void constructBatchParameters();
   llvm::Function * createBatchFunction();
   void setArgumentNames();
+  void setFunctionBody();
 }; // tas namespace
 
 }

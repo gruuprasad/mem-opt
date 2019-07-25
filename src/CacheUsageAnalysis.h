@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <llvm/ADT/SmallVector.h>
 #include <llvm/Analysis/LoopInfo.h>
 #include <llvm/Analysis/MemorySSA.h>
 #include <llvm/IR/Dominators.h>
@@ -16,7 +17,9 @@ class CacheUsageAnalysis {
   const llvm::DataLayout * DL;
   llvm::DominatorTree DT;
   llvm::LoopInfo LI;
+  llvm::SmallVector<const llvm::AllocaInst *, 4> PtrAllocas;
   unsigned NumOfCacheLines = 0;
+  bool LoopExists = false;
 
   public:
   CacheUsageAnalysis(llvm::Function * F)
@@ -29,7 +32,6 @@ class CacheUsageAnalysis {
   }
   unsigned getByteOffsetRelative(llvm::Type *, unsigned FieldIdx);
   unsigned getByteOffsetAbsolute(const llvm::GetElementPtrInst * BasePtr, unsigned CurOffset);
-  unsigned analyzeFunctionWithLoop();
 }; // tas namespace
 
 }

@@ -1,7 +1,7 @@
 add_library(catch_LIB OBJECT test_main.cpp)
 
 add_executable(tests
-                simple_test.cpp
+                batchProcess_test.cpp
                 cacheAnalysis_test.cpp)
 
 set(LLVM_LINK_COMPONENTS
