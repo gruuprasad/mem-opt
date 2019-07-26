@@ -169,7 +169,7 @@ TEST_CASE("List of pointers") {
   CacheUsageAnalysis CA (F);
   CA.run();
 
-  REQUIRE(CA.getNumOfCacheLines() == 4);
+  REQUIRE(CA.getNumOfCacheLines() == 0);
 }
 
 TEST_CASE("fast_flows_packet") {

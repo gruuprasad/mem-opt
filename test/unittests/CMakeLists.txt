@@ -14,8 +14,9 @@ set(LLVM_LINK_COMPONENTS
   TransformUtils)
 
 target_link_libraries(tests
-                      TASUtil
+                      cacheanalysis
                       catch_LIB
+                      common
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser

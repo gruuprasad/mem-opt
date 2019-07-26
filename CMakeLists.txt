@@ -47,9 +47,10 @@ endif()
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 
-include_directories(src/)
-add_subdirectory(src/)
-add_subdirectory(test/)
+include_directories(include)
+add_subdirectory(src)
+add_subdirectory(tools)
+add_subdirectory(test)
 
 # Testing related tools
 if(NOT EXISTS ${LLVM_ROOT}/bin/FileCheck)
@@ -60,4 +61,4 @@ endif()
 configure_file("${CMAKE_SOURCE_DIR}/test/litTests/lit.site.cfg.in" "${CMAKE_BINARY_DIR}/test/litTests/lit.site.cfg")
 
 #add_custom_target(check COMMAND lit ${CMAKE_BINARY_DIR}/test/litTests)
-add_custom_target(check COMMAND ctest)
+#add_custom_target(check COMMAND ctest)

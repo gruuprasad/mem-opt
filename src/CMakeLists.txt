@@ -1,9 +1,4 @@
-add_library(TASPass SHARED CacheUsageAnalysisPass.cpp)
-
-add_library(TASUtil SHARED
-  CacheUsageAnalysis.cpp
-  Util.cpp)
-
-target_link_libraries(TASPass TASUtil)
-
-install(TARGETS TASPass DESTINATION lib)
+add_subdirectory(BatchMaker)
+add_subdirectory(CacheAnalysis)
+add_subdirectory(Common)
+add_subdirectory(PassWrapper)

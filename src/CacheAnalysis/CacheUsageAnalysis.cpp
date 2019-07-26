@@ -5,13 +5,14 @@
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/Support/Debug.h>
 
 #include <algorithm>
 #include <string>
 
 using namespace llvm;
 
-#define DEBUG_TYPE "tas-cache-analysis"
+#define DEBUG_TYPE "tas"
 
 namespace tas {
 
@@ -92,8 +93,8 @@ bool CacheUsageAnalysis::run() {
         BasePtr =  BasePtr->getNextNode()->getNextNode();
       }
 
-      //errs() << "\nKey = " << *Key.first << " " << Key.second << "\n";
-      //errs() << "Use = " << *U << "\n";
+      LLVM_DEBUG(dbgs() << "\nKey = " << *Key.first << " " << Key.second << "\n");
+      LLVM_DEBUG(dbgs() << "Use = " << *U << "\n");
       if (!isa<GetElementPtrInst>(BasePtr->getNextNode())) continue;
 
       unsigned AbsoluteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);

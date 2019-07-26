@@ -2254,1375 +2254,1384 @@ define dso_local i32 @fast_flows_packet(%struct.dataplane_context*, %struct.netw
   store i16 %50, i16* %31, align 2
   store i32 0, i32* %33, align 4
   store i32 0, i32* %34, align 4
-  %51 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %52 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %51, i32 0, i32 2
-  %53 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %52, i32 0, i32 4
-  %54 = load i16, i16* %53, align 1
-  %55 = call zeroext i16 @ntohs(i16 zeroext %54) #9
-  %56 = zext i16 %55 to i32
-  %57 = ashr i32 %56, 12
-  %58 = sub nsw i32 %57, 5
-  %59 = mul nsw i32 %58, 4
-  %60 = trunc i32 %59 to i16
-  store i16 %60, i16* %28, align 2
-  %61 = load i16, i16* %28, align 2
-  %62 = zext i16 %61 to i64
-  %63 = add i64 54, %62
-  %64 = trunc i64 %63 to i32
-  store i32 %64, i32* %16, align 4
-  %65 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %66 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %65, i32 0, i32 1
-  %67 = getelementptr inbounds %struct.ip_hdr, %struct.ip_hdr* %66, i32 0, i32 2
-  %68 = getelementptr inbounds %struct.beui16, %struct.beui16* %67, i32 0, i32 0
-  %69 = load i16, i16* %68, align 1
-  %70 = call zeroext i16 @f_beui16(i16 %69)
-  %71 = zext i16 %70 to i64
-  %72 = load i16, i16* %28, align 2
-  %73 = zext i16 %72 to i64
-  %74 = add i64 40, %73
-  %75 = sub i64 %71, %74
-  %76 = trunc i64 %75 to i32
-  store i32 %76, i32* %15, align 4
-  %77 = load i32, i32* %15, align 4
-  store i32 %77, i32* %21, align 4
-  %78 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %79 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %78, i32 0, i32 13
-  call void @util_spin_lock(i32* %79)
-  %80 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %81 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %80, i32 0, i32 1
-  %82 = load i64, i64* %81, align 8
-  %83 = and i64 %82, 1
-  %84 = icmp ne i64 %83, 0
-  %85 = zext i1 %84 to i32
-  %86 = sext i32 %85 to i64
-  %87 = icmp ne i64 %86, 0
-  br i1 %87, label %88, label %91
+  %51 = load i8*, i8** %9, align 8
+  %52 = icmp eq i8* %51, null
+  br i1 %52, label %53, label %54
 
-; <label>:88:                                     ; preds = %5
-  %89 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %90 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %89, i8* getelementptr inbounds ([49 x i8], [49 x i8]* @.str.8, i32 0, i32 0))
-  br label %1024
+; <label>:53:                                     ; preds = %5
+  store i32 -1, i32* %6, align 4
+  br label %1039
 
-; <label>:91:                                     ; preds = %5
-  %92 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %93 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %92, i32 0, i32 2
-  %94 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %93, i32 0, i32 4
-  %95 = load i16, i16* %94, align 1
-  %96 = call zeroext i16 @ntohs(i16 zeroext %95) #9
-  %97 = zext i16 %96 to i32
-  %98 = and i32 %97, 511
-  %99 = and i32 %98, -218
-  %100 = icmp ne i32 %99, 0
-  %101 = zext i1 %100 to i32
-  %102 = sext i32 %101 to i64
-  %103 = icmp ne i64 %102, 0
-  br i1 %103, label %104, label %126
+; <label>:54:                                     ; preds = %5
+  %55 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %56 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %55, i32 0, i32 2
+  %57 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %56, i32 0, i32 4
+  %58 = load i16, i16* %57, align 1
+  %59 = call zeroext i16 @ntohs(i16 zeroext %58) #9
+  %60 = zext i16 %59 to i32
+  %61 = ashr i32 %60, 12
+  %62 = sub nsw i32 %61, 5
+  %63 = mul nsw i32 %62, 4
+  %64 = trunc i32 %63 to i16
+  store i16 %64, i16* %28, align 2
+  %65 = load i16, i16* %28, align 2
+  %66 = zext i16 %65 to i64
+  %67 = add i64 54, %66
+  %68 = trunc i64 %67 to i32
+  store i32 %68, i32* %16, align 4
+  %69 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %70 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %69, i32 0, i32 1
+  %71 = getelementptr inbounds %struct.ip_hdr, %struct.ip_hdr* %70, i32 0, i32 2
+  %72 = getelementptr inbounds %struct.beui16, %struct.beui16* %71, i32 0, i32 0
+  %73 = load i16, i16* %72, align 1
+  %74 = call zeroext i16 @f_beui16(i16 %73)
+  %75 = zext i16 %74 to i64
+  %76 = load i16, i16* %28, align 2
+  %77 = zext i16 %76 to i64
+  %78 = add i64 40, %77
+  %79 = sub i64 %75, %78
+  %80 = trunc i64 %79 to i32
+  store i32 %80, i32* %15, align 4
+  %81 = load i32, i32* %15, align 4
+  store i32 %81, i32* %21, align 4
+  %82 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %83 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %82, i32 0, i32 13
+  call void @util_spin_lock(i32* %83)
+  %84 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %85 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %84, i32 0, i32 1
+  %86 = load i64, i64* %85, align 8
+  %87 = and i64 %86, 1
+  %88 = icmp ne i64 %87, 0
+  %89 = zext i1 %88 to i32
+  %90 = sext i32 %89 to i64
+  %91 = icmp ne i64 %90, 0
+  br i1 %91, label %92, label %95
 
-; <label>:104:                                    ; preds = %91
-  %105 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %106 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %105, i32 0, i32 2
-  %107 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %106, i32 0, i32 4
-  %108 = load i16, i16* %107, align 1
-  %109 = call zeroext i16 @ntohs(i16 zeroext %108) #9
-  %110 = zext i16 %109 to i32
-  %111 = and i32 %110, 511
-  %112 = and i32 %111, 2
-  %113 = icmp ne i32 %112, 0
-  br i1 %113, label %114, label %115
+; <label>:92:                                     ; preds = %54
+  %93 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %94 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %93, i8* getelementptr inbounds ([49 x i8], [49 x i8]* @.str.8, i32 0, i32 0))
+  br label %1028
 
-; <label>:114:                                    ; preds = %104
+; <label>:95:                                     ; preds = %54
+  %96 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %97 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %96, i32 0, i32 2
+  %98 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %97, i32 0, i32 4
+  %99 = load i16, i16* %98, align 1
+  %100 = call zeroext i16 @ntohs(i16 zeroext %99) #9
+  %101 = zext i16 %100 to i32
+  %102 = and i32 %101, 511
+  %103 = and i32 %102, -218
+  %104 = icmp ne i32 %103, 0
+  %105 = zext i1 %104 to i32
+  %106 = sext i32 %105 to i64
+  %107 = icmp ne i64 %106, 0
+  br i1 %107, label %108, label %130
+
+; <label>:108:                                    ; preds = %95
+  %109 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %110 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %109, i32 0, i32 2
+  %111 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %110, i32 0, i32 4
+  %112 = load i16, i16* %111, align 1
+  %113 = call zeroext i16 @ntohs(i16 zeroext %112) #9
+  %114 = zext i16 %113 to i32
+  %115 = and i32 %114, 511
+  %116 = and i32 %115, 2
+  %117 = icmp ne i32 %116, 0
+  br i1 %117, label %118, label %119
+
+; <label>:118:                                    ; preds = %108
   store i32 1, i32* %27, align 4
-  br label %125
+  br label %129
 
-; <label>:115:                                    ; preds = %104
-  %116 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %117 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %118 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %117, i32 0, i32 2
-  %119 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %118, i32 0, i32 4
-  %120 = load i16, i16* %119, align 1
-  %121 = call zeroext i16 @ntohs(i16 zeroext %120) #9
-  %122 = zext i16 %121 to i32
-  %123 = and i32 %122, 511
-  %124 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %116, i8* getelementptr inbounds ([55 x i8], [55 x i8]* @.str.9, i32 0, i32 0), i32 %123)
-  br label %125
+; <label>:119:                                    ; preds = %108
+  %120 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %121 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %122 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %121, i32 0, i32 2
+  %123 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %122, i32 0, i32 4
+  %124 = load i16, i16* %123, align 1
+  %125 = call zeroext i16 @ntohs(i16 zeroext %124) #9
+  %126 = zext i16 %125 to i32
+  %127 = and i32 %126, 511
+  %128 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %120, i8* getelementptr inbounds ([55 x i8], [55 x i8]* @.str.9, i32 0, i32 0), i32 %127)
+  br label %129
 
-; <label>:125:                                    ; preds = %115, %114
-  br label %1024
+; <label>:129:                                    ; preds = %119, %118
+  br label %1028
 
-; <label>:126:                                    ; preds = %91
-  %127 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %128 = call i32 @tcp_txavail(%struct.flextcp_pl_flowst* %127, i32* null)
-  store i32 %128, i32* %19, align 4
-  %129 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %130 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %129, i32 0, i32 2
-  %131 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %130, i32 0, i32 2
-  %132 = getelementptr inbounds %struct.beui32, %struct.beui32* %131, i32 0, i32 0
-  %133 = load i32, i32* %132, align 1
-  %134 = call i32 @f_beui32(i32 %133)
-  store i32 %134, i32* %17, align 4
-  %135 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %136 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %135, i32 0, i32 2
-  %137 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %136, i32 0, i32 3
-  %138 = getelementptr inbounds %struct.beui32, %struct.beui32* %137, i32 0, i32 0
-  %139 = load i32, i32* %138, align 1
-  %140 = call i32 @f_beui32(i32 %139)
-  store i32 %140, i32* %18, align 4
-  %141 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %142 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %141, i32 0, i32 15
-  %143 = load i32, i32* %142, align 64
-  store i32 %143, i32* %25, align 4
-  %144 = load i32, i32* %15, align 4
-  %145 = icmp ugt i32 %144, 0
-  br i1 %145, label %146, label %147
+; <label>:130:                                    ; preds = %95
+  %131 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %132 = call i32 @tcp_txavail(%struct.flextcp_pl_flowst* %131, i32* null)
+  store i32 %132, i32* %19, align 4
+  %133 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %134 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %133, i32 0, i32 2
+  %135 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %134, i32 0, i32 2
+  %136 = getelementptr inbounds %struct.beui32, %struct.beui32* %135, i32 0, i32 0
+  %137 = load i32, i32* %136, align 1
+  %138 = call i32 @f_beui32(i32 %137)
+  store i32 %138, i32* %17, align 4
+  %139 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %140 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %139, i32 0, i32 2
+  %141 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %140, i32 0, i32 3
+  %142 = getelementptr inbounds %struct.beui32, %struct.beui32* %141, i32 0, i32 0
+  %143 = load i32, i32* %142, align 1
+  %144 = call i32 @f_beui32(i32 %143)
+  store i32 %144, i32* %18, align 4
+  %145 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %146 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %145, i32 0, i32 15
+  %147 = load i32, i32* %146, align 64
+  store i32 %147, i32* %25, align 4
+  %148 = load i32, i32* %15, align 4
+  %149 = icmp ugt i32 %148, 0
+  br i1 %149, label %150, label %151
 
-; <label>:146:                                    ; preds = %126
+; <label>:150:                                    ; preds = %130
   store i32 1, i32* %33, align 4
-  br label %147
+  br label %151
 
-; <label>:147:                                    ; preds = %146, %126
-  %148 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %149 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %148, i32 0, i32 2
-  %150 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %149, i32 0, i32 4
-  %151 = load i16, i16* %150, align 1
-  %152 = call zeroext i16 @ntohs(i16 zeroext %151) #9
-  %153 = zext i16 %152 to i32
-  %154 = and i32 %153, 511
-  %155 = and i32 %154, 16
-  %156 = icmp eq i32 %155, 16
-  br i1 %156, label %157, label %162
+; <label>:151:                                    ; preds = %150, %130
+  %152 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %153 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %152, i32 0, i32 2
+  %154 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %153, i32 0, i32 4
+  %155 = load i16, i16* %154, align 1
+  %156 = call zeroext i16 @ntohs(i16 zeroext %155) #9
+  %157 = zext i16 %156 to i32
+  %158 = and i32 %157, 511
+  %159 = and i32 %158, 16
+  %160 = icmp eq i32 %159, 16
+  br i1 %160, label %161, label %166
 
-; <label>:157:                                    ; preds = %147
-  %158 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %159 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %158, i32 0, i32 28
-  %160 = load i16, i16* %159, align 2
-  %161 = add i16 %160, 1
-  store i16 %161, i16* %159, align 2
-  br label %162
+; <label>:161:                                    ; preds = %151
+  %162 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %163 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %162, i32 0, i32 28
+  %164 = load i16, i16* %163, align 2
+  %165 = add i16 %164, 1
+  store i16 %165, i16* %163, align 2
+  br label %166
 
-; <label>:162:                                    ; preds = %157, %147
-  %163 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %164 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %163, i32 0, i32 2
-  %165 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %164, i32 0, i32 4
-  %166 = load i16, i16* %165, align 1
-  %167 = call zeroext i16 @ntohs(i16 zeroext %166) #9
-  %168 = zext i16 %167 to i32
-  %169 = and i32 %168, 511
-  %170 = and i32 %169, 16
-  %171 = icmp eq i32 %170, 16
-  br i1 %171, label %172, label %177
+; <label>:166:                                    ; preds = %161, %151
+  %167 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %168 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %167, i32 0, i32 2
+  %169 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %168, i32 0, i32 4
+  %170 = load i16, i16* %169, align 1
+  %171 = call zeroext i16 @ntohs(i16 zeroext %170) #9
+  %172 = zext i16 %171 to i32
+  %173 = and i32 %172, 511
+  %174 = and i32 %173, 16
+  %175 = icmp eq i32 %174, 16
+  br i1 %175, label %176, label %181
 
-; <label>:172:                                    ; preds = %162
-  %173 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %174 = load i32, i32* %18, align 4
-  %175 = call i32 @tcp_valid_rxack(%struct.flextcp_pl_flowst* %173, i32 %174, i32* %23)
-  %176 = icmp eq i32 %175, 0
-  br label %177
+; <label>:176:                                    ; preds = %166
+  %177 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %178 = load i32, i32* %18, align 4
+  %179 = call i32 @tcp_valid_rxack(%struct.flextcp_pl_flowst* %177, i32 %178, i32* %23)
+  %180 = icmp eq i32 %179, 0
+  br label %181
 
-; <label>:177:                                    ; preds = %172, %162
-  %178 = phi i1 [ false, %162 ], [ %176, %172 ]
-  %179 = zext i1 %178 to i32
-  %180 = sext i32 %179 to i64
-  %181 = icmp ne i64 %180, 0
-  br i1 %181, label %182, label %282
+; <label>:181:                                    ; preds = %176, %166
+  %182 = phi i1 [ false, %166 ], [ %180, %176 ]
+  %183 = zext i1 %182 to i32
+  %184 = sext i32 %183 to i64
+  %185 = icmp ne i64 %184, 0
+  br i1 %185, label %186, label %286
 
-; <label>:182:                                    ; preds = %177
-  %183 = load i32, i32* %23, align 4
-  %184 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %185 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %184, i32 0, i32 29
-  %186 = load i32, i32* %185, align 4
-  %187 = add i32 %186, %183
-  store i32 %187, i32* %185, align 4
-  %188 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %189 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %188, i32 0, i32 2
-  %190 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %189, i32 0, i32 4
-  %191 = load i16, i16* %190, align 1
-  %192 = call zeroext i16 @ntohs(i16 zeroext %191) #9
-  %193 = zext i16 %192 to i32
-  %194 = and i32 %193, 511
-  %195 = and i32 %194, 64
-  %196 = icmp eq i32 %195, 64
-  br i1 %196, label %197, label %203
+; <label>:186:                                    ; preds = %181
+  %187 = load i32, i32* %23, align 4
+  %188 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %189 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %188, i32 0, i32 29
+  %190 = load i32, i32* %189, align 4
+  %191 = add i32 %190, %187
+  store i32 %191, i32* %189, align 4
+  %192 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %193 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %192, i32 0, i32 2
+  %194 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %193, i32 0, i32 4
+  %195 = load i16, i16* %194, align 1
+  %196 = call zeroext i16 @ntohs(i16 zeroext %195) #9
+  %197 = zext i16 %196 to i32
+  %198 = and i32 %197, 511
+  %199 = and i32 %198, 64
+  %200 = icmp eq i32 %199, 64
+  br i1 %200, label %201, label %207
 
-; <label>:197:                                    ; preds = %182
-  %198 = load i32, i32* %23, align 4
-  %199 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %200 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %199, i32 0, i32 30
-  %201 = load i32, i32* %200, align 8
-  %202 = add i32 %201, %198
-  store i32 %202, i32* %200, align 8
-  br label %203
+; <label>:201:                                    ; preds = %186
+  %202 = load i32, i32* %23, align 4
+  %203 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %204 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %203, i32 0, i32 30
+  %205 = load i32, i32* %204, align 8
+  %206 = add i32 %205, %202
+  store i32 %206, i32* %204, align 8
+  br label %207
 
-; <label>:203:                                    ; preds = %197, %182
-  %204 = load i32, i32* %23, align 4
-  %205 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %206 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %205, i32 0, i32 21
-  %207 = load i32, i32* %206, align 8
-  %208 = icmp ule i32 %204, %207
-  %209 = zext i1 %208 to i32
-  %210 = sext i32 %209 to i64
-  %211 = icmp ne i64 %210, 0
-  br i1 %211, label %212, label %218
+; <label>:207:                                    ; preds = %201, %186
+  %208 = load i32, i32* %23, align 4
+  %209 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %210 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %209, i32 0, i32 21
+  %211 = load i32, i32* %210, align 8
+  %212 = icmp ule i32 %208, %211
+  %213 = zext i1 %212 to i32
+  %214 = sext i32 %213 to i64
+  %215 = icmp ne i64 %214, 0
+  br i1 %215, label %216, label %222
 
-; <label>:212:                                    ; preds = %203
-  %213 = load i32, i32* %23, align 4
-  %214 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %215 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %214, i32 0, i32 21
-  %216 = load i32, i32* %215, align 8
-  %217 = sub i32 %216, %213
-  store i32 %217, i32* %215, align 8
-  br label %255
+; <label>:216:                                    ; preds = %207
+  %217 = load i32, i32* %23, align 4
+  %218 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %219 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %218, i32 0, i32 21
+  %220 = load i32, i32* %219, align 8
+  %221 = sub i32 %220, %217
+  store i32 %221, i32* %219, align 8
+  br label %259
 
-; <label>:218:                                    ; preds = %203
-  %219 = load i32, i32* %23, align 4
-  %220 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %221 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %220, i32 0, i32 21
-  %222 = load i32, i32* %221, align 8
-  %223 = sub i32 %219, %222
+; <label>:222:                                    ; preds = %207
+  %223 = load i32, i32* %23, align 4
   %224 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %225 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %224, i32 0, i32 23
-  %226 = load i32, i32* %225, align 32
-  %227 = add i32 %226, %223
-  store i32 %227, i32* %225, align 32
-  %228 = load i32, i32* %23, align 4
-  %229 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %230 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %229, i32 0, i32 21
-  %231 = load i32, i32* %230, align 8
-  %232 = sub i32 %228, %231
+  %225 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %224, i32 0, i32 21
+  %226 = load i32, i32* %225, align 8
+  %227 = sub i32 %223, %226
+  %228 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %229 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %228, i32 0, i32 23
+  %230 = load i32, i32* %229, align 32
+  %231 = add i32 %230, %227
+  store i32 %231, i32* %229, align 32
+  %232 = load i32, i32* %23, align 4
   %233 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %234 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %233, i32 0, i32 22
-  %235 = load i32, i32* %234, align 4
-  %236 = add i32 %235, %232
-  store i32 %236, i32* %234, align 4
+  %234 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %233, i32 0, i32 21
+  %235 = load i32, i32* %234, align 8
+  %236 = sub i32 %232, %235
   %237 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %238 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %237, i32 0, i32 22
   %239 = load i32, i32* %238, align 4
-  %240 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %241 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %240, i32 0, i32 4
-  %242 = load i32, i32* %241, align 4
-  %243 = icmp uge i32 %239, %242
-  br i1 %243, label %244, label %252
+  %240 = add i32 %239, %236
+  store i32 %240, i32* %238, align 4
+  %241 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %242 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %241, i32 0, i32 22
+  %243 = load i32, i32* %242, align 4
+  %244 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %245 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %244, i32 0, i32 4
+  %246 = load i32, i32* %245, align 4
+  %247 = icmp uge i32 %243, %246
+  br i1 %247, label %248, label %256
 
-; <label>:244:                                    ; preds = %218
-  %245 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %246 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %245, i32 0, i32 4
-  %247 = load i32, i32* %246, align 4
-  %248 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %249 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %248, i32 0, i32 22
-  %250 = load i32, i32* %249, align 4
-  %251 = sub i32 %250, %247
-  store i32 %251, i32* %249, align 4
-  br label %252
+; <label>:248:                                    ; preds = %222
+  %249 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %250 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %249, i32 0, i32 4
+  %251 = load i32, i32* %250, align 4
+  %252 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %253 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %252, i32 0, i32 22
+  %254 = load i32, i32* %253, align 4
+  %255 = sub i32 %254, %251
+  store i32 %255, i32* %253, align 4
+  br label %256
 
-; <label>:252:                                    ; preds = %244, %218
-  %253 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %254 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %253, i32 0, i32 21
-  store i32 0, i32* %254, align 8
-  br label %255
+; <label>:256:                                    ; preds = %248, %222
+  %257 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %258 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %257, i32 0, i32 21
+  store i32 0, i32* %258, align 8
+  br label %259
 
-; <label>:255:                                    ; preds = %252, %212
-  %256 = load i32, i32* %23, align 4
-  %257 = icmp ne i32 %256, 0
-  %258 = zext i1 %257 to i32
-  %259 = sext i32 %258 to i64
-  %260 = icmp ne i64 %259, 0
-  br i1 %260, label %261, label %264
+; <label>:259:                                    ; preds = %256, %216
+  %260 = load i32, i32* %23, align 4
+  %261 = icmp ne i32 %260, 0
+  %262 = zext i1 %261 to i32
+  %263 = sext i32 %262 to i64
+  %264 = icmp ne i64 %263, 0
+  br i1 %264, label %265, label %268
 
-; <label>:261:                                    ; preds = %255
-  %262 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %263 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %262, i32 0, i32 18
-  store i32 0, i32* %263, align 4
-  br label %281
+; <label>:265:                                    ; preds = %259
+  %266 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %267 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %266, i32 0, i32 18
+  store i32 0, i32* %267, align 4
+  br label %285
 
-; <label>:264:                                    ; preds = %255
-  %265 = load i32, i32* %21, align 4
-  %266 = icmp eq i32 %265, 0
-  br i1 %266, label %267, label %273
+; <label>:268:                                    ; preds = %259
+  %269 = load i32, i32* %21, align 4
+  %270 = icmp eq i32 %269, 0
+  br i1 %270, label %271, label %277
 
-; <label>:267:                                    ; preds = %264
-  %268 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %269 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %268, i32 0, i32 18
-  %270 = load i32, i32* %269, align 4
-  %271 = add i32 %270, 1
-  store i32 %271, i32* %269, align 4
-  %272 = icmp uge i32 %271, 3
-  br label %273
+; <label>:271:                                    ; preds = %268
+  %272 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %273 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %272, i32 0, i32 18
+  %274 = load i32, i32* %273, align 4
+  %275 = add i32 %274, 1
+  store i32 %275, i32* %273, align 4
+  %276 = icmp uge i32 %275, 3
+  br label %277
 
-; <label>:273:                                    ; preds = %267, %264
-  %274 = phi i1 [ false, %264 ], [ %272, %267 ]
-  %275 = zext i1 %274 to i32
-  %276 = sext i32 %275 to i64
-  %277 = icmp ne i64 %276, 0
-  br i1 %277, label %278, label %280
+; <label>:277:                                    ; preds = %271, %268
+  %278 = phi i1 [ false, %268 ], [ %276, %271 ]
+  %279 = zext i1 %278 to i32
+  %280 = sext i32 %279 to i64
+  %281 = icmp ne i64 %280, 0
+  br i1 %281, label %282, label %284
 
-; <label>:278:                                    ; preds = %273
-  %279 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  call void @flow_reset_retransmit(%struct.flextcp_pl_flowst* %279)
-  br label %910
-
-; <label>:280:                                    ; preds = %273
-  br label %281
-
-; <label>:281:                                    ; preds = %280, %261
-  br label %282
-
-; <label>:282:                                    ; preds = %281, %177
+; <label>:282:                                    ; preds = %277
   %283 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %284 = load i32, i32* %17, align 4
-  %285 = load i32, i32* %15, align 4
-  %286 = trunc i32 %285 to i16
-  %287 = call i32 @tcp_trim_rxbuf(%struct.flextcp_pl_flowst* %283, i32 %284, i16 zeroext %286, i16* %29, i16* %30)
-  %288 = icmp ne i32 %287, 0
-  %289 = zext i1 %288 to i32
-  %290 = sext i32 %289 to i64
-  %291 = icmp ne i64 %290, 0
-  br i1 %291, label %292, label %293
+  call void @flow_reset_retransmit(%struct.flextcp_pl_flowst* %283)
+  br label %914
 
-; <label>:292:                                    ; preds = %282
-  br label %910
+; <label>:284:                                    ; preds = %277
+  br label %285
 
-; <label>:293:                                    ; preds = %282
-  %294 = load i16, i16* %29, align 2
-  %295 = zext i16 %294 to i32
-  %296 = load i16, i16* %30, align 2
-  %297 = zext i16 %296 to i32
-  %298 = add nsw i32 %295, %297
-  %299 = load i32, i32* %15, align 4
-  %300 = sub i32 %299, %298
-  store i32 %300, i32* %15, align 4
-  %301 = load i16, i16* %29, align 2
-  %302 = zext i16 %301 to i32
-  %303 = load i32, i32* %16, align 4
-  %304 = add i32 %303, %302
-  store i32 %304, i32* %16, align 4
-  %305 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %306 = bitcast %struct.pkt_tcp* %305 to i8*
+; <label>:285:                                    ; preds = %284, %265
+  br label %286
+
+; <label>:286:                                    ; preds = %285, %181
+  %287 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %288 = load i32, i32* %17, align 4
+  %289 = load i32, i32* %15, align 4
+  %290 = trunc i32 %289 to i16
+  %291 = call i32 @tcp_trim_rxbuf(%struct.flextcp_pl_flowst* %287, i32 %288, i16 zeroext %290, i16* %29, i16* %30)
+  %292 = icmp ne i32 %291, 0
+  %293 = zext i1 %292 to i32
+  %294 = sext i32 %293 to i64
+  %295 = icmp ne i64 %294, 0
+  br i1 %295, label %296, label %297
+
+; <label>:296:                                    ; preds = %286
+  br label %914
+
+; <label>:297:                                    ; preds = %286
+  %298 = load i16, i16* %29, align 2
+  %299 = zext i16 %298 to i32
+  %300 = load i16, i16* %30, align 2
+  %301 = zext i16 %300 to i32
+  %302 = add nsw i32 %299, %301
+  %303 = load i32, i32* %15, align 4
+  %304 = sub i32 %303, %302
+  store i32 %304, i32* %15, align 4
+  %305 = load i16, i16* %29, align 2
+  %306 = zext i16 %305 to i32
   %307 = load i32, i32* %16, align 4
-  %308 = zext i32 %307 to i64
-  %309 = getelementptr inbounds i8, i8* %306, i64 %308
-  %310 = bitcast i8* %309 to %struct.obj_hdr*
-  store %struct.obj_hdr* %310, %struct.obj_hdr** %32, align 8
-  %311 = load i16, i16* %29, align 2
-  %312 = zext i16 %311 to i32
-  %313 = load i32, i32* %17, align 4
-  %314 = add i32 %313, %312
-  store i32 %314, i32* %17, align 4
-  %315 = load i32, i32* %17, align 4
-  %316 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %317 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %316, i32 0, i32 16
-  %318 = load i32, i32* %317, align 4
-  %319 = icmp ne i32 %315, %318
-  %320 = zext i1 %319 to i32
-  %321 = sext i32 %320 to i64
-  %322 = icmp ne i64 %321, 0
-  br i1 %322, label %323, label %394
+  %308 = add i32 %307, %306
+  store i32 %308, i32* %16, align 4
+  %309 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %310 = bitcast %struct.pkt_tcp* %309 to i8*
+  %311 = load i32, i32* %16, align 4
+  %312 = zext i32 %311 to i64
+  %313 = getelementptr inbounds i8, i8* %310, i64 %312
+  %314 = bitcast i8* %313 to %struct.obj_hdr*
+  store %struct.obj_hdr* %314, %struct.obj_hdr** %32, align 8
+  %315 = load i16, i16* %29, align 2
+  %316 = zext i16 %315 to i32
+  %317 = load i32, i32* %17, align 4
+  %318 = add i32 %317, %316
+  store i32 %318, i32* %17, align 4
+  %319 = load i32, i32* %17, align 4
+  %320 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %321 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %320, i32 0, i32 16
+  %322 = load i32, i32* %321, align 4
+  %323 = icmp ne i32 %319, %322
+  %324 = zext i1 %323 to i32
+  %325 = sext i32 %324 to i64
+  %326 = icmp ne i64 %325, 0
+  br i1 %326, label %327, label %398
 
-; <label>:323:                                    ; preds = %293
+; <label>:327:                                    ; preds = %297
   store i32 1, i32* %33, align 4
-  %324 = load i32, i32* %15, align 4
-  %325 = icmp eq i32 %324, 0
-  br i1 %325, label %326, label %327
+  %328 = load i32, i32* %15, align 4
+  %329 = icmp eq i32 %328, 0
+  br i1 %329, label %330, label %331
 
-; <label>:326:                                    ; preds = %323
-  br label %910
+; <label>:330:                                    ; preds = %327
+  br label %914
 
-; <label>:327:                                    ; preds = %323
-  %328 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %329 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %328, i32 0, i32 20
-  %330 = load i32, i32* %329, align 4
-  %331 = icmp eq i32 %330, 0
-  br i1 %331, label %332, label %345
+; <label>:331:                                    ; preds = %327
+  %332 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %333 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %332, i32 0, i32 20
+  %334 = load i32, i32* %333, align 4
+  %335 = icmp eq i32 %334, 0
+  br i1 %335, label %336, label %349
 
-; <label>:332:                                    ; preds = %327
-  %333 = load i32, i32* %17, align 4
-  %334 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %335 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %334, i32 0, i32 19
-  store i32 %333, i32* %335, align 16
-  %336 = load i32, i32* %15, align 4
-  %337 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %338 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %337, i32 0, i32 20
-  store i32 %336, i32* %338, align 4
-  %339 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %340 = load i32, i32* %17, align 4
-  %341 = load i32, i32* %15, align 4
-  %342 = trunc i32 %341 to i16
-  %343 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %344 = bitcast %struct.obj_hdr* %343 to i8*
-  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %339, i32 %340, i16 zeroext %342, i8* %344)
-  br label %393
+; <label>:336:                                    ; preds = %331
+  %337 = load i32, i32* %17, align 4
+  %338 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %339 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %338, i32 0, i32 19
+  store i32 %337, i32* %339, align 16
+  %340 = load i32, i32* %15, align 4
+  %341 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %342 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %341, i32 0, i32 20
+  store i32 %340, i32* %342, align 4
+  %343 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %344 = load i32, i32* %17, align 4
+  %345 = load i32, i32* %15, align 4
+  %346 = trunc i32 %345 to i16
+  %347 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %348 = bitcast %struct.obj_hdr* %347 to i8*
+  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %343, i32 %344, i16 zeroext %346, i8* %348)
+  br label %397
 
-; <label>:345:                                    ; preds = %327
-  %346 = load i32, i32* %17, align 4
-  %347 = load i32, i32* %15, align 4
-  %348 = add i32 %346, %347
-  %349 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %350 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %349, i32 0, i32 19
-  %351 = load i32, i32* %350, align 16
-  %352 = icmp eq i32 %348, %351
-  br i1 %352, label %353, label %368
+; <label>:349:                                    ; preds = %331
+  %350 = load i32, i32* %17, align 4
+  %351 = load i32, i32* %15, align 4
+  %352 = add i32 %350, %351
+  %353 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %354 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %353, i32 0, i32 19
+  %355 = load i32, i32* %354, align 16
+  %356 = icmp eq i32 %352, %355
+  br i1 %356, label %357, label %372
 
-; <label>:353:                                    ; preds = %345
-  %354 = load i32, i32* %17, align 4
-  %355 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %356 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %355, i32 0, i32 19
-  store i32 %354, i32* %356, align 16
-  %357 = load i32, i32* %15, align 4
-  %358 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %359 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %358, i32 0, i32 20
-  %360 = load i32, i32* %359, align 4
-  %361 = add i32 %360, %357
-  store i32 %361, i32* %359, align 4
+; <label>:357:                                    ; preds = %349
+  %358 = load i32, i32* %17, align 4
+  %359 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %360 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %359, i32 0, i32 19
+  store i32 %358, i32* %360, align 16
+  %361 = load i32, i32* %15, align 4
   %362 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %363 = load i32, i32* %17, align 4
-  %364 = load i32, i32* %15, align 4
-  %365 = trunc i32 %364 to i16
-  %366 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %367 = bitcast %struct.obj_hdr* %366 to i8*
-  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %362, i32 %363, i16 zeroext %365, i8* %367)
-  br label %392
+  %363 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %362, i32 0, i32 20
+  %364 = load i32, i32* %363, align 4
+  %365 = add i32 %364, %361
+  store i32 %365, i32* %363, align 4
+  %366 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %367 = load i32, i32* %17, align 4
+  %368 = load i32, i32* %15, align 4
+  %369 = trunc i32 %368 to i16
+  %370 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %371 = bitcast %struct.obj_hdr* %370 to i8*
+  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %366, i32 %367, i16 zeroext %369, i8* %371)
+  br label %396
 
-; <label>:368:                                    ; preds = %345
-  %369 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %370 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %369, i32 0, i32 19
-  %371 = load i32, i32* %370, align 16
-  %372 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %373 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %372, i32 0, i32 20
-  %374 = load i32, i32* %373, align 4
-  %375 = add i32 %371, %374
-  %376 = load i32, i32* %17, align 4
-  %377 = icmp eq i32 %375, %376
-  br i1 %377, label %378, label %390
+; <label>:372:                                    ; preds = %349
+  %373 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %374 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %373, i32 0, i32 19
+  %375 = load i32, i32* %374, align 16
+  %376 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %377 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %376, i32 0, i32 20
+  %378 = load i32, i32* %377, align 4
+  %379 = add i32 %375, %378
+  %380 = load i32, i32* %17, align 4
+  %381 = icmp eq i32 %379, %380
+  br i1 %381, label %382, label %394
 
-; <label>:378:                                    ; preds = %368
-  %379 = load i32, i32* %15, align 4
-  %380 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %381 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %380, i32 0, i32 20
-  %382 = load i32, i32* %381, align 4
-  %383 = add i32 %382, %379
-  store i32 %383, i32* %381, align 4
+; <label>:382:                                    ; preds = %372
+  %383 = load i32, i32* %15, align 4
   %384 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %385 = load i32, i32* %17, align 4
-  %386 = load i32, i32* %15, align 4
-  %387 = trunc i32 %386 to i16
-  %388 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %389 = bitcast %struct.obj_hdr* %388 to i8*
-  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %384, i32 %385, i16 zeroext %387, i8* %389)
-  br label %391
+  %385 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %384, i32 0, i32 20
+  %386 = load i32, i32* %385, align 4
+  %387 = add i32 %386, %383
+  store i32 %387, i32* %385, align 4
+  %388 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %389 = load i32, i32* %17, align 4
+  %390 = load i32, i32* %15, align 4
+  %391 = trunc i32 %390 to i16
+  %392 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %393 = bitcast %struct.obj_hdr* %392 to i8*
+  call void @flow_rx_seq_write(%struct.flextcp_pl_flowst* %388, i32 %389, i16 zeroext %391, i8* %393)
+  br label %395
 
-; <label>:390:                                    ; preds = %368
-  br label %391
+; <label>:394:                                    ; preds = %372
+  br label %395
 
-; <label>:391:                                    ; preds = %390, %378
-  br label %392
+; <label>:395:                                    ; preds = %394, %382
+  br label %396
 
-; <label>:392:                                    ; preds = %391, %353
-  br label %393
+; <label>:396:                                    ; preds = %395, %357
+  br label %397
 
-; <label>:393:                                    ; preds = %392, %332
-  br label %910
+; <label>:397:                                    ; preds = %396, %336
+  br label %914
 
-; <label>:394:                                    ; preds = %293
-  %395 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
-  %396 = load %struct.tcp_opts*, %struct.tcp_opts** %395, align 8
-  %397 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %396, i32 0, i32 0
-  %398 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %397, align 8
-  %399 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %398, i32 0, i32 2
-  %400 = getelementptr inbounds %struct.beui32, %struct.beui32* %399, i32 0, i32 0
-  %401 = load i32, i32* %400, align 1
-  %402 = call i32 @f_beui32(i32 %401)
-  %403 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %404 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %403, i32 0, i32 25
-  store i32 %402, i32* %404, align 8
-  %405 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %406 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %405, i32 0, i32 2
-  %407 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %406, i32 0, i32 4
-  %408 = load i16, i16* %407, align 1
-  %409 = call zeroext i16 @ntohs(i16 zeroext %408) #9
-  %410 = zext i16 %409 to i32
-  %411 = and i32 %410, 511
-  %412 = and i32 %411, 16
-  %413 = icmp eq i32 %412, 16
-  br i1 %413, label %414, label %424
+; <label>:398:                                    ; preds = %297
+  %399 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
+  %400 = load %struct.tcp_opts*, %struct.tcp_opts** %399, align 8
+  %401 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %400, i32 0, i32 0
+  %402 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %401, align 8
+  %403 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %402, i32 0, i32 2
+  %404 = getelementptr inbounds %struct.beui32, %struct.beui32* %403, i32 0, i32 0
+  %405 = load i32, i32* %404, align 1
+  %406 = call i32 @f_beui32(i32 %405)
+  %407 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %408 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %407, i32 0, i32 25
+  store i32 %406, i32* %408, align 8
+  %409 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %410 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %409, i32 0, i32 2
+  %411 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %410, i32 0, i32 4
+  %412 = load i16, i16* %411, align 1
+  %413 = call zeroext i16 @ntohs(i16 zeroext %412) #9
+  %414 = zext i16 %413 to i32
+  %415 = and i32 %414, 511
+  %416 = and i32 %415, 16
+  %417 = icmp eq i32 %416, 16
+  br i1 %417, label %418, label %428
 
-; <label>:414:                                    ; preds = %394
-  %415 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
-  %416 = load %struct.tcp_opts*, %struct.tcp_opts** %415, align 8
-  %417 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %416, i32 0, i32 0
-  %418 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %417, align 8
-  %419 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %418, i32 0, i32 3
-  %420 = getelementptr inbounds %struct.beui32, %struct.beui32* %419, i32 0, i32 0
-  %421 = load i32, i32* %420, align 1
-  %422 = call i32 @f_beui32(i32 %421)
-  %423 = icmp ne i32 %422, 0
-  br label %424
+; <label>:418:                                    ; preds = %398
+  %419 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
+  %420 = load %struct.tcp_opts*, %struct.tcp_opts** %419, align 8
+  %421 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %420, i32 0, i32 0
+  %422 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %421, align 8
+  %423 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %422, i32 0, i32 3
+  %424 = getelementptr inbounds %struct.beui32, %struct.beui32* %423, i32 0, i32 0
+  %425 = load i32, i32* %424, align 1
+  %426 = call i32 @f_beui32(i32 %425)
+  %427 = icmp ne i32 %426, 0
+  br label %428
 
-; <label>:424:                                    ; preds = %414, %394
-  %425 = phi i1 [ false, %394 ], [ %423, %414 ]
-  %426 = zext i1 %425 to i32
-  %427 = sext i32 %426 to i64
-  %428 = icmp ne i64 %427, 0
-  br i1 %428, label %429, label %466
+; <label>:428:                                    ; preds = %418, %398
+  %429 = phi i1 [ false, %398 ], [ %427, %418 ]
+  %430 = zext i1 %429 to i32
+  %431 = sext i32 %430 to i64
+  %432 = icmp ne i64 %431, 0
+  br i1 %432, label %433, label %470
 
-; <label>:429:                                    ; preds = %424
-  %430 = load i32, i32* %11, align 4
-  %431 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
-  %432 = load %struct.tcp_opts*, %struct.tcp_opts** %431, align 8
-  %433 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %432, i32 0, i32 0
-  %434 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %433, align 8
-  %435 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %434, i32 0, i32 3
-  %436 = getelementptr inbounds %struct.beui32, %struct.beui32* %435, i32 0, i32 0
-  %437 = load i32, i32* %436, align 1
-  %438 = call i32 @f_beui32(i32 %437)
-  %439 = sub i32 %430, %438
-  store i32 %439, i32* %26, align 4
-  %440 = load i32, i32* %26, align 4
-  %441 = icmp ult i32 %440, 100000
-  br i1 %441, label %442, label %465
+; <label>:433:                                    ; preds = %428
+  %434 = load i32, i32* %11, align 4
+  %435 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
+  %436 = load %struct.tcp_opts*, %struct.tcp_opts** %435, align 8
+  %437 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %436, i32 0, i32 0
+  %438 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %437, align 8
+  %439 = getelementptr inbounds %struct.tcp_timestamp_opt, %struct.tcp_timestamp_opt* %438, i32 0, i32 3
+  %440 = getelementptr inbounds %struct.beui32, %struct.beui32* %439, i32 0, i32 0
+  %441 = load i32, i32* %440, align 1
+  %442 = call i32 @f_beui32(i32 %441)
+  %443 = sub i32 %434, %442
+  store i32 %443, i32* %26, align 4
+  %444 = load i32, i32* %26, align 4
+  %445 = icmp ult i32 %444, 100000
+  br i1 %445, label %446, label %469
 
-; <label>:442:                                    ; preds = %429
-  %443 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %444 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %443, i32 0, i32 31
-  %445 = load i32, i32* %444, align 4
-  %446 = icmp ne i32 %445, 0
-  %447 = zext i1 %446 to i32
-  %448 = sext i32 %447 to i64
-  %449 = icmp ne i64 %448, 0
-  br i1 %449, label %450, label %460
+; <label>:446:                                    ; preds = %433
+  %447 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %448 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %447, i32 0, i32 31
+  %449 = load i32, i32* %448, align 4
+  %450 = icmp ne i32 %449, 0
+  %451 = zext i1 %450 to i32
+  %452 = sext i32 %451 to i64
+  %453 = icmp ne i64 %452, 0
+  br i1 %453, label %454, label %464
 
-; <label>:450:                                    ; preds = %442
-  %451 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %452 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %451, i32 0, i32 31
-  %453 = load i32, i32* %452, align 4
-  %454 = mul i32 %453, 7
-  %455 = load i32, i32* %26, align 4
-  %456 = add i32 %454, %455
-  %457 = udiv i32 %456, 8
-  %458 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %459 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %458, i32 0, i32 31
-  store i32 %457, i32* %459, align 4
-  br label %464
-
-; <label>:460:                                    ; preds = %442
-  %461 = load i32, i32* %26, align 4
+; <label>:454:                                    ; preds = %446
+  %455 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %456 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %455, i32 0, i32 31
+  %457 = load i32, i32* %456, align 4
+  %458 = mul i32 %457, 7
+  %459 = load i32, i32* %26, align 4
+  %460 = add i32 %458, %459
+  %461 = udiv i32 %460, 8
   %462 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %463 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %462, i32 0, i32 31
   store i32 %461, i32* %463, align 4
-  br label %464
+  br label %468
 
-; <label>:464:                                    ; preds = %460, %450
-  br label %465
+; <label>:464:                                    ; preds = %446
+  %465 = load i32, i32* %26, align 4
+  %466 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %467 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %466, i32 0, i32 31
+  store i32 %465, i32* %467, align 4
+  br label %468
 
-; <label>:465:                                    ; preds = %464, %429
-  br label %466
+; <label>:468:                                    ; preds = %464, %454
+  br label %469
 
-; <label>:466:                                    ; preds = %465, %424
-  %467 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %468 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %467, i32 0, i32 2
-  %469 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %468, i32 0, i32 5
-  %470 = getelementptr inbounds %struct.beui16, %struct.beui16* %469, i32 0, i32 0
-  %471 = load i16, i16* %470, align 1
-  %472 = call zeroext i16 @f_beui16(i16 %471)
-  %473 = zext i16 %472 to i32
-  %474 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %475 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %474, i32 0, i32 17
-  store i32 %473, i32* %475, align 8
-  %476 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %477 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %476, i32 0, i32 1
-  %478 = load i64, i64* %477, align 8
-  %479 = and i64 %478, 32
-  %480 = icmp eq i64 %479, 32
-  br i1 %480, label %481, label %487
+; <label>:469:                                    ; preds = %468, %433
+  br label %470
 
-; <label>:481:                                    ; preds = %466
-  %482 = load i32, i32* %15, align 4
-  %483 = icmp ugt i32 %482, 0
-  br i1 %483, label %484, label %487
+; <label>:470:                                    ; preds = %469, %428
+  %471 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %472 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %471, i32 0, i32 2
+  %473 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %472, i32 0, i32 5
+  %474 = getelementptr inbounds %struct.beui16, %struct.beui16* %473, i32 0, i32 0
+  %475 = load i16, i16* %474, align 1
+  %476 = call zeroext i16 @f_beui16(i16 %475)
+  %477 = zext i16 %476 to i32
+  %478 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %479 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %478, i32 0, i32 17
+  store i32 %477, i32* %479, align 8
+  %480 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %481 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %480, i32 0, i32 1
+  %482 = load i64, i64* %481, align 8
+  %483 = and i64 %482, 32
+  %484 = icmp eq i64 %483, 32
+  br i1 %484, label %485, label %491
 
-; <label>:484:                                    ; preds = %481
-  %485 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %486 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %485, i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.10, i32 0, i32 0))
-  br label %910
+; <label>:485:                                    ; preds = %470
+  %486 = load i32, i32* %15, align 4
+  %487 = icmp ugt i32 %486, 0
+  br i1 %487, label %488, label %491
 
-; <label>:487:                                    ; preds = %481, %466
-  %488 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %489 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %488, i32 0, i32 1
-  %490 = load i64, i64* %489, align 8
-  %491 = and i64 %490, 2
-  %492 = icmp ne i64 %491, 0
-  br i1 %492, label %493, label %701
+; <label>:488:                                    ; preds = %485
+  %489 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %490 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %489, i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.10, i32 0, i32 0))
+  br label %914
 
-; <label>:493:                                    ; preds = %487
-  %494 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %495 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %494, i32 0, i32 33
-  %496 = load i32, i32* %495, align 4
-  %497 = icmp eq i32 %496, 0
-  br i1 %497, label %498, label %682
+; <label>:491:                                    ; preds = %485, %470
+  %492 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %493 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %492, i32 0, i32 1
+  %494 = load i64, i64* %493, align 8
+  %495 = and i64 %494, 2
+  %496 = icmp ne i64 %495, 0
+  br i1 %496, label %497, label %705
 
-; <label>:498:                                    ; preds = %493
-  %499 = load i32, i32* %15, align 4
-  %500 = icmp ugt i32 %499, 0
-  br i1 %500, label %501, label %682
+; <label>:497:                                    ; preds = %491
+  %498 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %499 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %498, i32 0, i32 33
+  %500 = load i32, i32* %499, align 4
+  %501 = icmp eq i32 %500, 0
+  br i1 %501, label %502, label %686
 
-; <label>:501:                                    ; preds = %498
-  %502 = load i32, i32* %15, align 4
-  %503 = zext i32 %502 to i64
-  %504 = icmp ult i64 %503, 8
-  br i1 %504, label %514, label %505
+; <label>:502:                                    ; preds = %497
+  %503 = load i32, i32* %15, align 4
+  %504 = icmp ugt i32 %503, 0
+  br i1 %504, label %505, label %686
 
-; <label>:505:                                    ; preds = %501
+; <label>:505:                                    ; preds = %502
   %506 = load i32, i32* %15, align 4
   %507 = zext i32 %506 to i64
-  %508 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %509 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %508, i32 0, i32 3
-  %510 = load i8, i8* %509, align 1
-  %511 = zext i8 %510 to i64
-  %512 = add i64 8, %511
-  %513 = icmp ult i64 %507, %512
-  br i1 %513, label %514, label %522
+  %508 = icmp ult i64 %507, 8
+  br i1 %508, label %518, label %509
 
-; <label>:514:                                    ; preds = %505, %501
-  %515 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %516 = load i32, i32* %15, align 4
-  %517 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %518 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %517, i32 0, i32 3
-  %519 = load i8, i8* %518, align 1
-  %520 = zext i8 %519 to i32
-  %521 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %515, i8* getelementptr inbounds ([68 x i8], [68 x i8]* @.str.11, i32 0, i32 0), i32 %516, i32 %520)
-  br label %1024
+; <label>:509:                                    ; preds = %505
+  %510 = load i32, i32* %15, align 4
+  %511 = zext i32 %510 to i64
+  %512 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %513 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %512, i32 0, i32 3
+  %514 = load i8, i8* %513, align 1
+  %515 = zext i8 %514 to i64
+  %516 = add i64 8, %515
+  %517 = icmp ult i64 %511, %516
+  br i1 %517, label %518, label %526
 
-; <label>:522:                                    ; preds = %505
-  %523 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %524 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %523, i32 0, i32 1
-  %525 = getelementptr inbounds %struct.beui16, %struct.beui16* %524, i32 0, i32 0
-  %526 = load i16, i16* %525, align 1
-  %527 = call zeroext i16 @f_beui16(i16 %526)
-  %528 = zext i16 %527 to i32
-  %529 = icmp ne i32 %528, 47109
-  br i1 %529, label %530, label %539
+; <label>:518:                                    ; preds = %509, %505
+  %519 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %520 = load i32, i32* %15, align 4
+  %521 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %522 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %521, i32 0, i32 3
+  %523 = load i8, i8* %522, align 1
+  %524 = zext i8 %523 to i32
+  %525 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %519, i8* getelementptr inbounds ([68 x i8], [68 x i8]* @.str.11, i32 0, i32 0), i32 %520, i32 %524)
+  br label %1028
 
-; <label>:530:                                    ; preds = %522
-  %531 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %532 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %533 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %532, i32 0, i32 1
-  %534 = getelementptr inbounds %struct.beui16, %struct.beui16* %533, i32 0, i32 0
-  %535 = load i16, i16* %534, align 1
-  %536 = call zeroext i16 @f_beui16(i16 %535)
-  %537 = zext i16 %536 to i32
-  %538 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %531, i8* getelementptr inbounds ([73 x i8], [73 x i8]* @.str.12, i32 0, i32 0), i32 %537, i32 47109)
-  br label %539
+; <label>:526:                                    ; preds = %509
+  %527 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %528 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %527, i32 0, i32 1
+  %529 = getelementptr inbounds %struct.beui16, %struct.beui16* %528, i32 0, i32 0
+  %530 = load i16, i16* %529, align 1
+  %531 = call zeroext i16 @f_beui16(i16 %530)
+  %532 = zext i16 %531 to i32
+  %533 = icmp ne i32 %532, 47109
+  br i1 %533, label %534, label %543
 
-; <label>:539:                                    ; preds = %530, %522
-  %540 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %541 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %540, i32 0, i32 1
-  %542 = getelementptr inbounds %struct.beui16, %struct.beui16* %541, i32 0, i32 0
-  store i16 0, i16* %542, align 1
-  %543 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %544 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %543, i32 0, i32 10
-  %545 = load i16, i16* %544, align 2
-  %546 = zext i16 %545 to i32
-  %547 = icmp slt i32 %546, 16
-  br i1 %547, label %548, label %549
+; <label>:534:                                    ; preds = %526
+  %535 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %536 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %537 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %536, i32 0, i32 1
+  %538 = getelementptr inbounds %struct.beui16, %struct.beui16* %537, i32 0, i32 0
+  %539 = load i16, i16* %538, align 1
+  %540 = call zeroext i16 @f_beui16(i16 %539)
+  %541 = zext i16 %540 to i32
+  %542 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %535, i8* getelementptr inbounds ([73 x i8], [73 x i8]* @.str.12, i32 0, i32 0), i32 %541, i32 47109)
+  br label %543
 
-; <label>:548:                                    ; preds = %539
-  br label %550
+; <label>:543:                                    ; preds = %534, %526
+  %544 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %545 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %544, i32 0, i32 1
+  %546 = getelementptr inbounds %struct.beui16, %struct.beui16* %545, i32 0, i32 0
+  store i16 0, i16* %546, align 1
+  %547 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %548 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %547, i32 0, i32 10
+  %549 = load i16, i16* %548, align 2
+  %550 = zext i16 %549 to i32
+  %551 = icmp slt i32 %550, 16
+  br i1 %551, label %552, label %553
 
-; <label>:549:                                    ; preds = %539
-  call void @__assert_fail(i8* getelementptr inbounds ([34 x i8], [34 x i8]* @.str.13, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 582, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:552:                                    ; preds = %543
+  br label %554
+
+; <label>:553:                                    ; preds = %543
+  call void @__assert_fail(i8* getelementptr inbounds ([34 x i8], [34 x i8]* @.str.13, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 585, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:550:                                    ; preds = %548
-  %551 = load %struct.flextcp_pl_mem*, %struct.flextcp_pl_mem** @fp_state, align 8
-  %552 = getelementptr inbounds %struct.flextcp_pl_mem, %struct.flextcp_pl_mem* %551, i32 0, i32 0
-  %553 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
-  %554 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %553, i32 0, i32 3
-  %555 = load i16, i16* %554, align 8
-  %556 = zext i16 %555 to i64
-  %557 = getelementptr inbounds [16 x [16 x %struct.flextcp_pl_appctx]], [16 x [16 x %struct.flextcp_pl_appctx]]* %552, i64 0, i64 %556
-  %558 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %559 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %558, i32 0, i32 10
-  %560 = load i16, i16* %559, align 2
-  %561 = zext i16 %560 to i64
-  %562 = getelementptr inbounds [16 x %struct.flextcp_pl_appctx], [16 x %struct.flextcp_pl_appctx]* %557, i64 0, i64 %561
-  %563 = getelementptr inbounds %struct.flextcp_pl_appctx, %struct.flextcp_pl_appctx* %562, i32 0, i32 4
-  %564 = load i32, i32* %563, align 1
-  store i32 %564, i32* %24, align 4
-  %565 = load i32, i32* %24, align 4
-  %566 = icmp ult i32 %565, 8
-  br i1 %566, label %567, label %568
+; <label>:554:                                    ; preds = %552
+  %555 = load %struct.flextcp_pl_mem*, %struct.flextcp_pl_mem** @fp_state, align 8
+  %556 = getelementptr inbounds %struct.flextcp_pl_mem, %struct.flextcp_pl_mem* %555, i32 0, i32 0
+  %557 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
+  %558 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %557, i32 0, i32 3
+  %559 = load i16, i16* %558, align 8
+  %560 = zext i16 %559 to i64
+  %561 = getelementptr inbounds [16 x [16 x %struct.flextcp_pl_appctx]], [16 x [16 x %struct.flextcp_pl_appctx]]* %556, i64 0, i64 %560
+  %562 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %563 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %562, i32 0, i32 10
+  %564 = load i16, i16* %563, align 2
+  %565 = zext i16 %564 to i64
+  %566 = getelementptr inbounds [16 x %struct.flextcp_pl_appctx], [16 x %struct.flextcp_pl_appctx]* %561, i64 0, i64 %565
+  %567 = getelementptr inbounds %struct.flextcp_pl_appctx, %struct.flextcp_pl_appctx* %566, i32 0, i32 4
+  %568 = load i32, i32* %567, align 1
+  store i32 %568, i32* %24, align 4
+  %569 = load i32, i32* %24, align 4
+  %570 = icmp ult i32 %569, 8
+  br i1 %570, label %571, label %572
 
-; <label>:567:                                    ; preds = %550
-  br label %569
+; <label>:571:                                    ; preds = %554
+  br label %573
 
-; <label>:568:                                    ; preds = %550
-  call void @__assert_fail(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.14, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 584, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:572:                                    ; preds = %554
+  call void @__assert_fail(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.14, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 587, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:569:                                    ; preds = %567
-  %570 = load %struct.flextcp_pl_mem*, %struct.flextcp_pl_mem** @fp_state, align 8
-  %571 = getelementptr inbounds %struct.flextcp_pl_mem, %struct.flextcp_pl_mem* %570, i32 0, i32 4
-  %572 = load i32, i32* %24, align 4
-  %573 = zext i32 %572 to i64
-  %574 = getelementptr inbounds [8 x %struct.flextcp_pl_appst], [8 x %struct.flextcp_pl_appst]* %571, i64 0, i64 %573
-  store %struct.flextcp_pl_appst* %574, %struct.flextcp_pl_appst** %14, align 8
-  %575 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %576 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %575, i32 0, i32 0
-  %577 = load i16, i16* %576, align 1
-  %578 = zext i16 %577 to i32
-  %579 = icmp sgt i32 %578, 0
-  br i1 %579, label %580, label %581
+; <label>:573:                                    ; preds = %571
+  %574 = load %struct.flextcp_pl_mem*, %struct.flextcp_pl_mem** @fp_state, align 8
+  %575 = getelementptr inbounds %struct.flextcp_pl_mem, %struct.flextcp_pl_mem* %574, i32 0, i32 4
+  %576 = load i32, i32* %24, align 4
+  %577 = zext i32 %576 to i64
+  %578 = getelementptr inbounds [8 x %struct.flextcp_pl_appst], [8 x %struct.flextcp_pl_appst]* %575, i64 0, i64 %577
+  store %struct.flextcp_pl_appst* %578, %struct.flextcp_pl_appst** %14, align 8
+  %579 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %580 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %579, i32 0, i32 0
+  %581 = load i16, i16* %580, align 1
+  %582 = zext i16 %581 to i32
+  %583 = icmp sgt i32 %582, 0
+  br i1 %583, label %584, label %585
 
-; <label>:580:                                    ; preds = %569
-  br label %582
+; <label>:584:                                    ; preds = %573
+  br label %586
 
-; <label>:581:                                    ; preds = %569
-  call void @__assert_fail(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.15, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 586, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:585:                                    ; preds = %573
+  call void @__assert_fail(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.15, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 589, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:582:                                    ; preds = %580
-  %583 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %584 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %583, i32 0, i32 0
-  %585 = load i16, i16* %584, align 1
-  %586 = zext i16 %585 to i32
-  %587 = icmp sle i32 %586, 31
-  br i1 %587, label %588, label %589
+; <label>:586:                                    ; preds = %584
+  %587 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %588 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %587, i32 0, i32 0
+  %589 = load i16, i16* %588, align 1
+  %590 = zext i16 %589 to i32
+  %591 = icmp sle i32 %590, 31
+  br i1 %591, label %592, label %593
 
-; <label>:588:                                    ; preds = %582
-  br label %590
+; <label>:592:                                    ; preds = %586
+  br label %594
 
-; <label>:589:                                    ; preds = %582
-  call void @__assert_fail(i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.16, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 587, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:593:                                    ; preds = %586
+  call void @__assert_fail(i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.16, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 590, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:590:                                    ; preds = %588
-  %591 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %592 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %591, i32 0, i32 1
-  %593 = load i64, i64* %592, align 8
-  %594 = and i64 %593, 4
-  %595 = icmp eq i64 %594, 0
-  br i1 %595, label %596, label %611
+; <label>:594:                                    ; preds = %592
+  %595 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %596 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %595, i32 0, i32 1
+  %597 = load i64, i64* %596, align 8
+  %598 = and i64 %597, 4
+  %599 = icmp eq i64 %598, 0
+  br i1 %599, label %600, label %615
 
-; <label>:596:                                    ; preds = %590
-  %597 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %598 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %597, i32 0, i32 4
-  %599 = getelementptr inbounds [0 x i8], [0 x i8]* %598, i32 0, i32 0
-  %600 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %601 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %600, i32 0, i32 3
-  %602 = load i8, i8* %601, align 1
-  %603 = zext i8 %602 to i32
-  %604 = call i32 @rte_hash_crc(i8* %599, i32 %603, i32 0)
-  store i32 %604, i32* %24, align 4
-  %605 = load i32, i32* %24, align 4
-  %606 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %607 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %606, i32 0, i32 0
-  %608 = load i16, i16* %607, align 1
-  %609 = zext i16 %608 to i32
-  %610 = urem i32 %605, %609
-  store i32 %610, i32* %24, align 4
-  br label %650
+; <label>:600:                                    ; preds = %594
+  %601 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %602 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %601, i32 0, i32 4
+  %603 = getelementptr inbounds [0 x i8], [0 x i8]* %602, i32 0, i32 0
+  %604 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %605 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %604, i32 0, i32 3
+  %606 = load i8, i8* %605, align 1
+  %607 = zext i8 %606 to i32
+  %608 = call i32 @rte_hash_crc(i8* %603, i32 %607, i32 0)
+  store i32 %608, i32* %24, align 4
+  %609 = load i32, i32* %24, align 4
+  %610 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %611 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %610, i32 0, i32 0
+  %612 = load i16, i16* %611, align 1
+  %613 = zext i16 %612 to i32
+  %614 = urem i32 %609, %613
+  store i32 %614, i32* %24, align 4
+  br label %654
 
-; <label>:611:                                    ; preds = %590
+; <label>:615:                                    ; preds = %594
   store i64 0, i64* %35, align 8
-  %612 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %613 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %612, i32 0, i32 3
-  %614 = load i8, i8* %613, align 1
-  %615 = zext i8 %614 to i32
-  %616 = icmp sgt i32 %615, 8
-  br i1 %616, label %617, label %624
+  %616 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %617 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %616, i32 0, i32 3
+  %618 = load i8, i8* %617, align 1
+  %619 = zext i8 %618 to i32
+  %620 = icmp sgt i32 %619, 8
+  br i1 %620, label %621, label %628
 
-; <label>:617:                                    ; preds = %611
-  %618 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %619 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %620 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %619, i32 0, i32 3
-  %621 = load i8, i8* %620, align 1
-  %622 = zext i8 %621 to i32
-  %623 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %618, i8* getelementptr inbounds ([78 x i8], [78 x i8]* @.str.17, i32 0, i32 0), i32 %622)
-  br label %1024
+; <label>:621:                                    ; preds = %615
+  %622 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %623 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %624 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %623, i32 0, i32 3
+  %625 = load i8, i8* %624, align 1
+  %626 = zext i8 %625 to i32
+  %627 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %622, i8* getelementptr inbounds ([78 x i8], [78 x i8]* @.str.17, i32 0, i32 0), i32 %626)
+  br label %1028
 
-; <label>:624:                                    ; preds = %611
-  %625 = bitcast i64* %35 to i8*
-  %626 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %627 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %626, i32 0, i32 4
-  %628 = getelementptr inbounds [0 x i8], [0 x i8]* %627, i32 0, i32 0
-  %629 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %630 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %629, i32 0, i32 3
-  %631 = load i8, i8* %630, align 1
-  %632 = zext i8 %631 to i64
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 8 %625, i8* align 1 %628, i64 %632, i1 false)
-  %633 = load i64, i64* %35, align 8
-  %634 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %635 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %634, i32 0, i32 0
-  %636 = load i16, i16* %635, align 1
-  %637 = zext i16 %636 to i64
-  %638 = icmp uge i64 %633, %637
-  br i1 %638, label %639, label %647
+; <label>:628:                                    ; preds = %615
+  %629 = bitcast i64* %35 to i8*
+  %630 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %631 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %630, i32 0, i32 4
+  %632 = getelementptr inbounds [0 x i8], [0 x i8]* %631, i32 0, i32 0
+  %633 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %634 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %633, i32 0, i32 3
+  %635 = load i8, i8* %634, align 1
+  %636 = zext i8 %635 to i64
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 8 %629, i8* align 1 %632, i64 %636, i1 false)
+  %637 = load i64, i64* %35, align 8
+  %638 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %639 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %638, i32 0, i32 0
+  %640 = load i16, i16* %639, align 1
+  %641 = zext i16 %640 to i64
+  %642 = icmp uge i64 %637, %641
+  br i1 %642, label %643, label %651
 
-; <label>:639:                                    ; preds = %624
-  %640 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %641 = load i64, i64* %35, align 8
-  %642 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %643 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %642, i32 0, i32 0
-  %644 = load i16, i16* %643, align 1
-  %645 = zext i16 %644 to i32
-  %646 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %640, i8* getelementptr inbounds ([87 x i8], [87 x i8]* @.str.18, i32 0, i32 0), i64 %641, i32 %645)
-  br label %1024
+; <label>:643:                                    ; preds = %628
+  %644 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %645 = load i64, i64* %35, align 8
+  %646 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %647 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %646, i32 0, i32 0
+  %648 = load i16, i16* %647, align 1
+  %649 = zext i16 %648 to i32
+  %650 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %644, i8* getelementptr inbounds ([87 x i8], [87 x i8]* @.str.18, i32 0, i32 0), i64 %645, i32 %649)
+  br label %1028
 
-; <label>:647:                                    ; preds = %624
-  %648 = load i64, i64* %35, align 8
-  %649 = trunc i64 %648 to i32
-  store i32 %649, i32* %24, align 4
-  br label %650
+; <label>:651:                                    ; preds = %628
+  %652 = load i64, i64* %35, align 8
+  %653 = trunc i64 %652 to i32
+  store i32 %653, i32* %24, align 4
+  br label %654
 
-; <label>:650:                                    ; preds = %647, %596
-  %651 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
-  %652 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %651, i32 0, i32 1
-  %653 = load i32, i32* %24, align 4
-  %654 = zext i32 %653 to i64
-  %655 = getelementptr inbounds [31 x i16], [31 x i16]* %652, i64 0, i64 %654
-  %656 = load i16, i16* %655, align 1
-  %657 = zext i16 %656 to i32
-  store i32 %657, i32* %24, align 4
-  %658 = load i32, i32* %24, align 4
-  %659 = icmp ult i32 %658, 16
-  br i1 %659, label %660, label %661
+; <label>:654:                                    ; preds = %651, %600
+  %655 = load %struct.flextcp_pl_appst*, %struct.flextcp_pl_appst** %14, align 8
+  %656 = getelementptr inbounds %struct.flextcp_pl_appst, %struct.flextcp_pl_appst* %655, i32 0, i32 1
+  %657 = load i32, i32* %24, align 4
+  %658 = zext i32 %657 to i64
+  %659 = getelementptr inbounds [31 x i16], [31 x i16]* %656, i64 0, i64 %658
+  %660 = load i16, i16* %659, align 1
+  %661 = zext i16 %660 to i32
+  store i32 %661, i32* %24, align 4
+  %662 = load i32, i32* %24, align 4
+  %663 = icmp ult i32 %662, 16
+  br i1 %663, label %664, label %665
 
-; <label>:660:                                    ; preds = %650
-  br label %662
+; <label>:664:                                    ; preds = %654
+  br label %666
 
-; <label>:661:                                    ; preds = %650
-  call void @__assert_fail(i8* getelementptr inbounds ([26 x i8], [26 x i8]* @.str.19, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 611, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:665:                                    ; preds = %654
+  call void @__assert_fail(i8* getelementptr inbounds ([26 x i8], [26 x i8]* @.str.19, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 614, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:662:                                    ; preds = %660
-  %663 = load i32, i32* %24, align 4
-  %664 = trunc i32 %663 to i16
-  %665 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %666 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %665, i32 0, i32 10
-  store i16 %664, i16* %666, align 2
-  %667 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %668 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %667, i32 0, i32 3
-  %669 = load i8, i8* %668, align 1
-  %670 = zext i8 %669 to i64
-  %671 = add i64 8, %670
-  %672 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %673 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %672, i32 0, i32 0
-  %674 = getelementptr inbounds %struct.beui32, %struct.beui32* %673, i32 0, i32 0
-  %675 = load i32, i32* %674, align 1
-  %676 = call i32 @f_beui32(i32 %675)
-  %677 = zext i32 %676 to i64
-  %678 = add i64 %671, %677
-  %679 = trunc i64 %678 to i32
-  %680 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %681 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %680, i32 0, i32 33
-  store i32 %679, i32* %681, align 4
-  br label %682
-
-; <label>:682:                                    ; preds = %662, %498, %493
-  %683 = load i32, i32* %15, align 4
+; <label>:666:                                    ; preds = %664
+  %667 = load i32, i32* %24, align 4
+  %668 = trunc i32 %667 to i16
+  %669 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %670 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %669, i32 0, i32 10
+  store i16 %668, i16* %670, align 2
+  %671 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %672 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %671, i32 0, i32 3
+  %673 = load i8, i8* %672, align 1
+  %674 = zext i8 %673 to i64
+  %675 = add i64 8, %674
+  %676 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %677 = getelementptr inbounds %struct.obj_hdr, %struct.obj_hdr* %676, i32 0, i32 0
+  %678 = getelementptr inbounds %struct.beui32, %struct.beui32* %677, i32 0, i32 0
+  %679 = load i32, i32* %678, align 1
+  %680 = call i32 @f_beui32(i32 %679)
+  %681 = zext i32 %680 to i64
+  %682 = add i64 %675, %681
+  %683 = trunc i64 %682 to i32
   %684 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %685 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %684, i32 0, i32 33
-  %686 = load i32, i32* %685, align 4
-  %687 = icmp ugt i32 %683, %686
-  br i1 %687, label %688, label %695
+  store i32 %683, i32* %685, align 4
+  br label %686
 
-; <label>:688:                                    ; preds = %682
-  %689 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %690 = load i32, i32* %15, align 4
-  %691 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %692 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %691, i32 0, i32 33
-  %693 = load i32, i32* %692, align 4
-  %694 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %689, i8* getelementptr inbounds ([77 x i8], [77 x i8]* @.str.20, i32 0, i32 0), i32 %690, i32 %693)
-  br label %1024
+; <label>:686:                                    ; preds = %666, %502, %497
+  %687 = load i32, i32* %15, align 4
+  %688 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %689 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %688, i32 0, i32 33
+  %690 = load i32, i32* %689, align 4
+  %691 = icmp ugt i32 %687, %690
+  br i1 %691, label %692, label %699
 
-; <label>:695:                                    ; preds = %682
-  %696 = load i32, i32* %15, align 4
-  %697 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %698 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %697, i32 0, i32 33
-  %699 = load i32, i32* %698, align 4
-  %700 = sub i32 %699, %696
-  store i32 %700, i32* %698, align 4
-  br label %701
+; <label>:692:                                    ; preds = %686
+  %693 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %694 = load i32, i32* %15, align 4
+  %695 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %696 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %695, i32 0, i32 33
+  %697 = load i32, i32* %696, align 4
+  %698 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %693, i8* getelementptr inbounds ([77 x i8], [77 x i8]* @.str.20, i32 0, i32 0), i32 %694, i32 %697)
+  br label %1028
 
-; <label>:701:                                    ; preds = %695, %487
-  %702 = load i32, i32* %15, align 4
-  %703 = icmp ugt i32 %702, 0
-  br i1 %703, label %704, label %862
+; <label>:699:                                    ; preds = %686
+  %700 = load i32, i32* %15, align 4
+  %701 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %702 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %701, i32 0, i32 33
+  %703 = load i32, i32* %702, align 4
+  %704 = sub i32 %703, %700
+  store i32 %704, i32* %702, align 4
+  br label %705
 
-; <label>:704:                                    ; preds = %701
-  %705 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %706 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %707 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %706, i32 0, i32 15
-  %708 = load i32, i32* %707, align 64
-  %709 = load i32, i32* %15, align 4
-  %710 = trunc i32 %709 to i16
-  %711 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
-  %712 = bitcast %struct.obj_hdr* %711 to i8*
-  call void @flow_rx_write(%struct.flextcp_pl_flowst* %705, i32 %708, i16 zeroext %710, i8* %712)
+; <label>:705:                                    ; preds = %699, %491
+  %706 = load i32, i32* %15, align 4
+  %707 = icmp ugt i32 %706, 0
+  br i1 %707, label %708, label %866
+
+; <label>:708:                                    ; preds = %705
+  %709 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %710 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %711 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %710, i32 0, i32 15
+  %712 = load i32, i32* %711, align 64
   %713 = load i32, i32* %15, align 4
-  store i32 %713, i32* %22, align 4
-  %714 = load i32, i32* %15, align 4
-  %715 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %716 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %715, i32 0, i32 14
-  %717 = load i32, i32* %716, align 4
-  %718 = sub i32 %717, %714
-  store i32 %718, i32* %716, align 4
-  %719 = load i32, i32* %15, align 4
-  %720 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %721 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %720, i32 0, i32 15
-  %722 = load i32, i32* %721, align 64
-  %723 = add i32 %722, %719
-  store i32 %723, i32* %721, align 64
+  %714 = trunc i32 %713 to i16
+  %715 = load %struct.obj_hdr*, %struct.obj_hdr** %32, align 8
+  %716 = bitcast %struct.obj_hdr* %715 to i8*
+  call void @flow_rx_write(%struct.flextcp_pl_flowst* %709, i32 %712, i16 zeroext %714, i8* %716)
+  %717 = load i32, i32* %15, align 4
+  store i32 %717, i32* %22, align 4
+  %718 = load i32, i32* %15, align 4
+  %719 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %720 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %719, i32 0, i32 14
+  %721 = load i32, i32* %720, align 4
+  %722 = sub i32 %721, %718
+  store i32 %722, i32* %720, align 4
+  %723 = load i32, i32* %15, align 4
   %724 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %725 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %724, i32 0, i32 15
   %726 = load i32, i32* %725, align 64
-  %727 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %728 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %727, i32 0, i32 3
-  %729 = load i32, i32* %728, align 8
-  %730 = icmp uge i32 %726, %729
-  br i1 %730, label %731, label %739
+  %727 = add i32 %726, %723
+  store i32 %727, i32* %725, align 64
+  %728 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %729 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %728, i32 0, i32 15
+  %730 = load i32, i32* %729, align 64
+  %731 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %732 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %731, i32 0, i32 3
+  %733 = load i32, i32* %732, align 8
+  %734 = icmp uge i32 %730, %733
+  br i1 %734, label %735, label %743
 
-; <label>:731:                                    ; preds = %704
-  %732 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %733 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %732, i32 0, i32 3
-  %734 = load i32, i32* %733, align 8
-  %735 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %736 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %735, i32 0, i32 15
-  %737 = load i32, i32* %736, align 64
-  %738 = sub i32 %737, %734
-  store i32 %738, i32* %736, align 64
-  br label %739
+; <label>:735:                                    ; preds = %708
+  %736 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %737 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %736, i32 0, i32 3
+  %738 = load i32, i32* %737, align 8
+  %739 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %740 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %739, i32 0, i32 15
+  %741 = load i32, i32* %740, align 64
+  %742 = sub i32 %741, %738
+  store i32 %742, i32* %740, align 64
+  br label %743
 
-; <label>:739:                                    ; preds = %731, %704
-  %740 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %741 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %740, i32 0, i32 15
-  %742 = load i32, i32* %741, align 64
-  %743 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %744 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %743, i32 0, i32 3
-  %745 = load i32, i32* %744, align 8
-  %746 = icmp ult i32 %742, %745
-  br i1 %746, label %747, label %748
+; <label>:743:                                    ; preds = %735, %708
+  %744 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %745 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %744, i32 0, i32 15
+  %746 = load i32, i32* %745, align 64
+  %747 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %748 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %747, i32 0, i32 3
+  %749 = load i32, i32* %748, align 8
+  %750 = icmp ult i32 %746, %749
+  br i1 %750, label %751, label %752
 
-; <label>:747:                                    ; preds = %739
-  br label %749
+; <label>:751:                                    ; preds = %743
+  br label %753
 
-; <label>:748:                                    ; preds = %739
-  call void @__assert_fail(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 637, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:752:                                    ; preds = %743
+  call void @__assert_fail(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 640, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:749:                                    ; preds = %747
-  %750 = load i32, i32* %15, align 4
-  %751 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %752 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %751, i32 0, i32 16
-  %753 = load i32, i32* %752, align 4
-  %754 = add i32 %753, %750
-  store i32 %754, i32* %752, align 4
-  store i32 1, i32* %33, align 4
+; <label>:753:                                    ; preds = %751
+  %754 = load i32, i32* %15, align 4
   %755 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %756 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %755, i32 0, i32 20
+  %756 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %755, i32 0, i32 16
   %757 = load i32, i32* %756, align 4
-  %758 = icmp ne i32 %757, 0
-  %759 = zext i1 %758 to i32
-  %760 = sext i32 %759 to i64
-  %761 = icmp ne i64 %760, 0
-  br i1 %761, label %762, label %861
+  %758 = add i32 %757, %754
+  store i32 %758, i32* %756, align 4
+  store i32 1, i32* %33, align 4
+  %759 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %760 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %759, i32 0, i32 20
+  %761 = load i32, i32* %760, align 4
+  %762 = icmp ne i32 %761, 0
+  %763 = zext i1 %762 to i32
+  %764 = sext i32 %763 to i64
+  %765 = icmp ne i64 %764, 0
+  br i1 %765, label %766, label %865
 
-; <label>:762:                                    ; preds = %749
-  %763 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %764 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %765 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %764, i32 0, i32 19
-  %766 = load i32, i32* %765, align 16
+; <label>:766:                                    ; preds = %753
   %767 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %768 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %767, i32 0, i32 20
-  %769 = load i32, i32* %768, align 4
-  %770 = trunc i32 %769 to i16
-  %771 = call i32 @tcp_trim_rxbuf(%struct.flextcp_pl_flowst* %763, i32 %766, i16 zeroext %770, i16* %29, i16* %30)
-  %772 = icmp ne i32 %771, 0
-  br i1 %772, label %773, label %776
+  %768 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %769 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %768, i32 0, i32 19
+  %770 = load i32, i32* %769, align 16
+  %771 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %772 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %771, i32 0, i32 20
+  %773 = load i32, i32* %772, align 4
+  %774 = trunc i32 %773 to i16
+  %775 = call i32 @tcp_trim_rxbuf(%struct.flextcp_pl_flowst* %767, i32 %770, i16 zeroext %774, i16* %29, i16* %30)
+  %776 = icmp ne i32 %775, 0
+  br i1 %776, label %777, label %780
 
-; <label>:773:                                    ; preds = %762
-  %774 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %775 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %774, i32 0, i32 20
-  store i32 0, i32* %775, align 4
-  br label %860
+; <label>:777:                                    ; preds = %766
+  %778 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %779 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %778, i32 0, i32 20
+  store i32 0, i32* %779, align 4
+  br label %864
 
-; <label>:776:                                    ; preds = %762
-  %777 = load i16, i16* %29, align 2
-  %778 = zext i16 %777 to i32
-  %779 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %780 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %779, i32 0, i32 19
-  %781 = load i32, i32* %780, align 16
-  %782 = add i32 %781, %778
-  store i32 %782, i32* %780, align 16
-  %783 = load i16, i16* %29, align 2
-  %784 = zext i16 %783 to i32
-  %785 = load i16, i16* %30, align 2
-  %786 = zext i16 %785 to i32
-  %787 = add nsw i32 %784, %786
-  %788 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %789 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %788, i32 0, i32 20
-  %790 = load i32, i32* %789, align 4
-  %791 = sub i32 %790, %787
-  store i32 %791, i32* %789, align 4
+; <label>:780:                                    ; preds = %766
+  %781 = load i16, i16* %29, align 2
+  %782 = zext i16 %781 to i32
+  %783 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %784 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %783, i32 0, i32 19
+  %785 = load i32, i32* %784, align 16
+  %786 = add i32 %785, %782
+  store i32 %786, i32* %784, align 16
+  %787 = load i16, i16* %29, align 2
+  %788 = zext i16 %787 to i32
+  %789 = load i16, i16* %30, align 2
+  %790 = zext i16 %789 to i32
+  %791 = add nsw i32 %788, %790
   %792 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %793 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %792, i32 0, i32 20
   %794 = load i32, i32* %793, align 4
-  %795 = icmp ugt i32 %794, 0
-  br i1 %795, label %796, label %859
+  %795 = sub i32 %794, %791
+  store i32 %795, i32* %793, align 4
+  %796 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %797 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %796, i32 0, i32 20
+  %798 = load i32, i32* %797, align 4
+  %799 = icmp ugt i32 %798, 0
+  br i1 %799, label %800, label %863
 
-; <label>:796:                                    ; preds = %776
-  %797 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %798 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %797, i32 0, i32 19
-  %799 = load i32, i32* %798, align 16
-  %800 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %801 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %800, i32 0, i32 16
-  %802 = load i32, i32* %801, align 4
-  %803 = icmp eq i32 %799, %802
-  br i1 %803, label %804, label %859
+; <label>:800:                                    ; preds = %780
+  %801 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %802 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %801, i32 0, i32 19
+  %803 = load i32, i32* %802, align 16
+  %804 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %805 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %804, i32 0, i32 16
+  %806 = load i32, i32* %805, align 4
+  %807 = icmp eq i32 %803, %806
+  br i1 %807, label %808, label %863
 
-; <label>:804:                                    ; preds = %796
-  %805 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %806 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %805, i32 0, i32 20
-  %807 = load i32, i32* %806, align 4
-  %808 = load i32, i32* %22, align 4
-  %809 = add i32 %808, %807
-  store i32 %809, i32* %22, align 4
-  %810 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %811 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %810, i32 0, i32 20
-  %812 = load i32, i32* %811, align 4
-  %813 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %814 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %813, i32 0, i32 14
-  %815 = load i32, i32* %814, align 4
-  %816 = sub i32 %815, %812
-  store i32 %816, i32* %814, align 4
+; <label>:808:                                    ; preds = %800
+  %809 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %810 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %809, i32 0, i32 20
+  %811 = load i32, i32* %810, align 4
+  %812 = load i32, i32* %22, align 4
+  %813 = add i32 %812, %811
+  store i32 %813, i32* %22, align 4
+  %814 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %815 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %814, i32 0, i32 20
+  %816 = load i32, i32* %815, align 4
   %817 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %818 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %817, i32 0, i32 20
+  %818 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %817, i32 0, i32 14
   %819 = load i32, i32* %818, align 4
-  %820 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %821 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %820, i32 0, i32 15
-  %822 = load i32, i32* %821, align 64
-  %823 = add i32 %822, %819
-  store i32 %823, i32* %821, align 64
+  %820 = sub i32 %819, %816
+  store i32 %820, i32* %818, align 4
+  %821 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %822 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %821, i32 0, i32 20
+  %823 = load i32, i32* %822, align 4
   %824 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
   %825 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %824, i32 0, i32 15
   %826 = load i32, i32* %825, align 64
-  %827 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %828 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %827, i32 0, i32 3
-  %829 = load i32, i32* %828, align 8
-  %830 = icmp uge i32 %826, %829
-  br i1 %830, label %831, label %839
+  %827 = add i32 %826, %823
+  store i32 %827, i32* %825, align 64
+  %828 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %829 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %828, i32 0, i32 15
+  %830 = load i32, i32* %829, align 64
+  %831 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %832 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %831, i32 0, i32 3
+  %833 = load i32, i32* %832, align 8
+  %834 = icmp uge i32 %830, %833
+  br i1 %834, label %835, label %843
 
-; <label>:831:                                    ; preds = %804
-  %832 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %833 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %832, i32 0, i32 3
-  %834 = load i32, i32* %833, align 8
-  %835 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %836 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %835, i32 0, i32 15
-  %837 = load i32, i32* %836, align 64
-  %838 = sub i32 %837, %834
-  store i32 %838, i32* %836, align 64
-  br label %839
+; <label>:835:                                    ; preds = %808
+  %836 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %837 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %836, i32 0, i32 3
+  %838 = load i32, i32* %837, align 8
+  %839 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %840 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %839, i32 0, i32 15
+  %841 = load i32, i32* %840, align 64
+  %842 = sub i32 %841, %838
+  store i32 %842, i32* %840, align 64
+  br label %843
 
-; <label>:839:                                    ; preds = %831, %804
-  %840 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %841 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %840, i32 0, i32 15
-  %842 = load i32, i32* %841, align 64
-  %843 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %844 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %843, i32 0, i32 3
-  %845 = load i32, i32* %844, align 8
-  %846 = icmp ult i32 %842, %845
-  br i1 %846, label %847, label %848
+; <label>:843:                                    ; preds = %835, %808
+  %844 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %845 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %844, i32 0, i32 15
+  %846 = load i32, i32* %845, align 64
+  %847 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %848 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %847, i32 0, i32 3
+  %849 = load i32, i32* %848, align 8
+  %850 = icmp ult i32 %846, %849
+  br i1 %850, label %851, label %852
 
-; <label>:847:                                    ; preds = %839
-  br label %849
+; <label>:851:                                    ; preds = %843
+  br label %853
 
-; <label>:848:                                    ; preds = %839
-  call void @__assert_fail(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 672, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
+; <label>:852:                                    ; preds = %843
+  call void @__assert_fail(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 675, i8* getelementptr inbounds ([117 x i8], [117 x i8]* @__PRETTY_FUNCTION__.fast_flows_packet, i32 0, i32 0)) #8
   unreachable
 
-; <label>:849:                                    ; preds = %847
-  %850 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %851 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %850, i32 0, i32 20
-  %852 = load i32, i32* %851, align 4
-  %853 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %854 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %853, i32 0, i32 16
-  %855 = load i32, i32* %854, align 4
-  %856 = add i32 %855, %852
-  store i32 %856, i32* %854, align 4
+; <label>:853:                                    ; preds = %851
+  %854 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %855 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %854, i32 0, i32 20
+  %856 = load i32, i32* %855, align 4
   %857 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %858 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %857, i32 0, i32 20
-  store i32 0, i32* %858, align 4
-  br label %859
+  %858 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %857, i32 0, i32 16
+  %859 = load i32, i32* %858, align 4
+  %860 = add i32 %859, %856
+  store i32 %860, i32* %858, align 4
+  %861 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %862 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %861, i32 0, i32 20
+  store i32 0, i32* %862, align 4
+  br label %863
 
-; <label>:859:                                    ; preds = %849, %796, %776
-  br label %860
+; <label>:863:                                    ; preds = %853, %800, %780
+  br label %864
 
-; <label>:860:                                    ; preds = %859, %773
-  br label %861
+; <label>:864:                                    ; preds = %863, %777
+  br label %865
 
-; <label>:861:                                    ; preds = %860, %749
-  br label %862
+; <label>:865:                                    ; preds = %864, %753
+  br label %866
 
-; <label>:862:                                    ; preds = %861, %701
-  %863 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %864 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %863, i32 0, i32 2
-  %865 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %864, i32 0, i32 4
-  %866 = load i16, i16* %865, align 1
-  %867 = call zeroext i16 @ntohs(i16 zeroext %866) #9
-  %868 = zext i16 %867 to i32
-  %869 = and i32 %868, 511
-  %870 = and i32 %869, 1
-  %871 = icmp eq i32 %870, 1
-  br i1 %871, label %872, label %909
+; <label>:866:                                    ; preds = %865, %705
+  %867 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %868 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %867, i32 0, i32 2
+  %869 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %868, i32 0, i32 4
+  %870 = load i16, i16* %869, align 1
+  %871 = call zeroext i16 @ntohs(i16 zeroext %870) #9
+  %872 = zext i16 %871 to i32
+  %873 = and i32 %872, 511
+  %874 = and i32 %873, 1
+  %875 = icmp eq i32 %874, 1
+  br i1 %875, label %876, label %913
 
-; <label>:872:                                    ; preds = %862
-  %873 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %874 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %873, i32 0, i32 1
-  %875 = load i64, i64* %874, align 8
-  %876 = and i64 %875, 32
-  %877 = icmp ne i64 %876, 0
-  br i1 %877, label %909, label %878
+; <label>:876:                                    ; preds = %866
+  %877 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %878 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %877, i32 0, i32 1
+  %879 = load i64, i64* %878, align 8
+  %880 = and i64 %879, 32
+  %881 = icmp ne i64 %880, 0
+  br i1 %881, label %913, label %882
 
-; <label>:878:                                    ; preds = %872
-  %879 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %880 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %879, i32 0, i32 16
-  %881 = load i32, i32* %880, align 4
-  %882 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
-  %883 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %882, i32 0, i32 2
-  %884 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %883, i32 0, i32 2
-  %885 = getelementptr inbounds %struct.beui32, %struct.beui32* %884, i32 0, i32 0
-  %886 = load i32, i32* %885, align 1
-  %887 = call i32 @f_beui32(i32 %886)
-  %888 = load i32, i32* %21, align 4
-  %889 = add i32 %887, %888
-  %890 = icmp eq i32 %881, %889
-  br i1 %890, label %891, label %905
+; <label>:882:                                    ; preds = %876
+  %883 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %884 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %883, i32 0, i32 16
+  %885 = load i32, i32* %884, align 4
+  %886 = load %struct.pkt_tcp*, %struct.pkt_tcp** %12, align 8
+  %887 = getelementptr inbounds %struct.pkt_tcp, %struct.pkt_tcp* %886, i32 0, i32 2
+  %888 = getelementptr inbounds %struct.tcp_hdr, %struct.tcp_hdr* %887, i32 0, i32 2
+  %889 = getelementptr inbounds %struct.beui32, %struct.beui32* %888, i32 0, i32 0
+  %890 = load i32, i32* %889, align 1
+  %891 = call i32 @f_beui32(i32 %890)
+  %892 = load i32, i32* %21, align 4
+  %893 = add i32 %891, %892
+  %894 = icmp eq i32 %885, %893
+  br i1 %894, label %895, label %909
 
-; <label>:891:                                    ; preds = %878
-  %892 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %893 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %892, i32 0, i32 20
-  %894 = load i32, i32* %893, align 4
-  %895 = icmp ne i32 %894, 0
-  br i1 %895, label %905, label %896
+; <label>:895:                                    ; preds = %882
+  %896 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %897 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %896, i32 0, i32 20
+  %898 = load i32, i32* %897, align 4
+  %899 = icmp ne i32 %898, 0
+  br i1 %899, label %909, label %900
 
-; <label>:896:                                    ; preds = %891
+; <label>:900:                                    ; preds = %895
   store i32 1, i32* %34, align 4
-  %897 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %898 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %897, i32 0, i32 1
-  %899 = load i64, i64* %898, align 8
-  %900 = or i64 %899, 32
-  store i64 %900, i64* %898, align 8
   %901 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %902 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %901, i32 0, i32 16
-  %903 = load i32, i32* %902, align 4
-  %904 = add i32 %903, 1
-  store i32 %904, i32* %902, align 4
+  %902 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %901, i32 0, i32 1
+  %903 = load i64, i64* %902, align 8
+  %904 = or i64 %903, 32
+  store i64 %904, i64* %902, align 8
+  %905 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %906 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %905, i32 0, i32 16
+  %907 = load i32, i32* %906, align 4
+  %908 = add i32 %907, 1
+  store i32 %908, i32* %906, align 4
   store i32 1, i32* %33, align 4
-  br label %908
+  br label %912
 
-; <label>:905:                                    ; preds = %891, %878
-  %906 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %907 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %906, i8* getelementptr inbounds ([53 x i8], [53 x i8]* @.str.22, i32 0, i32 0))
-  br label %908
+; <label>:909:                                    ; preds = %895, %882
+  %910 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %911 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %910, i8* getelementptr inbounds ([53 x i8], [53 x i8]* @.str.22, i32 0, i32 0))
+  br label %912
 
-; <label>:908:                                    ; preds = %905, %896
-  br label %909
+; <label>:912:                                    ; preds = %909, %900
+  br label %913
 
-; <label>:909:                                    ; preds = %908, %872, %862
-  br label %910
+; <label>:913:                                    ; preds = %912, %876, %866
+  br label %914
 
-; <label>:910:                                    ; preds = %909, %484, %393, %326, %292, %278
-  %911 = load i32, i32* %22, align 4
-  %912 = icmp ne i32 %911, 0
-  br i1 %912, label %919, label %913
+; <label>:914:                                    ; preds = %913, %488, %397, %330, %296, %282
+  %915 = load i32, i32* %22, align 4
+  %916 = icmp ne i32 %915, 0
+  br i1 %916, label %923, label %917
 
-; <label>:913:                                    ; preds = %910
-  %914 = load i32, i32* %23, align 4
-  %915 = icmp ne i32 %914, 0
-  br i1 %915, label %919, label %916
+; <label>:917:                                    ; preds = %914
+  %918 = load i32, i32* %23, align 4
+  %919 = icmp ne i32 %918, 0
+  br i1 %919, label %923, label %920
 
-; <label>:916:                                    ; preds = %913
-  %917 = load i32, i32* %34, align 4
-  %918 = icmp ne i32 %917, 0
-  br label %919
+; <label>:920:                                    ; preds = %917
+  %921 = load i32, i32* %34, align 4
+  %922 = icmp ne i32 %921, 0
+  br label %923
 
-; <label>:919:                                    ; preds = %916, %913, %910
-  %920 = phi i1 [ true, %913 ], [ true, %910 ], [ %918, %916 ]
-  %921 = zext i1 %920 to i32
-  %922 = sext i32 %921 to i64
-  %923 = icmp ne i64 %922, 0
-  br i1 %923, label %924, label %952
+; <label>:923:                                    ; preds = %920, %917, %914
+  %924 = phi i1 [ true, %917 ], [ true, %914 ], [ %922, %920 ]
+  %925 = zext i1 %924 to i32
+  %926 = sext i32 %925 to i64
+  %927 = icmp ne i64 %926, 0
+  br i1 %927, label %928, label %956
 
-; <label>:924:                                    ; preds = %919
-  %925 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %926 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %925, i32 0, i32 1
-  %927 = load i64, i64* %926, align 8
-  %928 = and i64 %927, 2
-  %929 = icmp ne i64 %928, 0
-  br i1 %929, label %931, label %930
+; <label>:928:                                    ; preds = %923
+  %929 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %930 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %929, i32 0, i32 1
+  %931 = load i64, i64* %930, align 8
+  %932 = and i64 %931, 2
+  %933 = icmp ne i64 %932, 0
+  br i1 %933, label %935, label %934
 
-; <label>:930:                                    ; preds = %924
+; <label>:934:                                    ; preds = %928
   store i16 1, i16* %36, align 2
-  br label %932
+  br label %936
 
-; <label>:931:                                    ; preds = %924
+; <label>:935:                                    ; preds = %928
   store i16 2, i16* %36, align 2
-  br label %932
+  br label %936
 
-; <label>:932:                                    ; preds = %931, %930
-  %933 = load i32, i32* %34, align 4
-  %934 = icmp ne i32 %933, 0
-  br i1 %934, label %935, label %940
+; <label>:936:                                    ; preds = %935, %934
+  %937 = load i32, i32* %34, align 4
+  %938 = icmp ne i32 %937, 0
+  br i1 %938, label %939, label %944
 
-; <label>:935:                                    ; preds = %932
-  %936 = load i16, i16* %36, align 2
-  %937 = zext i16 %936 to i32
-  %938 = or i32 %937, 256
-  %939 = trunc i32 %938 to i16
-  store i16 %939, i16* %36, align 2
-  br label %940
+; <label>:939:                                    ; preds = %936
+  %940 = load i16, i16* %36, align 2
+  %941 = zext i16 %940 to i32
+  %942 = or i32 %941, 256
+  %943 = trunc i32 %942 to i16
+  store i16 %943, i16* %36, align 2
+  br label %944
 
-; <label>:940:                                    ; preds = %935, %932
-  %941 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
-  %942 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %943 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %942, i32 0, i32 10
-  %944 = load i16, i16* %943, align 2
-  %945 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %946 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %945, i32 0, i32 0
-  %947 = load i64, i64* %946, align 64
-  %948 = load i32, i32* %22, align 4
-  %949 = load i32, i32* %25, align 4
-  %950 = load i32, i32* %23, align 4
-  %951 = load i16, i16* %36, align 2
-  call void @arx_cache_add(%struct.dataplane_context* %941, i16 zeroext %944, i64 %947, i32 %948, i32 %949, i32 %950, i16 zeroext %951)
-  br label %952
+; <label>:944:                                    ; preds = %939, %936
+  %945 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
+  %946 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %947 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %946, i32 0, i32 10
+  %948 = load i16, i16* %947, align 2
+  %949 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %950 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %949, i32 0, i32 0
+  %951 = load i64, i64* %950, align 64
+  %952 = load i32, i32* %22, align 4
+  %953 = load i32, i32* %25, align 4
+  %954 = load i32, i32* %23, align 4
+  %955 = load i16, i16* %36, align 2
+  call void @arx_cache_add(%struct.dataplane_context* %945, i16 zeroext %948, i64 %951, i32 %952, i32 %953, i32 %954, i16 zeroext %955)
+  br label %956
 
-; <label>:952:                                    ; preds = %940, %919
-  %953 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %954 = call i32 @tcp_txavail(%struct.flextcp_pl_flowst* %953, i32* null)
-  store i32 %954, i32* %20, align 4
-  %955 = load i32, i32* %20, align 4
-  %956 = load i32, i32* %19, align 4
-  %957 = icmp ugt i32 %955, %956
-  br i1 %957, label %958, label %997
+; <label>:956:                                    ; preds = %944, %923
+  %957 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %958 = call i32 @tcp_txavail(%struct.flextcp_pl_flowst* %957, i32* null)
+  store i32 %958, i32* %20, align 4
+  %959 = load i32, i32* %20, align 4
+  %960 = load i32, i32* %19, align 4
+  %961 = icmp ugt i32 %959, %960
+  br i1 %961, label %962, label %1001
 
-; <label>:958:                                    ; preds = %952
-  %959 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %960 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %959, i32 0, i32 1
-  %961 = load i64, i64* %960, align 8
-  %962 = and i64 %961, 2
-  %963 = icmp ne i64 %962, 0
-  br i1 %963, label %981, label %964
+; <label>:962:                                    ; preds = %956
+  %963 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %964 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %963, i32 0, i32 1
+  %965 = load i64, i64* %964, align 8
+  %966 = and i64 %965, 2
+  %967 = icmp ne i64 %966, 0
+  br i1 %967, label %985, label %968
 
-; <label>:964:                                    ; preds = %958
-  %965 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
-  %966 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %965, i32 0, i32 1
-  %967 = load i16, i16* %31, align 2
-  %968 = zext i16 %967 to i32
-  %969 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %970 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %969, i32 0, i32 26
-  %971 = load i32, i32* %970, align 4
-  %972 = load i32, i32* %20, align 4
-  %973 = load i32, i32* %19, align 4
-  %974 = sub i32 %972, %973
-  %975 = call i32 @qman_set(%struct.qman_thread* %966, i32 %968, i32 %971, i32 %974, i16 zeroext 1448, i8 zeroext 19)
-  %976 = icmp ne i32 %975, 0
-  br i1 %976, label %977, label %980
+; <label>:968:                                    ; preds = %962
+  %969 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
+  %970 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %969, i32 0, i32 1
+  %971 = load i16, i16* %31, align 2
+  %972 = zext i16 %971 to i32
+  %973 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %974 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %973, i32 0, i32 26
+  %975 = load i32, i32* %974, align 4
+  %976 = load i32, i32* %20, align 4
+  %977 = load i32, i32* %19, align 4
+  %978 = sub i32 %976, %977
+  %979 = call i32 @qman_set(%struct.qman_thread* %970, i32 %972, i32 %975, i32 %978, i16 zeroext 1448, i8 zeroext 19)
+  %980 = icmp ne i32 %979, 0
+  br i1 %980, label %981, label %984
 
-; <label>:977:                                    ; preds = %964
-  %978 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %979 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %978, i8* getelementptr inbounds ([50 x i8], [50 x i8]* @.str.23, i32 0, i32 0))
+; <label>:981:                                    ; preds = %968
+  %982 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %983 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %982, i8* getelementptr inbounds ([50 x i8], [50 x i8]* @.str.23, i32 0, i32 0))
   call void @abort() #8
   unreachable
 
-; <label>:980:                                    ; preds = %964
-  br label %996
+; <label>:984:                                    ; preds = %968
+  br label %1000
 
-; <label>:981:                                    ; preds = %958
-  %982 = load i32, i32* %19, align 4
-  %983 = icmp eq i32 %982, 0
-  br i1 %983, label %984, label %995
+; <label>:985:                                    ; preds = %962
+  %986 = load i32, i32* %19, align 4
+  %987 = icmp eq i32 %986, 0
+  br i1 %987, label %988, label %999
 
-; <label>:984:                                    ; preds = %981
-  %985 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
-  %986 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %985, i32 0, i32 1
-  %987 = load i16, i16* %31, align 2
-  %988 = zext i16 %987 to i32
-  %989 = call i32 @qman_set(%struct.qman_thread* %986, i32 %988, i32 0, i32 1, i16 zeroext 1, i8 zeroext 19)
-  %990 = icmp ne i32 %989, 0
-  br i1 %990, label %991, label %994
+; <label>:988:                                    ; preds = %985
+  %989 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
+  %990 = getelementptr inbounds %struct.dataplane_context, %struct.dataplane_context* %989, i32 0, i32 1
+  %991 = load i16, i16* %31, align 2
+  %992 = zext i16 %991 to i32
+  %993 = call i32 @qman_set(%struct.qman_thread* %990, i32 %992, i32 0, i32 1, i16 zeroext 1, i8 zeroext 19)
+  %994 = icmp ne i32 %993, 0
+  br i1 %994, label %995, label %998
 
-; <label>:991:                                    ; preds = %984
-  %992 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
-  %993 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %992, i8* getelementptr inbounds ([51 x i8], [51 x i8]* @.str.24, i32 0, i32 0))
+; <label>:995:                                    ; preds = %988
+  %996 = load %struct._IO_FILE*, %struct._IO_FILE** @stderr, align 8
+  %997 = call i32 (%struct._IO_FILE*, i8*, ...) @fprintf(%struct._IO_FILE* %996, i8* getelementptr inbounds ([51 x i8], [51 x i8]* @.str.24, i32 0, i32 0))
   call void @abort() #8
   unreachable
 
-; <label>:994:                                    ; preds = %984
-  br label %995
+; <label>:998:                                    ; preds = %988
+  br label %999
 
-; <label>:995:                                    ; preds = %994, %981
-  br label %996
+; <label>:999:                                    ; preds = %998, %985
+  br label %1000
 
-; <label>:996:                                    ; preds = %995, %980
-  br label %997
+; <label>:1000:                                   ; preds = %999, %984
+  br label %1001
 
-; <label>:997:                                    ; preds = %996, %952
-  %998 = load i32, i32* %33, align 4
-  %999 = icmp ne i32 %998, 0
-  br i1 %999, label %1000, label %1020
+; <label>:1001:                                   ; preds = %1000, %956
+  %1002 = load i32, i32* %33, align 4
+  %1003 = icmp ne i32 %1002, 0
+  br i1 %1003, label %1004, label %1024
 
-; <label>:1000:                                   ; preds = %997
-  %1001 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
-  %1002 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1003 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1002, i32 0, i32 23
-  %1004 = load i32, i32* %1003, align 32
-  %1005 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1006 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1005, i32 0, i32 16
-  %1007 = load i32, i32* %1006, align 4
-  %1008 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1009 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1008, i32 0, i32 14
-  %1010 = load i32, i32* %1009, align 4
-  %1011 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1012 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1011, i32 0, i32 25
-  %1013 = load i32, i32* %1012, align 8
-  %1014 = load i32, i32* %11, align 4
-  %1015 = load %struct.network_buf_handle*, %struct.network_buf_handle** %8, align 8
-  %1016 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
-  %1017 = load %struct.tcp_opts*, %struct.tcp_opts** %1016, align 8
-  %1018 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %1017, i32 0, i32 0
-  %1019 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %1018, align 8
-  call void @flow_tx_ack(%struct.dataplane_context* %1001, i32 %1004, i32 %1007, i32 %1010, i32 %1013, i32 %1014, %struct.network_buf_handle* %1015, %struct.tcp_timestamp_opt* %1019)
-  br label %1020
+; <label>:1004:                                   ; preds = %1001
+  %1005 = load %struct.dataplane_context*, %struct.dataplane_context** %7, align 8
+  %1006 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1007 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1006, i32 0, i32 23
+  %1008 = load i32, i32* %1007, align 32
+  %1009 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1010 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1009, i32 0, i32 16
+  %1011 = load i32, i32* %1010, align 4
+  %1012 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1013 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1012, i32 0, i32 14
+  %1014 = load i32, i32* %1013, align 4
+  %1015 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1016 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1015, i32 0, i32 25
+  %1017 = load i32, i32* %1016, align 8
+  %1018 = load i32, i32* %11, align 4
+  %1019 = load %struct.network_buf_handle*, %struct.network_buf_handle** %8, align 8
+  %1020 = load %struct.tcp_opts**, %struct.tcp_opts*** %10, align 8
+  %1021 = load %struct.tcp_opts*, %struct.tcp_opts** %1020, align 8
+  %1022 = getelementptr inbounds %struct.tcp_opts, %struct.tcp_opts* %1021, i32 0, i32 0
+  %1023 = load %struct.tcp_timestamp_opt*, %struct.tcp_timestamp_opt** %1022, align 8
+  call void @flow_tx_ack(%struct.dataplane_context* %1005, i32 %1008, i32 %1011, i32 %1014, i32 %1017, i32 %1018, %struct.network_buf_handle* %1019, %struct.tcp_timestamp_opt* %1023)
+  br label %1024
 
-; <label>:1020:                                   ; preds = %1000, %997
-  %1021 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1022 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1021, i32 0, i32 13
-  call void @util_spin_unlock(i32* %1022)
-  %1023 = load i32, i32* %33, align 4
-  store i32 %1023, i32* %6, align 4
-  br label %1035
+; <label>:1024:                                   ; preds = %1004, %1001
+  %1025 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1026 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1025, i32 0, i32 13
+  call void @util_spin_unlock(i32* %1026)
+  %1027 = load i32, i32* %33, align 4
+  store i32 %1027, i32* %6, align 4
+  br label %1039
 
-; <label>:1024:                                   ; preds = %688, %639, %617, %514, %125, %88
-  %1025 = load i32, i32* %27, align 4
-  %1026 = icmp ne i32 %1025, 0
-  br i1 %1026, label %1032, label %1027
+; <label>:1028:                                   ; preds = %692, %643, %621, %518, %129, %92
+  %1029 = load i32, i32* %27, align 4
+  %1030 = icmp ne i32 %1029, 0
+  br i1 %1030, label %1036, label %1031
 
-; <label>:1027:                                   ; preds = %1024
-  %1028 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1029 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1028, i32 0, i32 1
-  %1030 = load i64, i64* %1029, align 8
-  %1031 = or i64 %1030, 1
-  store i64 %1031, i64* %1029, align 8
-  br label %1032
+; <label>:1031:                                   ; preds = %1028
+  %1032 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1033 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1032, i32 0, i32 1
+  %1034 = load i64, i64* %1033, align 8
+  %1035 = or i64 %1034, 1
+  store i64 %1035, i64* %1033, align 8
+  br label %1036
 
-; <label>:1032:                                   ; preds = %1027, %1024
-  %1033 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
-  %1034 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1033, i32 0, i32 13
-  call void @util_spin_unlock(i32* %1034)
+; <label>:1036:                                   ; preds = %1031, %1028
+  %1037 = load %struct.flextcp_pl_flowst*, %struct.flextcp_pl_flowst** %13, align 8
+  %1038 = getelementptr inbounds %struct.flextcp_pl_flowst, %struct.flextcp_pl_flowst* %1037, i32 0, i32 13
+  call void @util_spin_unlock(i32* %1038)
   store i32 -1, i32* %6, align 4
-  br label %1035
+  br label %1039
 
-; <label>:1035:                                   ; preds = %1032, %1020
-  %1036 = load i32, i32* %6, align 4
-  ret i32 %1036
+; <label>:1039:                                   ; preds = %1036, %1024, %53
+  %1040 = load i32, i32* %6, align 4
+  ret i32 %1040
 }
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
@@ -4209,7 +4218,7 @@ define internal void @flow_rx_seq_write(%struct.flextcp_pl_flowst*, i32, i16 zer
   br label %40
 
 ; <label>:39:                                     ; preds = %32
-  call void @__assert_fail(i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.33, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 993, i8* getelementptr inbounds ([85 x i8], [85 x i8]* @__PRETTY_FUNCTION__.flow_rx_seq_write, i32 0, i32 0)) #8
+  call void @__assert_fail(i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.33, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.6, i32 0, i32 0), i32 996, i8* getelementptr inbounds ([85 x i8], [85 x i8]* @__PRETTY_FUNCTION__.flow_rx_seq_write, i32 0, i32 0)) #8
   unreachable
 
 ; <label>:40:                                     ; preds = %38
@@ -13476,15 +13485,15 @@ attributes #9 = { nounwind readnone }
 !1 = !{i32 7, !"PIC Level", i32 2}
 !2 = !{i32 7, !"PIE Level", i32 2}
 !3 = !{!"clang version 8.0.0 (tags/RELEASE_800/final)"}
-!4 = !{i32 3772684}
-!5 = !{i32 -2145954683}
-!6 = !{i32 -2145953551}
-!7 = !{i32 3868836, i32 3868850, i32 3868882, i32 3868910, i32 3868926, i32 3868939, i32 3868955, i32 3868984, i32 3869001, i32 3869018}
-!8 = !{i32 3869234}
-!9 = !{i32 -2143308060}
-!10 = !{i32 -2143308002}
-!11 = !{i32 -2145977855}
-!12 = !{i32 3837330}
-!13 = !{i32 3836823}
-!14 = !{i32 3836615}
-!15 = !{i32 3836407}
+!4 = !{i32 3772719}
+!5 = !{i32 -2145954648}
+!6 = !{i32 -2145953516}
+!7 = !{i32 3868871, i32 3868885, i32 3868917, i32 3868945, i32 3868961, i32 3868974, i32 3868990, i32 3869019, i32 3869036, i32 3869053}
+!8 = !{i32 3869269}
+!9 = !{i32 -2143308014}
+!10 = !{i32 -2143307956}
+!11 = !{i32 -2145977820}
+!12 = !{i32 3837365}
+!13 = !{i32 3836858}
+!14 = !{i32 3836650}
+!15 = !{i32 3836442}
