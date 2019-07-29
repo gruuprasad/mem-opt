@@ -99,8 +99,8 @@ bool CacheUsageAnalysis::run() {
 
       unsigned AbsoluteOffset = getByteOffsetAbsolute(cast<GetElementPtrInst>(BasePtr->getNextNode()), 0 /*Base Address idx */);
       //errs() << "Absolute Offset = " << AbsoluteOffset 
-      //  << " Cacheline " << AbsoluteOffset/CACHELINESIZE_BYTES << "\n";
-      MemoryCacheLineId.insert(std::make_pair(Key, AbsoluteOffset/CACHELINESIZE_BYTES));
+      //  << " Cacheline " << AbsoluteOffset/CacheLineSize << "\n";
+      MemoryCacheLineId.insert(std::make_pair(Key, AbsoluteOffset/CacheLineSize));
     }
   }
 

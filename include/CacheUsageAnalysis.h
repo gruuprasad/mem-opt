@@ -18,13 +18,15 @@ class CacheUsageAnalysis {
   llvm::DominatorTree DT;
   llvm::LoopInfo LI;
   llvm::SmallVector<const llvm::AllocaInst *, 4> PtrAllocas;
+  unsigned CacheLineSize;
   unsigned NumOfCacheLines = 0;
   bool LoopExists = false;
 
   public:
-  CacheUsageAnalysis(llvm::Function * F)
+  CacheUsageAnalysis(llvm::Function * F, unsigned N = 64)
     : F(F), DL(&F->getParent()->getDataLayout()),
-      DT(llvm::DominatorTree(*F)), LI(llvm::LoopInfo(DT)) {}
+      DT(llvm::DominatorTree(*F)), LI(llvm::LoopInfo(DT)),
+      CacheLineSize(N) {}
 
   bool run();
   unsigned getNumOfCacheLines() {
