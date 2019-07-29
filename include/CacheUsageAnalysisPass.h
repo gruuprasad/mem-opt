@@ -16,9 +16,10 @@ namespace tas {
 /// 
 /// Example code annotation:
 /// \code int process_packet(int a) TAS_ANALYZE_CACHE; \endcode
-struct CacheUsageAnalysisPass : public llvm::FunctionPass {
-  static char ID;
+class CacheUsageAnalysisPass : public llvm::FunctionPass {
   unsigned CacheLineSize; ///< Cache line size in bytes (default - 64 bytes)
+public:
+  static char ID;
   CacheUsageAnalysisPass(unsigned N = 64) : FunctionPass(ID), CacheLineSize(N) {}
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;

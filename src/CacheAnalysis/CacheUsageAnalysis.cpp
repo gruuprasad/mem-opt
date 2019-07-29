@@ -16,6 +16,11 @@ using namespace llvm;
 
 namespace tas {
 
+raw_ostream &operator<<(raw_ostream &OS, CAResult AR) {
+  OS << "Estimated number of cache lines = " << AR.NumOfCacheLines << "\n";
+  return OS;
+}
+
 unsigned CacheUsageAnalysis::getByteOffsetRelative(Type * Ty, unsigned FieldIdx) {
   if (Ty->isSingleValueType())
     return 0;

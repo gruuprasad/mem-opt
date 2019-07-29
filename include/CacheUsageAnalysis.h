@@ -12,6 +12,19 @@
 
 namespace tas {
 
+/// This holds the result of cache analysis performed on a function.
+/// Currently the only result data we have is the usage of number of
+/// cache lines.
+/// FIXME How to properly use this kind of result data along with
+/// pass manager?
+struct CAResult {
+  unsigned NumOfCacheLines; //< Estimated number of cache lines.
+  CAResult(unsigned N) : NumOfCacheLines(N) {}
+};
+
+llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, CAResult AR);
+
+/// \param[out] NumOfCacheLines Result of the cache analysis
 class CacheUsageAnalysis {
   llvm::Function * F;
   const llvm::DataLayout * DL;
@@ -32,6 +45,12 @@ class CacheUsageAnalysis {
   unsigned getNumOfCacheLines() {
     return NumOfCacheLines;
   }
+
+  /// Hand off cache analysis result
+  CAResult getResult() {
+    return CAResult(NumOfCacheLines);
+  }
+
   unsigned getByteOffsetRelative(llvm::Type *, unsigned FieldIdx);
   unsigned getByteOffsetAbsolute(const llvm::GetElementPtrInst * BasePtr, unsigned CurOffset);
 }; // tas namespace
