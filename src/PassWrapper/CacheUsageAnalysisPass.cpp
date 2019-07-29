@@ -14,12 +14,11 @@ using namespace llvm;
 
 static const std::string fn_mark = "tas_cacheline_count";
 
-namespace {
+namespace tas {
 
 void CacheUsageAnalysisPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<DominatorTreeWrapperPass>();
   AU.addRequired<LoopInfoWrapperPass>();
-  AU.addRequired<MemorySSAWrapperPass>();
   AU.setPreservesAll();
 }
 
@@ -32,22 +31,27 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
   if (!F.hasFnAttribute(fn_mark)) 
     return false;
 
-  errs() << "CacheUsageAnalysisPass pass: " << F.getName() << "\n";
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  MemorySSA &MSSA = getAnalysis<MemorySSAWrapperPass>().getMSSA();
+  CacheUsageAnalysis CA (&F);
+  CA.run();
+  errs() << "CacheUsageAnalysisPass pass: " << F.getName() << "\n";
+  errs() << "Cachelines needed = " << CA.getNumOfCacheLines() << "\n";
   return false;
 }
 
 char CacheUsageAnalysisPass::ID = 0;
 static RegisterPass<CacheUsageAnalysisPass> X("cache-usage-analysis", "Pass to analyze cache usage", false, false);
-} // Anonymous namespace
+
+} // tas namespace
 
 static void registerTASPass(const PassManagerBuilder & Builder,
                            legacy::PassManagerBase &PM) {
-  PM.add(new CacheUsageAnalysisPass());
+  PM.add(new tas::CacheUsageAnalysisPass());
 }
 
+/*
 static RegisterStandardPasses
     RegisterTASPass(PassManagerBuilder::EP_EnabledOnOptLevel0,
                    registerTASPass);
+                   */

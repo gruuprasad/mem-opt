@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "Macros.h"
 
 // packet fits in a single cache line
 struct packet {
@@ -12,7 +13,7 @@ struct packet {
 
 // case: When struct fits in a single cacheline
 // Expected: #cachelines = 1
-void test_fn(struct packet * const p1, struct packet * const p2) {
+void test_fn(struct packet * const p1, struct packet * const p2) TAS_ANALYZE_CACHE {
   // Access all the struct members present on the heap.
   p1->ip = 1;
   p1->id = 10;

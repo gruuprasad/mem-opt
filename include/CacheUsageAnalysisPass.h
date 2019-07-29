@@ -5,11 +5,12 @@
 #include <llvm/IR/Module.h>
 #include <llvm/Pass.h>
 
-namespace {
+namespace tas {
 
 struct CacheUsageAnalysisPass : public llvm::FunctionPass {
   static char ID;
-  CacheUsageAnalysisPass() : FunctionPass(ID) {}
+  unsigned CacheLineSize;
+  CacheUsageAnalysisPass(unsigned N = 64) : FunctionPass(ID), CacheLineSize(N) {}
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
  
