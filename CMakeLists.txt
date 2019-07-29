@@ -47,6 +47,22 @@ endif()
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 
+# Documentation
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    message(STATUS "Doxygen found, `doc` target to generate html documentation, viewdoc to open in browser")
+    configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile @ONLY)
+    add_custom_target(doc
+        ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating API documentation for tas-opt" VERBATIM
+    )
+  add_custom_target(viewdoc
+    xdg-open ${CMAKE_BINARY_DIR}/doc/html/index.html
+    COMMENT "Opening documentation in browser" VERBATIM
+    )
+endif(DOXYGEN_FOUND)
+
 include_directories(include)
 add_subdirectory(src)
 add_subdirectory(tools)

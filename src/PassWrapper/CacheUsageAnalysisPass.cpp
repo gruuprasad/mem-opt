@@ -22,6 +22,8 @@ void CacheUsageAnalysisPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesAll();
 }
 
+/// Extract function annotation info from llvm.var.annotations in Module object
+/// if any and add it as Attribute to Function of interest.
 bool CacheUsageAnalysisPass::doInitialization(Module &M) {
   tas::setAnnotationInFunctionObject(&M);
   return true;
