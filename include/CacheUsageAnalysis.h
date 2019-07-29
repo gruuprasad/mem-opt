@@ -19,6 +19,7 @@ namespace tas {
 /// pass manager?
 struct CAResult {
   unsigned NumOfCacheLines; //< Estimated number of cache lines.
+  CAResult() = default;
   CAResult(unsigned N) : NumOfCacheLines(N) {}
 };
 

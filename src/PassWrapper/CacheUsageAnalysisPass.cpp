@@ -37,8 +37,7 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
   CacheUsageAnalysis CA (&F, CacheLineSize);
   CA.run();
-  errs() << "CacheUsageAnalysisPass pass: " << F.getName() << "\n";
-  errs() << "Cachelines needed = " << CA.getNumOfCacheLines() << "\n";
+  Result = CA.getResult();
   return false;
 }
 
