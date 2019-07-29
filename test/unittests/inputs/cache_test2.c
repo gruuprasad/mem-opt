@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "Macros.h"
 
 struct packet_state {
   uint64_t ps1;
@@ -22,7 +23,7 @@ struct packet_state {
 
 // Case: When each struct takes more than 1 cacheline
 // Expected: #cachelines = 3
-void test_fn(struct packet_state * const p1_state, struct packet_state * const p2_state) {
+void test_fn(struct packet_state * const p1_state, struct packet_state * const p2_state) TAS_ANALYZE_CACHE {
   // Access member state in 1st cache line.
   p1_state->ps3 = 4000;
 

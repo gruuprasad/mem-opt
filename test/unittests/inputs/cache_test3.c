@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include "Macros.h"
 
 struct metadata {
   uint64_t md1;
@@ -31,7 +32,7 @@ struct packet_state {
 
 // Case: Nested struct
 // Expected: #cachelines = 6
-void test_fn(struct packet_state * const p1_state, struct packet_state * const p2_state) {
+void test_fn(struct packet_state * const p1_state, struct packet_state * const p2_state) TAS_ANALYZE_CACHE {
   // Access member state in 1st cache line.
   p1_state->ps3_cl1 = 4000;    // p1 - cl 1
 

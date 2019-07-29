@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "Macros.h"
 
 struct packet {
   uint64_t ip;
@@ -14,7 +15,7 @@ struct pl_memory {
 };
 
 // Expected: #cachelines = 2
-void test_fn(struct packet ** pkts) {
+void test_fn(struct packet ** pkts) TAS_ANALYZE_CACHE {
   /*
   printf("Size of struct packet = %lu\n", sizeof(struct packet));
   printf("Size of struct packet_state = %lu\n", sizeof(struct packet_state));

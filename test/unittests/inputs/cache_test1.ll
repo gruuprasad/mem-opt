@@ -5,6 +5,10 @@ target triple = "x86_64-pc-linux-gnu"
 
 %struct.packet = type { i32, i32, i32, i32 }
 
+@.str = private unnamed_addr constant [20 x i8] c"tas_cacheline_count\00", section "llvm.metadata"
+@.str.1 = private unnamed_addr constant [14 x i8] c"cache_test1.c\00", section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*, %struct.packet*)* @test_fn to i8*), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str.1, i32 0, i32 0), i32 16 }], section "llvm.metadata"
+
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local void @test_fn(%struct.packet*, %struct.packet*) #0 {
   %3 = alloca %struct.packet*, align 8
