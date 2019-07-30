@@ -13,18 +13,6 @@
 
 namespace tas {
 
-class CacheUsageAnalysis : public llvm::AnalysisInfoMixin<CacheUsageAnalysis> {
-  friend AnalysisInfoMixin<CacheUsageAnalysis>;
-  static llvm::AnalysisKey Key;
-  unsigned CacheLineSize;
-public:
-  using Result = tas::CacheUsageInfo;
-
-  CacheUsageAnalysis(int N) : CacheLineSize(N) {}
-
-  tas::CacheUsageInfo run(llvm::Function & F, llvm::FunctionAnalysisManager &AM);
-};
-
 /// This pass computes the number of cache lines used by the method of interest.
 ///
 /// Method of interest has to be annotated as \ref TAS_ANALYZE_CACHE in method declaration.
@@ -34,14 +22,27 @@ public:
 ///  ```
 ///   int process_packet(int a) TAS_ANALYZE_CACHE;
 ///  ```
+
+class CacheUsageAnalysis : public llvm::AnalysisInfoMixin<CacheUsageAnalysis> {
+  friend AnalysisInfoMixin<CacheUsageAnalysis>;
+  static llvm::AnalysisKey Key;
+  unsigned CacheLineSize;
+public:
+  using Result = CacheUsageInfo;
+
+  CacheUsageAnalysis(int N) : CacheLineSize(N) {}
+
+  CacheUsageInfo run(llvm::Function & F, llvm::FunctionAnalysisManager &AM);
+};
+
 class CacheUsageAnalysisPass : public llvm::FunctionPass {
   unsigned CacheLineSize; ///< Cache line size in bytes (default - 64 bytes)
-  CAResult Result;
+  CacheUsageInfo CI;
 public:
   static char ID;
-  CacheUsageAnalysisPass(unsigned N = 64) : FunctionPass(ID), CacheLineSize(N) {}
+  CacheUsageAnalysisPass(unsigned N = 64) : FunctionPass(ID), CacheLineSize(N), CI(N) {}
 
-  CAResult& getAnalysisResult() { return Result; }
+  const CacheUsageInfo& getCacheUsageInfo() { return CI; }
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
  
@@ -49,6 +50,12 @@ public:
 
   bool runOnFunction(llvm::Function &F) override;
 };
+
+/// FIXME This method runs the analysis pass in a pipeline.
+/// How to get the result of the analysis?
+/// In other pass, one can ue `getAnalysis<CacheUsageAnalysisPass>()` to
+/// use the analysis result.
+void runCacheAnalysisPass(llvm::Module * M, unsigned CacheLineSize);
 
 }
 

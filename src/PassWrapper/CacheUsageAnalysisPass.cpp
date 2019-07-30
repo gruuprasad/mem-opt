@@ -19,9 +19,10 @@ namespace tas {
 llvm::AnalysisKey CacheUsageAnalysis::Key;
 
 tas::CacheUsageInfo CacheUsageAnalysis::run(llvm::Function &F, llvm::FunctionAnalysisManager &AM) {
-  llvm::errs() << "Started analysis\n";
-  tas::CacheUsageInfo CI (&F);
-  CI.analyze();
+  auto & DT = AM.getResult<DominatorTreeAnalysis>(F);
+  auto & LI = AM.getResult<LoopAnalysis>(F);
+  tas::CacheUsageInfo CI(CacheLineSize);
+  CI.analyze(F);
   return CI;
 }
 
@@ -44,14 +45,34 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
 
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  CacheUsageInfo CA (&F, CacheLineSize);
-  CA.analyze();
-  Result = CA.getResult();
+  CI.analyze(F);
   return false;
 }
 
 char CacheUsageAnalysisPass::ID = 0;
 static RegisterPass<CacheUsageAnalysisPass> X("cache-usage-analysis", "Pass to analyze cache usage", false, false);
+
+void runCacheAnalysisPass(Module * M, unsigned CacheLineSize) {
+  legacy::PassManager FPM;
+  FPM.add(new DominatorTreeWrapperPass());
+  FPM.add(new LoopInfoWrapperPass());
+  FPM.add(new tas::CacheUsageAnalysisPass(CacheLineSize));
+  FPM.run(*M);
+
+  /*
+  FunctionAnalysisManager FAM (true);
+  FAM.registerPass([&] { return tas::CacheUsageAnalysis(CacheLineSize); });
+  FunctionPassManager FPM;
+
+  ModuleAnalysisManager MAM (true);
+  MAM.registerPass([&] { return FunctionAnalysisManagerModuleProxy(FAM); });
+
+  ModulePassManager MPM;
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
+  errs() << "Running pass\n";
+  MPM.run(*M, MAM);
+  */
+}
 
 } // tas namespace
 
@@ -65,3 +86,4 @@ static RegisterStandardPasses
     RegisterTASPass(PassManagerBuilder::EP_EnabledOnOptLevel0,
                    registerTASPass);
                    */
+

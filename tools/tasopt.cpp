@@ -26,28 +26,6 @@ cl::opt<string> InFile(cl::Positional, cl::desc("<Module to analyze>"),
 cl::opt<unsigned> CacheLineSize ("cacheline-size",
                 cl::desc("cache line size in bytes (default - 64)"), cl::init(64));
 
-static void analyseCache(Module * M, unsigned CacheLineSize) {
-  legacy::PassManager FPM;
-  FPM.add(new DominatorTreeWrapperPass());
-  FPM.add(new LoopInfoWrapperPass());
-  FPM.add(new tas::CacheUsageAnalysisPass(CacheLineSize));
-  FPM.run(*M);
-
-  /*
-  FunctionAnalysisManager FAM (true);
-  FAM.registerPass([&] { return tas::CacheUsageAnalysis(CacheLineSize); });
-  FunctionPassManager FPM;
-
-  ModuleAnalysisManager MAM (true);
-  MAM.registerPass([&] { return FunctionAnalysisManagerModuleProxy(FAM); });
-
-  ModulePassManager MPM;
-  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
-  errs() << "Running pass\n";
-  MPM.run(*M, MAM);
-  */
-}
-
 int main(int argc, char * argv[]) {
   cl::ParseCommandLineOptions(argc, argv);
 
@@ -61,7 +39,7 @@ int main(int argc, char * argv[]) {
     return -1;
   }
 
-  analyseCache(M.get(), CacheLineSize);
+  // runCacheAnalysisPass(M.get(), CacheLineSize);
 
   return 0;
 }
