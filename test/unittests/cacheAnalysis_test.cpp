@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "CacheUsageAnalysis.h"
+#include "CacheUsageInfo.h"
 #include "Util.h"
 
 #include <llvm/AsmParser/Parser.h>
@@ -96,8 +96,8 @@ TEST_CASE("Struct fit in single cache line", "[RUN]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 1);
 }
@@ -110,8 +110,8 @@ TEST_CASE("Struct fit across two cache line") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 3);
 }
@@ -124,8 +124,8 @@ TEST_CASE("Nested struct [level 2]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 6);
 }
@@ -138,8 +138,8 @@ TEST_CASE("Nested struct [level 3]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 7);
 }
@@ -152,8 +152,8 @@ TEST_CASE("array of struct [level 3]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 4);
 }
@@ -166,8 +166,8 @@ TEST_CASE("List of pointers") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 0);
 }
@@ -180,8 +180,8 @@ TEST_CASE("fast_flows_packet") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("fast_flows_packet");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 8);
 }
@@ -194,8 +194,8 @@ TEST_CASE("fast_flows_packet_fss") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("fast_flows_packet_fss");
 
-  CacheUsageAnalysis CA (F);
-  CA.run();
+  CacheUsageInfo CA (F);
+  CA.analyze();
 
   REQUIRE(CA.getNumOfCacheLines() == 3);
 }

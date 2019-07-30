@@ -8,16 +8,28 @@
 #include <llvm/IR/Module.h>
 #include <llvm/Pass.h>
 
-#include "CacheUsageAnalysis.h"
+#include "CacheUsageInfo.h"
 
 namespace tas {
+
+class CacheUsageAnalysis : llvm::AnalysisInfoMixin<CacheUsageAnalysis> {
+  friend AnalysisInfoMixin<CacheUsageAnalysis>;
+  static llvm::AnalysisKey Key;
+public:
+  using Result = CacheUsageInfo;
+
+  CacheUsageInfo run(llvm::Function & F, llvm::FunctionAnalysisManager &AM);
+};
 
 /// This pass computes the number of cache lines used by the method of interest.
 ///
 /// Method of interest has to be annotated as \ref TAS_ANALYZE_CACHE in method declaration.
 /// 
 /// Example code annotation:
-/// \code int process_packet(int a) TAS_ANALYZE_CACHE; \endcode
+///
+///  ```
+///   int process_packet(int a) TAS_ANALYZE_CACHE;
+///  ```
 class CacheUsageAnalysisPass : public llvm::FunctionPass {
   unsigned CacheLineSize; ///< Cache line size in bytes (default - 64 bytes)
   CAResult Result;

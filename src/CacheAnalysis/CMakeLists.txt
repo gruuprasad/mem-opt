@@ -1,2 +1,2 @@
-add_library(cacheanalysis
-            CacheUsageAnalysis.cpp)
+add_library(cacheUsageInfo
+            CacheUsageInfo.cpp)

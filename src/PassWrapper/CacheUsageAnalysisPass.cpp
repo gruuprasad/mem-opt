@@ -1,5 +1,5 @@
 #include "CacheUsageAnalysisPass.h"
-#include "CacheUsageAnalysis.h"
+#include "CacheUsageInfo.h"
 #include "Util.h"
 
 #include <llvm/Analysis/MemorySSA.h>
@@ -15,6 +15,12 @@ using namespace llvm;
 static const std::string fn_mark = "tas_cacheline_count";
 
 namespace tas {
+
+CacheUsageInfo CacheUsageAnalysis::run(Function &F, FunctionAnalysisManager &AM) {
+  CacheUsageInfo CI (&F);
+  CI.analyze();
+  return CI;
+}
 
 void CacheUsageAnalysisPass::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.addRequired<DominatorTreeWrapperPass>();
@@ -35,8 +41,8 @@ bool CacheUsageAnalysisPass::runOnFunction(Function &F) {
 
   LoopInfo &LI = getAnalysis<LoopInfoWrapperPass>().getLoopInfo();
   DominatorTree &DT = getAnalysis<DominatorTreeWrapperPass>().getDomTree();
-  CacheUsageAnalysis CA (&F, CacheLineSize);
-  CA.run();
+  CacheUsageInfo CA (&F, CacheLineSize);
+  CA.analyze();
   Result = CA.getResult();
   return false;
 }

@@ -1,4 +1,4 @@
-#include <llvm/Analysis/LoopInfo.h>
+//#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/IR/Dominators.h>
 #include <llvm/IR/Function.h>
@@ -7,11 +7,13 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Pass.h>
+#include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/SourceMgr.h>
 
 #include "CacheUsageAnalysisPass.h"
+#include "CacheUsageInfo.h"
 
 #define DEBUG_TYPE "tasopt"
 
@@ -25,11 +27,23 @@ cl::opt<unsigned> CacheLineSize ("cacheline-size",
                 cl::desc("cache line size in bytes (default - 64)"), cl::init(64));
 
 static void analyseCache(Module * M, unsigned CacheLineSize) {
+  /*
   legacy::PassManager FPM;
   FPM.add(new DominatorTreeWrapperPass());
   FPM.add(new LoopInfoWrapperPass());
   FPM.add(new tas::CacheUsageAnalysisPass(CacheLineSize));
   FPM.run(*M);
+  */
+  FunctionPassManager FPM;
+  FPM.addPass(tas::CacheUsageAnalysis());
+
+  FunctionAnalysisManager FAM;
+  PassBuilder PB;
+  PB.registerFunctionAnalyses(FAM);
+
+  for (auto & F : *M) {
+    FPM.run(F, FAM);
+  }
 }
 
 int main(int argc, char * argv[]) {
