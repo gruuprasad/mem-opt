@@ -16,8 +16,11 @@ static const std::string fn_mark = "tas_cacheline_count";
 
 namespace tas {
 
-CacheUsageInfo CacheUsageAnalysis::run(Function &F, FunctionAnalysisManager &AM) {
-  CacheUsageInfo CI (&F);
+llvm::AnalysisKey CacheUsageAnalysis::Key;
+
+tas::CacheUsageInfo CacheUsageAnalysis::run(llvm::Function &F, llvm::FunctionAnalysisManager &AM) {
+  llvm::errs() << "Started analysis\n";
+  tas::CacheUsageInfo CI (&F);
   CI.analyze();
   return CI;
 }

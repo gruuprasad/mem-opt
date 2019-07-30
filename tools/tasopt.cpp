@@ -27,23 +27,25 @@ cl::opt<unsigned> CacheLineSize ("cacheline-size",
                 cl::desc("cache line size in bytes (default - 64)"), cl::init(64));
 
 static void analyseCache(Module * M, unsigned CacheLineSize) {
-  /*
   legacy::PassManager FPM;
   FPM.add(new DominatorTreeWrapperPass());
   FPM.add(new LoopInfoWrapperPass());
   FPM.add(new tas::CacheUsageAnalysisPass(CacheLineSize));
   FPM.run(*M);
-  */
+
+  /*
+  FunctionAnalysisManager FAM (true);
+  FAM.registerPass([&] { return tas::CacheUsageAnalysis(CacheLineSize); });
   FunctionPassManager FPM;
-  FPM.addPass(tas::CacheUsageAnalysis());
 
-  FunctionAnalysisManager FAM;
-  PassBuilder PB;
-  PB.registerFunctionAnalyses(FAM);
+  ModuleAnalysisManager MAM (true);
+  MAM.registerPass([&] { return FunctionAnalysisManagerModuleProxy(FAM); });
 
-  for (auto & F : *M) {
-    FPM.run(F, FAM);
-  }
+  ModulePassManager MPM;
+  MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
+  errs() << "Running pass\n";
+  MPM.run(*M, MAM);
+  */
 }
 
 int main(int argc, char * argv[]) {
