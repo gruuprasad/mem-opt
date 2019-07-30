@@ -1,37 +1,37 @@
 [
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/src/CacheAnalysis",
-  "command": "/usr/bin/clang++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/cacheanalysis.dir/CacheUsageAnalysis.cpp.o -c /home/gp/mpi-sws/tas-opt/src/CacheAnalysis/CacheUsageAnalysis.cpp",
-  "file": "/home/gp/mpi-sws/tas-opt/src/CacheAnalysis/CacheUsageAnalysis.cpp"
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/cacheUsageInfo.dir/CacheUsageInfo.cpp.o -c /home/gp/mpi-sws/tas-opt/src/CacheAnalysis/CacheUsageInfo.cpp",
+  "file": "/home/gp/mpi-sws/tas-opt/src/CacheAnalysis/CacheUsageInfo.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/src/Common",
-  "command": "/usr/bin/clang++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/common.dir/Util.cpp.o -c /home/gp/mpi-sws/tas-opt/src/Common/Util.cpp",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/common.dir/Util.cpp.o -c /home/gp/mpi-sws/tas-opt/src/Common/Util.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/src/Common/Util.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/src/PassWrapper",
-  "command": "/usr/bin/clang++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPass.dir/CacheUsageAnalysisPass.cpp.o -c /home/gp/mpi-sws/tas-opt/src/PassWrapper/CacheUsageAnalysisPass.cpp",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/TASPass.dir/CacheUsageAnalysisPass.cpp.o -c /home/gp/mpi-sws/tas-opt/src/PassWrapper/CacheUsageAnalysisPass.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/src/PassWrapper/CacheUsageAnalysisPass.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/tools",
-  "command": "/usr/bin/clang++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tasopt.dir/tasopt.cpp.o -c /home/gp/mpi-sws/tas-opt/tools/tasopt.cpp",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tasopt.dir/tasopt.cpp.o -c /home/gp/mpi-sws/tas-opt/tools/tasopt.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/tools/tasopt.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/test/unittests",
-  "command": "/usr/bin/clang++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/catch_LIB.dir/test_main.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/test_main.cpp",
+  "command": "/usr/bin/c++   -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/catch_LIB.dir/test_main.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/test_main.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/test/unittests/test_main.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/test/unittests",
-  "command": "/usr/bin/clang++  -DGOOGLE_GLOG_DLL_DECL=\"\" -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tests.dir/batchProcess_test.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/batchProcess_test.cpp",
+  "command": "/usr/bin/c++  -DGOOGLE_GLOG_DLL_DECL=\"\" -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tests.dir/batchProcess_test.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/batchProcess_test.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/test/unittests/batchProcess_test.cpp"
 },
 {
   "directory": "/home/gp/mpi-sws/tas-opt/build/test/unittests",
-  "command": "/usr/bin/clang++  -DGOOGLE_GLOG_DLL_DECL=\"\" -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tests.dir/cacheAnalysis_test.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/cacheAnalysis_test.cpp",
+  "command": "/usr/bin/c++  -DGOOGLE_GLOG_DLL_DECL=\"\" -I/home/gp/llvm_projects/llvm/install/include -I/home/gp/mpi-sws/tas-opt/include  -g -Wall -fno-rtti -fPIC   -D_GNU_SOURCE -D_DEBUG -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -std=gnu++14 -o CMakeFiles/tests.dir/cacheAnalysis_test.cpp.o -c /home/gp/mpi-sws/tas-opt/test/unittests/cacheAnalysis_test.cpp",
   "file": "/home/gp/mpi-sws/tas-opt/test/unittests/cacheAnalysis_test.cpp"
 }
 ]

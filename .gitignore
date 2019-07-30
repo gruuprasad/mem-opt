@@ -7,3 +7,5 @@ test/litTests/batch_fn_test2/batch_process_test1
 test/litTests/batch_fn_test2/batch_process_test1.ll
 
 *.o
+
+compile_commands.json
