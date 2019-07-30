@@ -22,14 +22,11 @@ class CacheUsageInfo {
   llvm::SmallVector<const llvm::AllocaInst *, 4> PtrAllocas;
   unsigned CacheLineSize;
   unsigned NumOfCacheLines = 0;
+  bool LoopExists;
 
   public:
-  CacheUsageInfo() = default;
-  CacheUsageInfo(unsigned N) : CacheLineSize(N) {}
-  CacheUsageInfo(llvm::Function * F, unsigned N = 64)
-    : F(F), DL(&F->getParent()->getDataLayout()),
-      DT(llvm::DominatorTree(*F)), LI(llvm::LoopInfo(DT)),
-      CacheLineSize(N) {}
+  CacheUsageInfo(unsigned N = 64)
+    : CacheLineSize(N) {}
 
   bool analyze(llvm::Function & F);
   unsigned getNumOfCacheLines() { return NumOfCacheLines; }

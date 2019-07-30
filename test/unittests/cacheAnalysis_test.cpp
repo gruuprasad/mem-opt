@@ -20,6 +20,7 @@
 extern std::string input_dir; // This contains path to input test files
 
 using namespace llvm;
+using namespace tas;
 
 static std::unique_ptr<Module> parseIR(LLVMContext &C, const char *IR) {
   SMDiagnostic Err;
@@ -28,8 +29,6 @@ static std::unique_ptr<Module> parseIR(LLVMContext &C, const char *IR) {
     Err.print("CacheAnalysisTests", errs());
   return Mod;
 }
-
-namespace tas {
 
 TEST_CASE("Calculate struct size") {
   LLVMContext C;
@@ -194,10 +193,8 @@ TEST_CASE("fast_flows_packet_fss") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("fast_flows_packet_fss");
 
-  CacheUsageInfo CA (F);
+  CacheUsageInfo CA;
   CA.analyze(*F);
 
   REQUIRE(CA.getNumOfCacheLines() == 3);
 }
-
-} // namespace tas
