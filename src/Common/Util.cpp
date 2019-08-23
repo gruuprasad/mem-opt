@@ -17,7 +17,6 @@ using namespace llvm;
 
 namespace tas {
 
-// FIXME Use intrinsic call name for detection instead of enum value
 std::string VarAnnotationStr = "llvm.var.annotation";
 
 void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnList) {

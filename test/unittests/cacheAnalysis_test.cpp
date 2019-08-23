@@ -68,23 +68,6 @@ TEST_CASE("struct size test") {
   )");
 
   REQUIRE( M != nullptr);
-  /*
-  TypeFinder types;
-  types.run(*M, true);
-
-  auto & DL = M->getDataLayout();
-
-  for (auto * Ty : types) {
-    errs() << "Type name = " << Ty->getName() << "\n";
-    auto * TyLayout = DL.getStructLayout(Ty);
-    errs() << "struct size = " << TyLayout->getSizeInBytes() << ":" << TyLayout->getSizeInBits() << "\n";
-    errs() << "Struct size (custom fn) " << getTypeSizeInBits(Ty) << "\n";
-    errs() << "Member offset details\n";
-    for (unsigned i = 0; i < Ty->getNumElements(); ++i) {
-      errs() << TyLayout->getElementOffset(i) << ":" << TyLayout->getElementOffsetInBits(i) << "\n";
-    }
-  }
-  */
 }
 
 TEST_CASE("Struct fit in single cache line", "[RUN]") {
@@ -95,10 +78,10 @@ TEST_CASE("Struct fit in single cache line", "[RUN]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 1);
+  REQUIRE(CI.getNumOfCacheLines() == 1);
 }
 
 TEST_CASE("Struct fit across two cache line") {
@@ -109,10 +92,10 @@ TEST_CASE("Struct fit across two cache line") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 3);
+  REQUIRE(CI.getNumOfCacheLines() == 3);
 }
 
 TEST_CASE("Nested struct [level 2]") {
@@ -123,10 +106,10 @@ TEST_CASE("Nested struct [level 2]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 6);
+  REQUIRE(CI.getNumOfCacheLines() == 6);
 }
 
 TEST_CASE("Nested struct [level 3]") {
@@ -137,10 +120,10 @@ TEST_CASE("Nested struct [level 3]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 7);
+  REQUIRE(CI.getNumOfCacheLines() == 7);
 }
 
 TEST_CASE("array of struct [level 3]") {
@@ -151,10 +134,10 @@ TEST_CASE("array of struct [level 3]") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 4);
+  REQUIRE(CI.getNumOfCacheLines() == 4);
 }
 
 TEST_CASE("List of pointers") {
@@ -165,10 +148,10 @@ TEST_CASE("List of pointers") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("test_fn");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 0);
+  REQUIRE(CI.getNumOfCacheLines() == 0);
 }
 
 TEST_CASE("fast_flows_packet") {
@@ -179,10 +162,10 @@ TEST_CASE("fast_flows_packet") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("fast_flows_packet");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 8);
+  REQUIRE(CI.getNumOfCacheLines() == 8);
 }
 
 TEST_CASE("fast_flows_packet_fss") {
@@ -193,8 +176,8 @@ TEST_CASE("fast_flows_packet_fss") {
   REQUIRE( M != nullptr);
   auto F = M->getFunction("fast_flows_packet_fss");
 
-  CacheUsageInfo CA;
-  CA.analyze(*F);
+  CacheUsageInfo CI;
+  CI.analyze(*F);
 
-  REQUIRE(CA.getNumOfCacheLines() == 3);
+  REQUIRE(CI.getNumOfCacheLines() == 3);
 }
