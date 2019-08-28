@@ -93,6 +93,7 @@ void insertLLVMPrefetchIntrinsic(Function * F, Instruction * I, Value * PtrVal) 
       );
 }
 
+/// Replace old value with new value within basic block.
 void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
   auto UI = From->use_begin();
   while (UI != From->use_end()) {
@@ -108,6 +109,7 @@ void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
   }
 }
 
+/// Recursively compute the size of the struct
 unsigned getTypeSizeInBits(Type * Ty) {
   if (!Ty->isAggregateType())
     return Ty->getPrimitiveSizeInBits();
