@@ -19,6 +19,7 @@ namespace tas {
 
 std::string VarAnnotationStr = "llvm.var.annotation";
 
+/// This function returns a map of Function and annotated string in the module.
 void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnList) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
   if (!AnnotationList) return;
