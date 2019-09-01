@@ -74,7 +74,7 @@ if(NOT EXISTS ${LLVM_ROOT}/bin/FileCheck)
 endif()
 
 # Set lit configurations
-configure_file("${CMAKE_SOURCE_DIR}/test/litTests/lit.site.cfg.in" "${CMAKE_BINARY_DIR}/test/litTests/lit.site.cfg")
+#configure_file("${CMAKE_SOURCE_DIR}/test/litTests/lit.site.cfg.in" "${CMAKE_BINARY_DIR}/test/litTests/lit.site.cfg")
 
 #add_custom_target(check COMMAND lit ${CMAKE_BINARY_DIR}/test/litTests)
 #add_custom_target(check COMMAND ctest)
