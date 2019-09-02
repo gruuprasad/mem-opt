@@ -26,8 +26,10 @@ namespace tas {
 bool BatchMaker::run() {
 
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  createBatchedFormFn();
+  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
+  BatchFunc = createBatchedFormFnPrototype();
 
+  updateBasicBlocksInBatchFunc();
   DominatorTree DT (*BatchFunc);
   LoopInfo LI (DT);
   auto BP = BatchProcess(BatchFunc, &LI, &DT);
@@ -37,47 +39,53 @@ bool BatchMaker::run() {
   return true;
 }
 
-void BatchMaker::createBatchedFormFn() {
+/// Old Function Prototype:
+///    Ret Fn(Type1 A, Type2 B BATCH_ARG, Type3 C BATCH_ARG);
+/// BatchForm Fn Prototype:
+///    void Fn_batch(Type1 A, Type2 * B, Type3 * C, int16_t TAS_BATCHSIZE, Ret * TAS_RETURNS);
+Function * BatchMaker::createBatchedFormFnPrototype() {
   errs() << "Function = " << NonBatchFunc->getName() << "\n";
 
-  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
-  // Create batch parameters
-  SmallVector<Type *, 4> NewParams;
-  SmallVector<std::string, 4> ArgNames;
-  std::string prefix { "batch_arg_" }; int i = 1;
-  unsigned BatchIndex = 0;
-  std::deque<unsigned> BatchParamIndices;
+  // Name of the argument to be batched is prefixed with string "batch_arg_i", where
+  // i goes from [1, ArgsToBatch.size()]
+  std::string prefix { "batch_arg_" }; int i = 0;
+  unsigned BatchParamIndex = 0;
   for (auto & Arg : NonBatchFunc->args()) {
     if (ArgsToBatch.find(&Arg) != ArgsToBatch.end()) {
-      NewParams.push_back(PointerType::get(Arg.getType(), 0));
-      ArgNames.push_back(prefix + std::to_string(i++));
-      BatchParamIndices.push_back(BatchIndex++);
+      BatchArgTypes.push_back(PointerType::get(Arg.getType(), 0));
+      BatchArgNames.push_back(prefix + std::to_string(i++));
+      BatchParamIndices.push_back(BatchParamIndex++);
     } else {
-      NewParams.push_back(Arg.getType());
-      ArgNames.push_back(Arg.getName());
-      BatchIndex++;
+      // Add argument unmodified
+      BatchArgTypes.push_back(Arg.getType());
+      BatchArgNames.push_back(Arg.getName());
+      BatchParamIndex++;
     }
   }
 
   // Adding Parameter representing actual batch size during run time
-  NewParams.push_back(Type::getInt16Ty(NonBatchFunc->getContext()));
-  ArgNames.push_back(std::string("TAS_BATCHSIZE"));
+  BatchArgTypes.push_back(Type::getInt16Ty(NonBatchFunc->getContext()));
+  BatchArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
   auto RetType = NonBatchFunc->getReturnType();
   // Add pointer as output parameter, where return value is stored.
-  NewParams.push_back(PointerType::get(RetType, 0));
-  ArgNames.push_back(std::string("TAS_RETURNS"));
+  BatchArgTypes.push_back(PointerType::get(RetType, 0));
+  BatchArgNames.push_back(std::string("TAS_RETURNS"));
 
   // Create Function prototype
-  FunctionType *BatchFuncType = FunctionType::get(RetType, NewParams, false);
+  FunctionType *BatchFuncType = FunctionType::get(RetType, BatchArgTypes, false);
   BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         NonBatchFunc->getName() + "_batch", NonBatchFunc->getParent());
 
+  return BatchFunc;
+}
+
+void BatchMaker::updateBasicBlocksInBatchFunc() {
   // Set argument names.
   SmallVector<Value *, 4> BatchedArgs;
   auto NewArgIt = BatchFunc->arg_begin();
   for (int i = 0; i < BatchFunc->arg_size() - 1; ++i) {
-    NewArgIt->setName(ArgNames[i]);
+    NewArgIt->setName(BatchArgNames[i]);
     if (i == BatchParamIndices.front()) {
       BatchedArgs.push_back(&*NewArgIt);
       BatchParamIndices.pop_front();
@@ -85,7 +93,7 @@ void BatchMaker::createBatchedFormFn() {
     ++NewArgIt;
   }
 
-  NewArgIt->setName(ArgNames[BatchFunc->arg_size() - 1]);
+  NewArgIt->setName(BatchArgNames[BatchFunc->arg_size() - 1]);
   auto * RetParam = &*NewArgIt;
 
   ValueToValueMapTy VMap;

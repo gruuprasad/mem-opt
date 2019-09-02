@@ -1,6 +1,7 @@
 #ifndef TAS_BATCHMAKER_H
 #define TAS_BATCHMAKER_H
 
+#include <deque>
 #include <string>
 
 #include <llvm/ADT/SmallVector.h>
@@ -22,12 +23,17 @@ class BatchMaker {
   llvm::SmallVector<llvm::Value *, 4> PrefetchVars;
   llvm::SmallPtrSet<llvm::Value *, 4> ArgsToBatch;
 
+  llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
+  llvm::SmallVector<std::string, 4> BatchArgNames;
+  std::deque<unsigned> BatchParamIndices;
+
   public:
   BatchMaker(llvm::Function * F_) :
     NonBatchFunc(F_), BatchFunc(nullptr) {}
 
   bool run();
-  void createBatchedFormFn();
+  llvm::Function * createBatchedFormFnPrototype();
+  void updateBasicBlocksInBatchFunc();
 }; // tas namespace
 
 }
