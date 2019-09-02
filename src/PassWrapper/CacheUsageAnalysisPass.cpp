@@ -1,6 +1,6 @@
 #include "CacheUsageAnalysisPass.h"
-#include "CacheUsageInfo.h"
-#include "Util.h"
+#include "CacheAnalysis/CacheUsageInfo.h"
+#include "Common/Util.h"
 
 #include <llvm/Analysis/MemorySSA.h>
 #include <llvm/Transforms/Utils.h>

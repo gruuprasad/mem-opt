@@ -1,6 +1,6 @@
-#include "BatchMaker.h"
+#include "BatchMaker/BatchMaker.h"
 #include "BatchMakerPass.h"
-#include "Util.h"
+#include "Common/Util.h"
 
 #include "llvm/Transforms/Utils.h"
 #include "llvm/Transforms/Scalar.h"

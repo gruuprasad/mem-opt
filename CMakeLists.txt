@@ -63,7 +63,7 @@ if(DOXYGEN_FOUND)
     )
 endif(DOXYGEN_FOUND)
 
-include_directories(include)
+include_directories(src)
 add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(test)

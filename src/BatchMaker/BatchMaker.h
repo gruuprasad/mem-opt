@@ -14,6 +14,8 @@ namespace tas {
 
 class TASForLoop;
 
+/// This pass converts the single packet processing function into
+/// a function which processes a batch of packets.
 class BatchMaker {
   llvm::Function * OldFunc;
   llvm::Function * NewFunc;

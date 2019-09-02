@@ -9,3 +9,7 @@ target_link_libraries(tasopt
                       LLVMSupport
                       LLVMIRReader
                       LLVMTransformUtils)
+
+
+
+target_include_directories(tasopt PUBLIC src)

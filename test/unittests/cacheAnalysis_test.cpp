@@ -1,6 +1,6 @@
 #include "catch.hpp"
-#include "CacheUsageInfo.h"
-#include "Util.h"
+#include "CacheAnalysis/CacheUsageInfo.h"
+#include "Common/Util.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/SmallVector.h>

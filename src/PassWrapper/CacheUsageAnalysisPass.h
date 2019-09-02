@@ -9,7 +9,7 @@
 #include <llvm/IR/PassManager.h>
 #include <llvm/Pass.h>
 
-#include "CacheUsageInfo.h"
+#include "CacheAnalysis/CacheUsageInfo.h"
 
 namespace tas {
 
