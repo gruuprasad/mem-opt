@@ -79,12 +79,24 @@ void BatchMaker::setArgumentNamesInBatchFunc() {
   RetArg = &*NewArgIt;
 }
 
-bool BatchMaker::run() {
+void BatchMaker::fillBasicBlocksInBatchFunc() {
+  // Store the mapping from old Value to new Value.
+  ValueToValueMapTy VMap;
+  auto NewArg = BatchFunc->arg_begin();
+  for (const Argument & OldArg : NonBatchFunc->args()) {
+    VMap[&OldArg] = &*NewArg++;
+  }
 
+  SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
+  CloneFunctionInto(BatchFunc, NonBatchFunc, VMap, NonBatchFunc->getSubprogram() != nullptr, Returns);
+}
+
+bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
   detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
   BatchFunc = createBatchedFormFnPrototype();
   setArgumentNamesInBatchFunc();
+  fillBasicBlocksInBatchFunc();
 
   updateBasicBlocksInBatchFunc();
   DominatorTree DT (*BatchFunc);
@@ -92,21 +104,10 @@ bool BatchMaker::run() {
   auto BP = BatchProcess(BatchFunc, &LI, &DT);
   bool changed = BP.run();
   BatchFunc->print(errs());
-
   return true;
 }
 
 void BatchMaker::updateBasicBlocksInBatchFunc() {
-
-  ValueToValueMapTy VMap;
-  auto NewA = BatchFunc->arg_begin();
-  for (const Argument & A : NonBatchFunc->args()) {
-    VMap[&A] = &*NewA++;
-  }
-
-  SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
-  CloneFunctionInto(BatchFunc, NonBatchFunc, VMap, NonBatchFunc->getSubprogram() != nullptr, Returns);
-
   auto EntryBB = &BatchFunc->getEntryBlock();
   IRBuilder<> Builder(EntryBB);
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
@@ -172,7 +173,6 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
       if (Found) break;
     }
   }
-
 
   // Make loop body to have a single backedge.
   // For that we need to tie all exiting edges and point it to single block.

@@ -37,6 +37,7 @@ class BatchMaker {
   llvm::Function * createBatchedFormFnPrototype();
   void updateBasicBlocksInBatchFunc();
   void setArgumentNamesInBatchFunc();
+  void fillBasicBlocksInBatchFunc();
 }; // tas namespace
 
 }
