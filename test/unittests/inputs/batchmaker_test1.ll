@@ -8,7 +8,8 @@ target triple = "x86_64-pc-linux-gnu"
 @.str = private unnamed_addr constant [16 x i8] c"tas_batch_maker\00", section "llvm.metadata"
 @.str.1 = private unnamed_addr constant [19 x i8] c"batchmaker_test1.c\00", section "llvm.metadata"
 @.str.2 = private unnamed_addr constant [10 x i8] c"batch_arg\00", section "llvm.metadata"
-@llvm.global.annotations = appending global [2 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @test_fn to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 16 }, { i8*, i8*, i8*, i32 } { i8* bitcast (i32 ()* @test_fn2 to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 24 }], section "llvm.metadata"
+@.str.3 = private unnamed_addr constant [10 x i8] c"expensive\00", section "llvm.metadata"
+@llvm.global.annotations = appending global [2 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (void (%struct.packet*)* @test_fn to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17 }, { i8*, i8*, i8*, i32 } { i8* bitcast (i32 ()* @test_fn2 to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 25 }], section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local void @test_fn(%struct.packet*) #0 {
@@ -41,7 +42,7 @@ define dso_local i32 @test_fn3(i32*, i32*) #0 {
   store i32* %0, i32** %3, align 8
   store i32* %1, i32** %4, align 8
   %5 = bitcast i32** %4 to i8*
-  call void @llvm.var.annotation(i8* %5, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 29)
+  call void @llvm.var.annotation(i8* %5, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 30)
   ret i32 0
 }
 
@@ -56,10 +57,10 @@ define dso_local i32 @test_fn4(i32*, i32*, i32*) #0 {
   store i32* %0, i32** %4, align 8
   store i32* %1, i32** %5, align 8
   %7 = bitcast i32** %5 to i8*
-  call void @llvm.var.annotation(i8* %7, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 33)
+  call void @llvm.var.annotation(i8* %7, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 34)
   store i32* %2, i32** %6, align 8
   %8 = bitcast i32** %6 to i8*
-  call void @llvm.var.annotation(i8* %8, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 33)
+  call void @llvm.var.annotation(i8* %8, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 34)
   ret i32 0
 }
 
@@ -72,11 +73,24 @@ define dso_local i32 @test_fn5(i32*, i32*, i32, i32*) #0 {
   store i32* %0, i32** %5, align 8
   store i32* %1, i32** %6, align 8
   %9 = bitcast i32** %6 to i8*
-  call void @llvm.var.annotation(i8* %9, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 37)
+  call void @llvm.var.annotation(i8* %9, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 38)
   store i32 %2, i32* %7, align 4
   store i32* %3, i32** %8, align 8
   %10 = bitcast i32** %8 to i8*
-  call void @llvm.var.annotation(i8* %10, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 37)
+  call void @llvm.var.annotation(i8* %10, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.2, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 38)
+  ret i32 0
+}
+
+; Function Attrs: noinline nounwind optnone sspstrong uwtable
+define dso_local i32 @test_fn6() #0 {
+  %1 = alloca i32*, align 8
+  %2 = alloca i32*, align 8
+  %3 = bitcast i32** %1 to i8*
+  call void @llvm.var.annotation(i8* %3, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.3, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 44)
+  %4 = bitcast i32** %2 to i8*
+  call void @llvm.var.annotation(i8* %4, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.3, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 45)
+  store i32* null, i32** %2, align 8
+  store i32* null, i32** %1, align 8
   ret i32 0
 }
 

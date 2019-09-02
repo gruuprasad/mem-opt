@@ -182,7 +182,8 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
   }
 
   auto EndBlock = BasicBlock::Create(BatchFunc->getContext(), "EndBlock", BatchFunc);
-  ReturnInst::Create(BatchFunc->getContext(), Constant::getNullValue(RetType), EndBlock);
+  ReturnInst::Create(BatchFunc->getContext(), Constant::getNullValue(NonBatchFunc->getReturnType()),
+                      EndBlock);
 
   // XXX Can be improved, if there is one terminating block, then that itself be knot block.
   auto KnotBlock = BasicBlock::Create(BatchFunc->getContext(), "Knotblock", BatchFunc);
@@ -200,6 +201,7 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
   auto * TripCount = BatchFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
   assert (TripCount && "Trip count argument must be given");
 
+  int i = 1;
   if (BatchCodeStartBlock) {
     auto TL0 = TASForLoop(BatchFunc->getContext(), &BatchFunc->getEntryBlock(), EndBlock,
         "tas.loop." + std::to_string(i), BatchFunc, TripCount);

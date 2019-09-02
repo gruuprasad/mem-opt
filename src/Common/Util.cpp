@@ -35,6 +35,56 @@ void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnLi
   }
 }
 
+void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
+  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
+  // XXX Checking only entry basic block for annotated variables.
+  for (auto & I : F->front()) {
+    if (auto * CI = dyn_cast<CallInst>(&I)) {
+
+      // Check whether var.annotation or not
+      auto * Callee = CI->getCalledFunction();
+      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+
+      // Get annotation string literal
+      auto StringTag = cast<ConstantDataArray>(
+          cast<GlobalVariable>(
+            CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
+
+      if (StringTag.compare("expensive") == 0) {
+        ExpensivePointers.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      }
+    }
+  }
+}
+
+void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
+  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
+  // XXX Checking only entry basic block for annotated variables.
+  for (auto & I : F->front()) {
+    if (auto * CI = dyn_cast<CallInst>(&I)) {
+
+      // Check whether var.annotation or not
+      auto * Callee = CI->getCalledFunction();
+      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+
+      // Get annotation string literal
+      auto StringTag = cast<ConstantDataArray>(
+          cast<GlobalVariable>(
+            CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
+
+      if (StringTag.compare("batch_arg") == 0) {
+        auto AllocaVar = cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0);
+        for (auto & I : F->front()) {
+          if (auto * Store = dyn_cast<StoreInst>(&I)) {
+            if (Store->getPointerOperand() == AllocaVar)
+              BatchParameters.insert(Store->getValueOperand());
+          }
+        }
+      }
+    }
+  }
+}
+
 void setAnnotationInFunctionObject(Module * M) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
   if (!AnnotationList) return;
@@ -121,55 +171,7 @@ unsigned getTypeSizeInBits(Type * Ty) {
   return Total;
 }
 
-void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
-  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
-  // XXX Checking only entry basic block for annotated variables.
-  for (auto & I : F->front()) {
-    if (auto * CI = dyn_cast<CallInst>(&I)) {
 
-      // Check whether var.annotation or not
-      auto * Callee = CI->getCalledFunction();
-      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
-
-      // Get annotation string literal
-      auto StringTag = cast<ConstantDataArray>(
-          cast<GlobalVariable>(
-            CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
-
-      if (StringTag.compare("expensive") == 0) {
-        ExpensivePointers.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
-      }
-    }
-  }
-}
-
-void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
-  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
-  // XXX Checking only entry basic block for annotated variables.
-  for (auto & I : F->front()) {
-    if (auto * CI = dyn_cast<CallInst>(&I)) {
-
-      // Check whether var.annotation or not
-      auto * Callee = CI->getCalledFunction();
-      if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
-
-      // Get annotation string literal
-      auto StringTag = cast<ConstantDataArray>(
-          cast<GlobalVariable>(
-            CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
-
-      if (StringTag.compare("batch_arg") == 0) {
-        auto AllocaVar = cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0);
-        for (auto & I : F->front()) {
-          if (auto * Store = dyn_cast<StoreInst>(&I)) {
-            if (Store->getPointerOperand() == AllocaVar)
-              BatchParameters.insert(Store->getValueOperand());
-          }
-        }
-      }
-    }
-  }
-}
 
 Value * createArray(Function * F, Type * Ty, unsigned size) {
   // Allocate temporary array

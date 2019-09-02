@@ -2,6 +2,7 @@
 
 #define TAS_MAKE_BATCH __attribute__((annotate("tas_batch_maker")))
 #define BATCH_ARG __attribute__((annotate("batch_arg")))
+#define EXPENSIVE __attribute__((annotate("expensive")))
 
 // packet fits in a single cache line
 struct packet {
@@ -35,6 +36,15 @@ int test_fn4(int * a, int *b1 BATCH_ARG, int * b2 BATCH_ARG) {
 }
 
 int test_fn5(int * a, int *b1 BATCH_ARG, int c, int * b2 BATCH_ARG) {
+  return 0;
+}
+
+// Test case 3
+int test_fn6() {
+  int * a EXPENSIVE;
+  int * b EXPENSIVE;
+
+  a = b = NULL;
   return 0;
 }
 

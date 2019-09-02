@@ -73,3 +73,16 @@ TEST_CASE("detect Batching Parameters") {
     REQUIRE(BatchArgs.size() == 2);
   }
 }
+
+TEST_CASE("detect expensive variables") {
+  auto M = parseIR(std::string("batchmaker_test1.ll"));
+  REQUIRE( M != nullptr);
+
+  {
+    // Function with two expensive variables
+    auto F = M->getFunction("test_fn6");
+    SmallVector<Value *, 4> ExpensiveVars;
+    detectExpensivePointerVariables(F, ExpensiveVars);
+    REQUIRE(ExpensiveVars.size() == 2);
+  }
+}
