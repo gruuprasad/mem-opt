@@ -23,22 +23,6 @@ using namespace llvm;
 
 namespace tas {
 
-bool BatchMaker::run() {
-
-  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
-  BatchFunc = createBatchedFormFnPrototype();
-
-  updateBasicBlocksInBatchFunc();
-  DominatorTree DT (*BatchFunc);
-  LoopInfo LI (DT);
-  auto BP = BatchProcess(BatchFunc, &LI, &DT);
-  bool changed = BP.run();
-  BatchFunc->print(errs());
-
-  return true;
-}
-
 /// Old Function Prototype:
 ///    Ret Fn(Type1 A, Type2 B BATCH_ARG, Type3 C BATCH_ARG);
 /// BatchForm Fn Prototype:
@@ -74,27 +58,45 @@ Function * BatchMaker::createBatchedFormFnPrototype() {
 
   // Create Function prototype
   FunctionType *BatchFuncType = FunctionType::get(RetType, BatchArgTypes, false);
-  BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
+  auto F = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         NonBatchFunc->getName() + "_batch", NonBatchFunc->getParent());
-
-  return BatchFunc;
+  return F;
 }
 
-void BatchMaker::updateBasicBlocksInBatchFunc() {
+void BatchMaker::setArgumentNamesInBatchFunc() {
   // Set argument names.
-  SmallVector<Value *, 4> BatchedArgs;
   auto NewArgIt = BatchFunc->arg_begin();
   for (int i = 0; i < BatchFunc->arg_size() - 1; ++i) {
     NewArgIt->setName(BatchArgNames[i]);
     if (i == BatchParamIndices.front()) {
-      BatchedArgs.push_back(&*NewArgIt);
+      BatchArgs.push_back(&*NewArgIt);
       BatchParamIndices.pop_front();
     }
     ++NewArgIt;
   }
 
   NewArgIt->setName(BatchArgNames[BatchFunc->arg_size() - 1]);
-  auto * RetParam = &*NewArgIt;
+  RetArg = &*NewArgIt;
+}
+
+bool BatchMaker::run() {
+
+  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
+  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
+  BatchFunc = createBatchedFormFnPrototype();
+  setArgumentNamesInBatchFunc();
+
+  updateBasicBlocksInBatchFunc();
+  DominatorTree DT (*BatchFunc);
+  LoopInfo LI (DT);
+  auto BP = BatchProcess(BatchFunc, &LI, &DT);
+  bool changed = BP.run();
+  BatchFunc->print(errs());
+
+  return true;
+}
+
+void BatchMaker::updateBasicBlocksInBatchFunc() {
 
   ValueToValueMapTy VMap;
   auto NewA = BatchFunc->arg_begin();
@@ -112,7 +114,7 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
   // For each argument, replace all uses.
   SmallPtrSet<Value *, 4> BatchedAllocas;
   SmallVector<Value *, 4> BatchGEPs;
-  for (auto & A : BatchedArgs) {
+  for (auto & A : BatchArgs) {
     auto APtr = Builder.CreateAlloca(A->getType());
     BatchedAllocas.insert(APtr);
     //Builder.CreateStore(A, APtr);
@@ -149,8 +151,8 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
   }
 
   // Store Ret parameter in alloca.
-  auto RetAlloca = Builder.CreateAlloca(RetParam->getType());
-  Builder.CreateStore(RetParam, RetAlloca);
+  auto RetAlloca = Builder.CreateAlloca(RetArg->getType());
+  Builder.CreateStore(RetArg, RetAlloca);
 
   // Find first use of batch alloca and split there.
   // New basic block going to be part of batch processing loop.

@@ -25,7 +25,9 @@ class BatchMaker {
 
   llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
   llvm::SmallVector<std::string, 4> BatchArgNames;
+  llvm::SmallVector<llvm::Value *, 4> BatchArgs;
   std::deque<unsigned> BatchParamIndices;
+  llvm::Argument * RetArg;
 
   public:
   BatchMaker(llvm::Function * F_) :
@@ -34,6 +36,7 @@ class BatchMaker {
   bool run();
   llvm::Function * createBatchedFormFnPrototype();
   void updateBasicBlocksInBatchFunc();
+  void setArgumentNamesInBatchFunc();
 }; // tas namespace
 
 }
