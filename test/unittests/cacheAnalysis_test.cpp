@@ -30,6 +30,7 @@ static std::unique_ptr<Module> parseIR(LLVMContext &C, const char *IR) {
   return Mod;
 }
 
+/*
 TEST_CASE("Calculate struct size") {
   LLVMContext C;
   SMDiagnostic Err;
@@ -37,6 +38,7 @@ TEST_CASE("Calculate struct size") {
   std::unique_ptr<Module> M (parseIRFile(input_dir + std::string("cachecheck.ll"),  Err, C));
   REQUIRE( M != nullptr);
 }
+
 
 TEST_CASE("struct size test") {
   LLVMContext C;
@@ -181,3 +183,4 @@ TEST_CASE("fast_flows_packet_fss") {
 
   REQUIRE(CI.getNumOfCacheLines() == 3);
 }
+*/

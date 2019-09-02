@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "Macros.h"
+#include "Common/Macros.h"
 
 // packet fits in a single cache line
 struct packet {
