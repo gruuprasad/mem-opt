@@ -17,13 +17,14 @@ class TASForLoop;
 /// This pass converts the single packet processing function into
 /// a function which processes a batch of packets.
 class BatchMaker {
-  llvm::Function * OldFunc;
-  llvm::Function * NewFunc;
+  llvm::Function * NonBatchFunc;
+  llvm::Function * BatchFunc;
   llvm::SmallVector<llvm::Value *, 4> PrefetchVars;
+  llvm::SmallPtrSet<llvm::Value *, 4> ArgsToBatch;
 
   public:
   BatchMaker(llvm::Function * F_) :
-    OldFunc(F_), NewFunc(nullptr), PrefetchVars() {}
+    NonBatchFunc(F_), BatchFunc(nullptr) {}
 
   bool run();
   void createBatchedFormFn();

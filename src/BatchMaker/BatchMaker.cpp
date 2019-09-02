@@ -25,31 +25,29 @@ namespace tas {
 
 bool BatchMaker::run() {
 
+  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
   createBatchedFormFn();
 
-  DominatorTree DT (*NewFunc);
+  DominatorTree DT (*BatchFunc);
   LoopInfo LI (DT);
-  auto BP = BatchProcess(NewFunc, &LI, &DT);
+  auto BP = BatchProcess(BatchFunc, &LI, &DT);
   bool changed = BP.run();
-  NewFunc->print(errs());
+  BatchFunc->print(errs());
 
   return true;
 }
 
 void BatchMaker::createBatchedFormFn() {
-  errs() << "Function = " << OldFunc->getName() << "\n";
-  SmallPtrSet<Value *, 4> ArgsToBatch;
-  detectBatchingParameters(OldFunc, ArgsToBatch);
+  errs() << "Function = " << NonBatchFunc->getName() << "\n";
 
-  detectExpensivePointerVariables(OldFunc, PrefetchVars);
-
+  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
   // Create batch parameters
   SmallVector<Type *, 4> NewParams;
   SmallVector<std::string, 4> ArgNames;
   std::string prefix { "batch_arg_" }; int i = 1;
   unsigned BatchIndex = 0;
   std::deque<unsigned> BatchParamIndices;
-  for (auto & Arg : OldFunc->args()) {
+  for (auto & Arg : NonBatchFunc->args()) {
     if (ArgsToBatch.find(&Arg) != ArgsToBatch.end()) {
       NewParams.push_back(PointerType::get(Arg.getType(), 0));
       ArgNames.push_back(prefix + std::to_string(i++));
@@ -62,23 +60,23 @@ void BatchMaker::createBatchedFormFn() {
   }
 
   // Adding Parameter representing actual batch size during run time
-  NewParams.push_back(Type::getInt16Ty(OldFunc->getContext()));
+  NewParams.push_back(Type::getInt16Ty(NonBatchFunc->getContext()));
   ArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
-  auto RetType = OldFunc->getReturnType();
+  auto RetType = NonBatchFunc->getReturnType();
   // Add pointer as output parameter, where return value is stored.
   NewParams.push_back(PointerType::get(RetType, 0));
   ArgNames.push_back(std::string("TAS_RETURNS"));
 
   // Create Function prototype
   FunctionType *BatchFuncType = FunctionType::get(RetType, NewParams, false);
-  NewFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
-                                        OldFunc->getName() + "_batch", OldFunc->getParent());
+  BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
+                                        NonBatchFunc->getName() + "_batch", NonBatchFunc->getParent());
 
   // Set argument names.
   SmallVector<Value *, 4> BatchedArgs;
-  auto NewArgIt = NewFunc->arg_begin();
-  for (int i = 0; i < NewFunc->arg_size() - 1; ++i) {
+  auto NewArgIt = BatchFunc->arg_begin();
+  for (int i = 0; i < BatchFunc->arg_size() - 1; ++i) {
     NewArgIt->setName(ArgNames[i]);
     if (i == BatchParamIndices.front()) {
       BatchedArgs.push_back(&*NewArgIt);
@@ -87,19 +85,19 @@ void BatchMaker::createBatchedFormFn() {
     ++NewArgIt;
   }
 
-  NewArgIt->setName(ArgNames[NewFunc->arg_size() - 1]);
+  NewArgIt->setName(ArgNames[BatchFunc->arg_size() - 1]);
   auto * RetParam = &*NewArgIt;
 
   ValueToValueMapTy VMap;
-  auto NewA = NewFunc->arg_begin();
-  for (const Argument & A : OldFunc->args()) {
+  auto NewA = BatchFunc->arg_begin();
+  for (const Argument & A : NonBatchFunc->args()) {
     VMap[&A] = &*NewA++;
   }
 
   SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
-  CloneFunctionInto(NewFunc, OldFunc, VMap, OldFunc->getSubprogram() != nullptr, Returns);
+  CloneFunctionInto(BatchFunc, NonBatchFunc, VMap, NonBatchFunc->getSubprogram() != nullptr, Returns);
 
-  auto EntryBB = &NewFunc->getEntryBlock();
+  auto EntryBB = &BatchFunc->getEntryBlock();
   IRBuilder<> Builder(EntryBB);
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
 
@@ -149,7 +147,7 @@ void BatchMaker::createBatchedFormFn() {
   // Find first use of batch alloca and split there.
   // New basic block going to be part of batch processing loop.
   BasicBlock * BatchCodeStartBlock = nullptr;
-  for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
+  for (inst_iterator I = inst_begin(BatchFunc), E = inst_end(BatchFunc); I != E; ++I) {
     if (isa<LoadInst>(*I) && isa<GetElementPtrInst>(I->getNextNode()) &&
         isa<LoadInst>(I->getNextNode()->getNextNode())) {
 
@@ -169,17 +167,17 @@ void BatchMaker::createBatchedFormFn() {
   // Make loop body to have a single backedge.
   // For that we need to tie all exiting edges and point it to single block.
   SmallVector<BasicBlock *, 4> TerminatingBB;
-  for (inst_iterator I = inst_begin(NewFunc), E = inst_end(NewFunc); I != E; ++I) {
+  for (inst_iterator I = inst_begin(BatchFunc), E = inst_end(BatchFunc); I != E; ++I) {
     if (ReturnInst * Return = dyn_cast<ReturnInst>(&*I)) {
       TerminatingBB.push_back(Return->getParent());
     }
   }
 
-  auto EndBlock = BasicBlock::Create(NewFunc->getContext(), "EndBlock", NewFunc);
-  ReturnInst::Create(NewFunc->getContext(), Constant::getNullValue(RetType), EndBlock);
+  auto EndBlock = BasicBlock::Create(BatchFunc->getContext(), "EndBlock", BatchFunc);
+  ReturnInst::Create(BatchFunc->getContext(), Constant::getNullValue(RetType), EndBlock);
 
   // XXX Can be improved, if there is one terminating block, then that itself be knot block.
-  auto KnotBlock = BasicBlock::Create(NewFunc->getContext(), "Knotblock", NewFunc);
+  auto KnotBlock = BasicBlock::Create(BatchFunc->getContext(), "Knotblock", BatchFunc);
   BranchInst::Create(EndBlock, KnotBlock);
 
   SmallVector<Value *, 4> RetVals;
@@ -189,14 +187,14 @@ void BatchMaker::createBatchedFormFn() {
   }
 
   // Use Dominator tree to decide which alloca index need to be replaced.
-  auto DT = DominatorTree(*NewFunc);
+  auto DT = DominatorTree(*BatchFunc);
 
-  auto * TripCount = NewFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
+  auto * TripCount = BatchFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
   assert (TripCount && "Trip count argument must be given");
 
   if (BatchCodeStartBlock) {
-    auto TL0 = TASForLoop(NewFunc->getContext(), &NewFunc->getEntryBlock(), EndBlock,
-        "tas.loop." + std::to_string(i), NewFunc, TripCount);
+    auto TL0 = TASForLoop(BatchFunc->getContext(), &BatchFunc->getEntryBlock(), EndBlock,
+        "tas.loop." + std::to_string(i), BatchFunc, TripCount);
     TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
     // Set offset as loop index variable in BatchGEPs.
     auto IndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
