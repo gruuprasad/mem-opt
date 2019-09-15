@@ -100,13 +100,6 @@ bool BatchMaker::run() {
   fillBasicBlocksInBatchFunc();
 
   //updateBasicBlocksInBatchFunc();
-  /*
-  DominatorTree DT (*BatchFunc);
-  LoopInfo LI (DT);
-  auto BP = BatchProcess(BatchFunc, &LI, &DT);
-  bool changed = BP.run();
-  */
-  //BatchFunc->print(errs());
   return true;
 }
 
@@ -173,58 +166,6 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
         }
       }
       if (Found) break;
-    }
-  }
-
-  // Make loop body to have a single backedge.
-  // For that we need to tie all exiting edges and point it to single block.
-  SmallVector<BasicBlock *, 4> TerminatingBB;
-  for (inst_iterator I = inst_begin(BatchFunc), E = inst_end(BatchFunc); I != E; ++I) {
-    if (ReturnInst * Return = dyn_cast<ReturnInst>(&*I)) {
-      TerminatingBB.push_back(Return->getParent());
-    }
-  }
-
-  auto EndBlock = BasicBlock::Create(BatchFunc->getContext(), "EndBlock", BatchFunc);
-  ReturnInst::Create(BatchFunc->getContext(), Constant::getNullValue(NonBatchFunc->getReturnType()),
-                      EndBlock);
-
-  // XXX Can be improved, if there is one terminating block, then that itself be knot block.
-  auto KnotBlock = BasicBlock::Create(BatchFunc->getContext(), "Knotblock", BatchFunc);
-  BranchInst::Create(EndBlock, KnotBlock);
-
-  SmallVector<Value *, 4> RetVals;
-  for (auto & BB : TerminatingBB) {
-    RetVals.push_back(BB->getTerminator()->getOperand(0));
-    ReplaceInstWithInst(BB->getTerminator(), BranchInst::Create(KnotBlock));
-  }
-
-  // Use Dominator tree to decide which alloca index need to be replaced.
-  auto DT = DominatorTree(*BatchFunc);
-
-  auto * TripCount = BatchFunc->getValueSymbolTable()->lookup("TAS_BATCHSIZE");
-  assert (TripCount && "Trip count argument must be given");
-
-  int i = 1;
-  if (BatchCodeStartBlock) {
-    auto TL0 = TASForLoop(BatchFunc->getContext(), &BatchFunc->getEntryBlock(), EndBlock,
-        "tas.loop." + std::to_string(i), BatchFunc, TripCount);
-    TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
-    // Set offset as loop index variable in BatchGEPs.
-    auto LoopIndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
-    for (auto & V : BatchGEPs) {
-      auto GI = cast<Instruction>(V);
-      if (!DT.dominates(GI, BatchCodeStartBlock))
-        GI->setOperand(GI->getNumOperands() - 1, LoopIndexVar);
-    }
-
-    // Store return value in a temporary variable.
-    auto RetVal = RetVals.begin();
-    for (auto & BB : TerminatingBB) {
-      Builder.SetInsertPoint(BB->getTerminator());
-      auto ptr = Builder.CreateLoad(RetAlloca);
-      auto offset = Builder.CreateGEP(ptr, LoopIndexVar);
-      Builder.CreateStore(*RetVal++, offset);
     }
   }
 }
