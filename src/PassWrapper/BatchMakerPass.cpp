@@ -41,6 +41,7 @@ static RegisterPass<TASBatchMaker> X("tas-batch-maker", "Pass to make batched pa
                                      false);
 } // Anonymous namespace
 
+/*
 static void registerTASPass(const PassManagerBuilder & Builder,
                            legacy::PassManagerBase &PM) {
   PM.add(new TASBatchMaker());
@@ -49,3 +50,16 @@ static void registerTASPass(const PassManagerBuilder & Builder,
 static RegisterStandardPasses
     RegisterTASPass(PassManagerBuilder::EP_EnabledOnOptLevel0,
                    registerTASPass);
+                   */
+
+namespace tas {
+
+void runBatchMakerPass(Module * M) {
+  legacy::PassManager FPM;
+  FPM.add(new DominatorTreeWrapperPass());
+  FPM.add(new LoopInfoWrapperPass());
+  FPM.add(new TASBatchMaker());
+  FPM.run(*M);
+}
+
+}

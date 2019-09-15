@@ -27,7 +27,7 @@ namespace tas {
 ///    Ret Fn(Type1 A, Type2 B BATCH_ARG, Type3 C BATCH_ARG);
 /// BatchForm Fn Prototype:
 ///    void Fn_batch(Type1 A, Type2 * B, Type3 * C, int16_t TAS_BATCHSIZE, Ret * TAS_RETURNS);
-Function * BatchMaker::createBatchedFormFnPrototype() {
+void BatchMaker::createBatchedFormFnPrototype() {
   errs() << "Function = " << NonBatchFunc->getName() << "\n";
 
   // Name of the argument to be batched is prefixed with string "batch_arg_i", where
@@ -48,7 +48,7 @@ Function * BatchMaker::createBatchedFormFnPrototype() {
   }
 
   // Adding Parameter representing actual batch size during run time
-  BatchArgTypes.push_back(Type::getInt16Ty(NonBatchFunc->getContext()));
+  BatchArgTypes.push_back(Type::getInt32Ty(NonBatchFunc->getContext()));
   BatchArgNames.push_back(std::string("TAS_BATCHSIZE"));
 
   auto RetType = NonBatchFunc->getReturnType();
@@ -58,9 +58,8 @@ Function * BatchMaker::createBatchedFormFnPrototype() {
 
   // Create Function prototype
   FunctionType *BatchFuncType = FunctionType::get(RetType, BatchArgTypes, false);
-  auto F = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
+  BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
                                         NonBatchFunc->getName() + "_batch", NonBatchFunc->getParent());
-  return F;
 }
 
 void BatchMaker::setArgumentNamesInBatchFunc() {
@@ -91,33 +90,13 @@ void BatchMaker::fillBasicBlocksInBatchFunc() {
   CloneFunctionInto(BatchFunc, NonBatchFunc, VMap, NonBatchFunc->getSubprogram() != nullptr, Returns);
 }
 
-bool BatchMaker::run() {
-  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
-  BatchFunc = createBatchedFormFnPrototype();
-  setArgumentNamesInBatchFunc();
-  BatchFunc->print(errs());
-  fillBasicBlocksInBatchFunc();
-
-  //updateBasicBlocksInBatchFunc();
-  return true;
-}
-
-void BatchMaker::updateBasicBlocksInBatchFunc() {
-  auto EntryBB = &BatchFunc->getEntryBlock();
+void BatchMaker::replaceArgUsesWithBatchArgVal() {
   IRBuilder<> Builder(EntryBB);
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
-
-  auto IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
-  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
-
   // For each argument, replace all uses.
-  SmallPtrSet<Value *, 4> BatchedAllocas;
-  SmallVector<Value *, 4> BatchGEPs;
   for (auto & BatchArg : BatchArgs) {
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
-    BatchedAllocas.insert(BatchArgAlloca);
-    //Builder.CreateStore(A, APtr);
+    BatchAllocas.insert(BatchArgAlloca);
     auto StoreI = findFirstUseInStoreInst(BatchArg);
 
     // Store argument in alloca variable.
@@ -145,29 +124,34 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
       NumUses--;
     }
   }
+}
 
+void BatchMaker::updateBasicBlocksInBatchFunc(){
+  EntryBB = &BatchFunc->getEntryBlock();
+  IRBuilder<> Builder(EntryBB);
+  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
+
+  // Batch index variable:
+  // int i = 0;
+  IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
   // Store Ret parameter in alloca.
+  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
   auto RetAlloca = Builder.CreateAlloca(RetArg->getType());
   Builder.CreateStore(RetArg, RetAlloca);
 
-  // Find first use of batch alloca and split there.
-  // New basic block going to be part of batch processing loop.
-  BasicBlock * BatchCodeStartBlock = nullptr;
-  for (inst_iterator I = inst_begin(BatchFunc), E = inst_end(BatchFunc); I != E; ++I) {
-    if (isa<LoadInst>(*I) && isa<GetElementPtrInst>(I->getNextNode()) &&
-        isa<LoadInst>(I->getNextNode()->getNextNode())) {
+  replaceArgUsesWithBatchArgVal();
+}
 
-      bool Found = false;
-      for (const auto * V : I->operand_values()) {
-        if (BatchedAllocas.find(V) != BatchedAllocas.end()) {
-          BatchCodeStartBlock = I->getParent()->splitBasicBlock(BasicBlock::iterator(*I), "BatchBlock_begin");
-          Found = true;
-          break;
-        }
-      }
-      if (Found) break;
-    }
-  }
+bool BatchMaker::run() {
+  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
+  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
+  createBatchedFormFnPrototype();
+  setArgumentNamesInBatchFunc();
+  fillBasicBlocksInBatchFunc();
+  updateBasicBlocksInBatchFunc();
+  errs() << *BatchFunc->getParent();
+  return true;
 }
 
 } // tas namespace

@@ -26,15 +26,21 @@ class BatchMaker {
   llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
   llvm::SmallVector<std::string, 4> BatchArgNames;
   llvm::SmallVector<llvm::Value *, 4> BatchArgs;
+  llvm::SmallVector<llvm::Value *, 4> BatchGEPs;
+  llvm::SmallPtrSet<llvm::Value *, 4> BatchAllocas;
   std::deque<unsigned> BatchParamIndices;
+  llvm::AllocaInst * IndexVarPtr;
   llvm::Argument * RetArg;
+  llvm::BasicBlock * EntryBB;
+
+  void replaceArgUsesWithBatchArgVal();
 
   public:
   BatchMaker(llvm::Function * F_) :
     NonBatchFunc(F_), BatchFunc(nullptr) {}
 
   bool run();
-  llvm::Function * createBatchedFormFnPrototype();
+  void createBatchedFormFnPrototype();
   void updateBasicBlocksInBatchFunc();
   void setArgumentNamesInBatchFunc();
   void fillBasicBlocksInBatchFunc();

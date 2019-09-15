@@ -12,6 +12,7 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/SourceMgr.h>
 
+#include "PassWrapper/BatchMakerPass.h"
 #include "PassWrapper/CacheUsageAnalysisPass.h"
 #include "CacheAnalysis/CacheUsageInfo.h"
 #include "Common/ToolUtil.h"
@@ -58,7 +59,7 @@ int main(int argc, char * argv[]) {
     return -1;
   }
 
-  // runCacheAnalysisPass(M.get(), CacheLineSize);
+  tas::runBatchMakerPass(M);
 
   return 0;
 }

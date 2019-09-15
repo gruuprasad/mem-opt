@@ -1,11 +1,11 @@
-set(HEADERS BatchMakerPass.h BatchProcessPass.h CacheUsageAnalysisPass.h)
-add_library(TASPass
+set(HEADERS BatchMakerPass.h CacheUsageAnalysisPass.h)
+add_library(TASPass SHARED
             ${HEADERS}
             BatchMakerPass.cpp
-            BatchProcessPass.cpp
             CacheUsageAnalysisPass.cpp)
 
 target_link_libraries(TASPass
+                      batchMaker
                       LLVMCore
                       common)
 

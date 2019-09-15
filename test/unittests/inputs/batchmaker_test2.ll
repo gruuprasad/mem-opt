@@ -9,27 +9,67 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.1 = private unnamed_addr constant [19 x i8] c"batchmaker_test2.c\00", section "llvm.metadata"
 @.str.2 = private unnamed_addr constant [16 x i8] c"packet ip = %d\0A\00", align 1
 @.str.3 = private unnamed_addr constant [16 x i8] c"packet id = %d\0A\00", align 1
-@.str.4 = private unnamed_addr constant [16 x i8] c"tas_batch_maker\00", section "llvm.metadata"
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (i32 (%struct.packet*)* @process_packet to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.4, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17 }], section "llvm.metadata"
+@.str.4 = private unnamed_addr constant [9 x i8] c"fastpath\00", align 1
+@.str.5 = private unnamed_addr constant [9 x i8] c"slowpath\00", align 1
+@.str.6 = private unnamed_addr constant [7 x i8] c"unlock\00", align 1
+@.str.7 = private unnamed_addr constant [16 x i8] c"tas_batch_maker\00", section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (i32 (%struct.packet*)* @process_packet to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17 }], section "llvm.metadata"
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
 define dso_local i32 @process_packet(%struct.packet*) #0 {
-  %2 = alloca %struct.packet*, align 8
+  %2 = alloca i32, align 4
   %3 = alloca %struct.packet*, align 8
-  store %struct.packet* %0, %struct.packet** %2, align 8
-  %4 = bitcast %struct.packet** %2 to i8*
-  call void @llvm.var.annotation(i8* %4, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17)
-  %5 = load %struct.packet*, %struct.packet** %2, align 8
-  store %struct.packet* %5, %struct.packet** %3, align 8
+  %4 = alloca %struct.packet*, align 8
+  store %struct.packet* %0, %struct.packet** %3, align 8
+  %5 = bitcast %struct.packet** %3 to i8*
+  call void @llvm.var.annotation(i8* %5, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17)
   %6 = load %struct.packet*, %struct.packet** %3, align 8
-  %7 = getelementptr inbounds %struct.packet, %struct.packet* %6, i32 0, i32 0
-  %8 = load i32, i32* %7, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.2, i32 0, i32 0), i32 %8)
-  %10 = load %struct.packet*, %struct.packet** %3, align 8
-  %11 = getelementptr inbounds %struct.packet, %struct.packet* %10, i32 0, i32 1
-  %12 = load i32, i32* %11, align 4
-  %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.3, i32 0, i32 0), i32 %12)
-  ret i32 0
+  store %struct.packet* %6, %struct.packet** %4, align 8
+  %7 = load %struct.packet*, %struct.packet** %4, align 8
+  %8 = getelementptr inbounds %struct.packet, %struct.packet* %7, i32 0, i32 0
+  %9 = load i32, i32* %8, align 4
+  %10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.2, i32 0, i32 0), i32 %9)
+  %11 = load %struct.packet*, %struct.packet** %4, align 8
+  %12 = getelementptr inbounds %struct.packet, %struct.packet* %11, i32 0, i32 1
+  %13 = load i32, i32* %12, align 4
+  %14 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.3, i32 0, i32 0), i32 %13)
+  %15 = load %struct.packet*, %struct.packet** %4, align 8
+  %16 = getelementptr inbounds %struct.packet, %struct.packet* %15, i32 0, i32 1
+  %17 = load i32, i32* %16, align 4
+  %18 = icmp eq i32 %17, 1
+  br i1 %18, label %19, label %20
+
+; <label>:19:                                     ; preds = %1
+  br label %30
+
+; <label>:20:                                     ; preds = %1
+  %21 = load %struct.packet*, %struct.packet** %4, align 8
+  %22 = getelementptr inbounds %struct.packet, %struct.packet* %21, i32 0, i32 1
+  %23 = load i32, i32* %22, align 4
+  %24 = icmp eq i32 %23, 2
+  br i1 %24, label %25, label %26
+
+; <label>:25:                                     ; preds = %20
+  br label %28
+
+; <label>:26:                                     ; preds = %20
+  %27 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.4, i32 0, i32 0))
+  store i32 0, i32* %2, align 4
+  br label %32
+
+; <label>:28:                                     ; preds = %25
+  %29 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.5, i32 0, i32 0))
+  store i32 -2, i32* %2, align 4
+  br label %32
+
+; <label>:30:                                     ; preds = %19
+  %31 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.6, i32 0, i32 0))
+  store i32 -1, i32* %2, align 4
+  br label %32
+
+; <label>:32:                                     ; preds = %30, %28, %26
+  %33 = load i32, i32* %2, align 4
+  ret i32 %33
 }
 
 ; Function Attrs: nounwind
@@ -38,33 +78,41 @@ declare void @llvm.var.annotation(i8*, i8*, i8*, i32) #1
 declare i32 @printf(i8*, ...) #2
 
 ; Function Attrs: noinline nounwind optnone sspstrong uwtable
-define dso_local i32 @caller_fn() #0 {
-  %1 = alloca %struct.packet*, align 8
-  %2 = call noalias i8* @malloc(i64 16) #1
-  %3 = bitcast i8* %2 to %struct.packet*
-  store %struct.packet* %3, %struct.packet** %1, align 8
-  %4 = load %struct.packet*, %struct.packet** %1, align 8
-  %5 = getelementptr inbounds %struct.packet, %struct.packet* %4, i32 0, i32 0
-  store i32 1000, i32* %5, align 4
-  %6 = load %struct.packet*, %struct.packet** %1, align 8
-  %7 = getelementptr inbounds %struct.packet, %struct.packet* %6, i32 0, i32 1
-  store i32 1, i32* %7, align 4
-  %8 = load %struct.packet*, %struct.packet** %1, align 8
-  %9 = getelementptr inbounds %struct.packet, %struct.packet* %8, i32 0, i32 2
-  store i32 200, i32* %9, align 4
-  %10 = load %struct.packet*, %struct.packet** %1, align 8
-  %11 = getelementptr inbounds %struct.packet, %struct.packet* %10, i32 0, i32 3
-  store i32 300, i32* %11, align 4
-  %12 = load %struct.packet*, %struct.packet** %1, align 8
-  %13 = call i32 @process_packet(%struct.packet* %12)
-  %14 = load %struct.packet*, %struct.packet** %1, align 8
-  %15 = bitcast %struct.packet* %14 to i8*
-  call void @free(i8* %15) #1
+define dso_local i32 @main() #0 {
+  %1 = alloca i32, align 4
+  %2 = alloca %struct.packet*, align 8
+  %3 = alloca i32*, align 8
+  store i32 0, i32* %1, align 4
+  %4 = call noalias i8* @malloc(i64 16) #1
+  %5 = bitcast i8* %4 to %struct.packet*
+  store %struct.packet* %5, %struct.packet** %2, align 8
+  %6 = load %struct.packet*, %struct.packet** %2, align 8
+  %7 = getelementptr inbounds %struct.packet, %struct.packet* %6, i32 0, i32 0
+  store i32 1000, i32* %7, align 4
+  %8 = load %struct.packet*, %struct.packet** %2, align 8
+  %9 = getelementptr inbounds %struct.packet, %struct.packet* %8, i32 0, i32 1
+  store i32 1, i32* %9, align 4
+  %10 = load %struct.packet*, %struct.packet** %2, align 8
+  %11 = getelementptr inbounds %struct.packet, %struct.packet* %10, i32 0, i32 2
+  store i32 200, i32* %11, align 4
+  %12 = load %struct.packet*, %struct.packet** %2, align 8
+  %13 = getelementptr inbounds %struct.packet, %struct.packet* %12, i32 0, i32 3
+  store i32 300, i32* %13, align 4
+  %14 = load %struct.packet*, %struct.packet** %2, align 8
+  %15 = call i32 @process_packet(%struct.packet* %14)
+  store i32* null, i32** %3, align 8
+  %16 = load i32*, i32** %3, align 8
+  call void @process_packet_batch(%struct.packet** %2, i32 1, i32* %16)
+  %17 = load %struct.packet*, %struct.packet** %2, align 8
+  %18 = bitcast %struct.packet* %17 to i8*
+  call void @free(i8* %18) #1
   ret i32 0
 }
 
 ; Function Attrs: nounwind
 declare noalias i8* @malloc(i64) #3
+
+declare void @process_packet_batch(%struct.packet**, i32, i32*) #2
 
 ; Function Attrs: nounwind
 declare void @free(i8*) #3

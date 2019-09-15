@@ -1,3 +1,3 @@
 set(HEADERS BatchMaker.h)
-add_library(bathchMaker
+add_library(batchMaker
             BatchMaker.cpp)

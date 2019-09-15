@@ -149,9 +149,10 @@ exit:
   return ret;
 }
 */
+void process_packet_batch(struct packet **, int, int *);
 
 // Calling function
-int caller_fn() {
+int main() {
   struct packet * p1 = (struct packet *) malloc(sizeof(struct packet));
   p1->ip = 1000;
   p1->id = 1;
@@ -159,6 +160,8 @@ int caller_fn() {
   p1->dest = 300;
 
   process_packet(p1);
+  int * ret = NULL;
+  process_packet_batch(&p1, 1, ret);
 
   free(p1);
   return 0;

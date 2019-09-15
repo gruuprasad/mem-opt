@@ -18,4 +18,10 @@ struct TASBatchMaker : public llvm::ModulePass {
 
 }
 
+namespace tas {
+
+void runBatchMakerPass(llvm::Module * M);
+
+}
+
 #endif
