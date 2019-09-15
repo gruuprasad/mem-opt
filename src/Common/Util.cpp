@@ -203,4 +203,17 @@ unsigned getGEPIndex(const GetElementPtrInst * GEP) {
   return FieldIdx;
 }
 
+
+StoreInst * findFirstUseInStoreInst(Value * V) {
+  // User list is inverted, first user is at the end of the list.
+  // Loop below finds first user which is StoreInst.
+  StoreInst * SI = nullptr;
+  for (auto * U : V->users()) {
+    if (auto * I = dyn_cast<StoreInst>(U)) {
+      SI = I;
+    }
+  }
+  return SI;
+}
+
 }

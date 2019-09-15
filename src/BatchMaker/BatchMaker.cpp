@@ -96,14 +96,17 @@ bool BatchMaker::run() {
   detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
   BatchFunc = createBatchedFormFnPrototype();
   setArgumentNamesInBatchFunc();
+  BatchFunc->print(errs());
   fillBasicBlocksInBatchFunc();
 
-  updateBasicBlocksInBatchFunc();
+  //updateBasicBlocksInBatchFunc();
+  /*
   DominatorTree DT (*BatchFunc);
   LoopInfo LI (DT);
   auto BP = BatchProcess(BatchFunc, &LI, &DT);
   bool changed = BP.run();
-  BatchFunc->print(errs());
+  */
+  //BatchFunc->print(errs());
   return true;
 }
 
@@ -112,25 +115,23 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
   IRBuilder<> Builder(EntryBB);
   Builder.SetInsertPoint(EntryBB, EntryBB->begin());
 
+  auto IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
+
   // For each argument, replace all uses.
   SmallPtrSet<Value *, 4> BatchedAllocas;
   SmallVector<Value *, 4> BatchGEPs;
-  for (auto & A : BatchArgs) {
-    auto APtr = Builder.CreateAlloca(A->getType());
-    BatchedAllocas.insert(APtr);
+  for (auto & BatchArg : BatchArgs) {
+    auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
+    BatchedAllocas.insert(BatchArgAlloca);
     //Builder.CreateStore(A, APtr);
-    StoreInst * StoreI = nullptr;
-    for (auto * U : A->users()) {
-      if (auto * I = dyn_cast<StoreInst>(U)) {
-        StoreI = I;
-      }
-    }
+    auto StoreI = findFirstUseInStoreInst(BatchArg);
 
     // Store argument in alloca variable.
     AllocaInst * OldAlloca = nullptr;
     if (StoreI) {
       if ((OldAlloca = dyn_cast<AllocaInst>(StoreI->getPointerOperand())))
-        StoreI->setOperand(1, APtr);
+        StoreI->setOperand(1, BatchArgAlloca);
     } else {
       continue;
     }
@@ -143,8 +144,9 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
     while (NumUses > 0) {
       User * U = OldAlloca->user_back();
       Builder.SetInsertPoint(cast<Instruction>(U));
-      auto DerefAPtr = Builder.CreateLoad(APtr);
-      auto ElemPtr = Builder.CreateGEP(DerefAPtr, Builder.getInt64(0) /*FIXME add index var*/);
+      auto IndexVal = Builder.CreateLoad(IndexVarPtr);
+      auto DerefAPtr = Builder.CreateLoad(BatchArgAlloca);
+      auto ElemPtr = Builder.CreateGEP(DerefAPtr, IndexVal);
       BatchGEPs.push_back(ElemPtr);
       U->replaceUsesOfWith(OldAlloca, ElemPtr);
       NumUses--;
@@ -209,11 +211,11 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
         "tas.loop." + std::to_string(i), BatchFunc, TripCount);
     TL0.setLoopBody(BatchCodeStartBlock, KnotBlock);
     // Set offset as loop index variable in BatchGEPs.
-    auto IndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
+    auto LoopIndexVar = cast<Instruction>(TL0.getIndexVariable64Bit());
     for (auto & V : BatchGEPs) {
       auto GI = cast<Instruction>(V);
       if (!DT.dominates(GI, BatchCodeStartBlock))
-        GI->setOperand(GI->getNumOperands() - 1, IndexVar);
+        GI->setOperand(GI->getNumOperands() - 1, LoopIndexVar);
     }
 
     // Store return value in a temporary variable.
@@ -221,7 +223,7 @@ void BatchMaker::updateBasicBlocksInBatchFunc() {
     for (auto & BB : TerminatingBB) {
       Builder.SetInsertPoint(BB->getTerminator());
       auto ptr = Builder.CreateLoad(RetAlloca);
-      auto offset = Builder.CreateGEP(ptr, IndexVar);
+      auto offset = Builder.CreateGEP(ptr, LoopIndexVar);
       Builder.CreateStore(*RetVal++, offset);
     }
   }

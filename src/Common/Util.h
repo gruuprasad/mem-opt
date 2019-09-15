@@ -55,6 +55,8 @@ template <typename InstType>
 llvm::Instruction * findValueFirstUseInInstruction(llvm::Value * V);
 
 unsigned getGEPIndex(const llvm::GetElementPtrInst * GEP);
+
+llvm::StoreInst * findFirstUseInStoreInst(llvm::Value * V);
 } // namespace tas
 
 #endif

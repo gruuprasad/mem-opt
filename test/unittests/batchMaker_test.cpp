@@ -1,3 +1,4 @@
+#include "BatchMaker/BatchMaker.h"
 #include "catch.hpp"
 #include "Common/Util.h"
 
@@ -84,5 +85,20 @@ TEST_CASE("detect expensive variables") {
     SmallVector<Value *, 4> ExpensiveVars;
     detectExpensivePointerVariables(F, ExpensiveVars);
     REQUIRE(ExpensiveVars.size() == 2);
+  }
+}
+
+TEST_CASE("create batch function prototype") {
+  auto M = parseIR(std::string("batchmaker_test2.ll"));
+  REQUIRE( M != nullptr);
+
+  {
+    // Test whether new function prototype exists in the module
+    auto F = M->getFunction("process_packet");
+    BatchMaker BM(F);
+    BM.run();
+
+    auto NewF = M->getFunction("process_packet_batch");
+    REQUIRE(NewF != nullptr);
   }
 }

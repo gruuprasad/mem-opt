@@ -6,7 +6,7 @@ project(tas-opt)
 #Script debug purpose: print to check cmake variable value
 #message(STATUS "Value is: ${CMAKE_PREFIX_PATH}")
 
-set(CMAKE_PREFIX_PATH "" CACHE STRING "Location to search for LLVM directory")
+set(CMAKE_PREFIX_PATH "/home/gp/llvm_projects/llvm/install/lib/cmake/llvm" CACHE STRING "Location to search for LLVM directory")
 
 # C++, compiler related flags and build type
 set(CMAKE_CXX_STANDARD 14)

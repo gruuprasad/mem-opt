@@ -14,6 +14,7 @@ set(LLVM_LINK_COMPONENTS
   TransformUtils)
 
 target_link_libraries(tests
+                      bathchMaker
                       cacheUsageInfo
                       catch_LIB
                       common
