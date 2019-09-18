@@ -40,7 +40,7 @@ int main(int argc, char * argv[]) {
   SMDiagnostic Err;
   Module * M = nullptr;
   if (!SrcFile.empty()) {
-    auto OutFile = tas::generateIR(SrcFile);
+    auto OutFile = tas::generateIR(SrcFile, std::string());
     // FIXME Reading IR file generated is failing.
     // M = parseIRFile(Outfile, Err, Ctx).get();
   }

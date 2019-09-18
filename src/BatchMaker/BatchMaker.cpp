@@ -151,7 +151,8 @@ bool BatchMaker::run() {
   setArgumentNamesInBatchFunc();
   fillBasicBlocksInBatchFunc();
   updateBasicBlocksInBatchFunc();
-  errs() << *BatchFunc->getParent();
+  //errs() << *BatchFunc->getParent();
+  
   return true;
 }
 

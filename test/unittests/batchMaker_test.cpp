@@ -1,6 +1,7 @@
 #include "BatchMaker/BatchMaker.h"
 #include "catch.hpp"
 #include "Common/Util.h"
+#include "Common/ToolUtil.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/PostOrderIterator.h>

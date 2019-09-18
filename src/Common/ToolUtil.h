@@ -5,7 +5,7 @@
 
 namespace tas {
 /// Generates LLVM IR from c program.
-std::string generateIR(std::string InFile);
+std::string generateIR(std::string InFile, std::string Input_dir);
 
 }
 
