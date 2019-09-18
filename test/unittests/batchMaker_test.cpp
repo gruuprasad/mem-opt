@@ -3,6 +3,8 @@
 #include "Common/Util.h"
 
 #include <llvm/AsmParser/Parser.h>
+#include <llvm/ADT/PostOrderIterator.h>
+#include <llvm/ADT/SCCIterator.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/Function.h>
@@ -102,3 +104,30 @@ TEST_CASE("create batch function prototype") {
     REQUIRE(NewF != nullptr);
   }
 }
+
+/* Explore graph related tools available in LLVM.
+TEST_CASE("Reverse Topological sorting of CFG") {
+  auto M = parseIR(std::string("batchmaker_test2.ll"));
+  REQUIRE( M != nullptr);
+  auto F = M->getFunction("process_packet");
+  errs() << "========Reverse post order=====\n";
+  ReversePostOrderTraversal<Function*> RPOT(F);
+  for (auto I = RPOT.begin(); I != RPOT.end(); ++I) {
+    errs() << **I;
+  }
+
+  errs() << "========SCC post order=====\n";
+  for (auto I = scc_begin(F); I != scc_end(F); ++I) {
+    const auto & SCCBBs = *I;
+    errs() << "SCC\n";
+    for (auto & BI : SCCBBs) {
+      errs() << *BI;
+    }
+  }
+
+  errs() << "======Post order========\n";
+  for (auto I = po_begin(F); I != po_end(F); ++I) {
+    errs() << **I;
+  }
+}
+*/

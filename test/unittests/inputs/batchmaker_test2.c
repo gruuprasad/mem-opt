@@ -16,6 +16,7 @@ struct packet {
 // Function processing single packet
 int process_packet(struct packet * in BATCH_ARG) TAS_MAKE_BATCH {
   struct packet * p = in;
+  int x = 0, y = 0, z = 0; // Dummy computation
   printf("packet ip = %d\n", p->ip);
   printf("packet id = %d\n", p->id);
   if (p->id == 1)
@@ -23,6 +24,22 @@ int process_packet(struct packet * in BATCH_ARG) TAS_MAKE_BATCH {
 
   if (p->id == 2)
     goto slowpath;
+
+  // Mimic some operations done by packet when in fast path.
+  // contains if, if-else control flow.
+  if (x == 0) {
+    x = x + 100;
+    y = y + 200;
+    z = x + y + 50;
+    goto slowpath;
+  }
+
+  if (x > 50) {
+    x = x - 50;
+    y = y - 100;
+  } else {
+    z = x + y + 50;
+  }
 
   printf("fastpath");
   return 0;
@@ -101,6 +118,7 @@ exit:
   printf("x = %d", x);
   return ret;
 }
+*/
 
 // Stage 3
 // Linearize the control flow
@@ -109,50 +127,48 @@ int process_packet_batch(struct packet ** in) {
   struct packet * p;
   int i = 0; // Batch-related
   int ret[1]; // Batch-related
-  int packet_path_cond[1]; // 0 - NA, unlock - 1, slowpath - 2, exit - 3
+  int packet_path_cond; // 0 - NA, unlock - 1, slowpath - 2, exit - 3
   ret[0] = 0;
-  packet_path_cond[0] = 0;
+  packet_path_cond = 0;
   p = in[i];
   printf("packet ip = %d\n", p->ip);
   printf("packet id = %d\n", p->id);
 
-  if (packet_path_cond[i] == 0 && p->id == 1) {
+  if (packet_path_cond == 0 && p->id == 1) {
     x = x + 10;
-    packet_path_cond[i] = 1;
-  }
-  
-  if (packet_path_cond[i] == 0 && p->id == 2) {
-    x = x + 20;
-    packet_path_cond[i] = 2;
+    packet_path_cond = 1;
   }
 
-  if (packet_path_cond[i] == 0) {
+  if (packet_path_cond == 0 && p->id == 2) {
+    x = x + 20;
+    packet_path_cond = 2;
+  }
+
+  if (packet_path_cond == 0) {
     printf("fastpath");
-    packet_path_cond[i] = 3;
+    packet_path_cond = 3;
     ret[i] = 0;
   }
 
 unlock:
-  if (packet_path_cond[i] == 1) {
+  if (packet_path_cond == 1) {
    printf("unlock");
    ret[i] = -1;
   }
 
 slowpath:
-  if (packet_path_cond[i] == 2) {
+  if (packet_path_cond == 2) {
     printf("slowpath");
     ret[i] = -2;
   }
 
 exit:
   printf("x = %d", x);
-  return ret;
+  return 0;
 }
-*/
-void process_packet_batch(struct packet **, int, int *);
 
 // Calling function
-int main() {
+int caller_fn() {
   struct packet * p1 = (struct packet *) malloc(sizeof(struct packet));
   p1->ip = 1000;
   p1->id = 1;
@@ -160,8 +176,6 @@ int main() {
   p1->dest = 300;
 
   process_packet(p1);
-  int * ret = NULL;
-  process_packet_batch(&p1, 1, ret);
 
   free(p1);
   return 0;

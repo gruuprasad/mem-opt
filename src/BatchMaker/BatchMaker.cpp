@@ -3,6 +3,7 @@
 #include "Common/ForLoop.h"
 #include "Common/Util.h"
 
+#include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>
 #include <llvm/IR/Argument.h>
