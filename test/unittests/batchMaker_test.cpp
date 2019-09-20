@@ -134,18 +134,29 @@ TEST_CASE("Topological sorting of CFG") {
 }
 */
 
-TEST_CASE("detect goto target block") {
-  auto M = parseIR(generateIR(std::string("goto_test1.c"), input_dir));
+TEST_CASE("detect path traces", "[RUN]") {
+  auto M = parseIR(generateIR(std::string("goto_test1.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("main");
   PathDetector PD(F);
   PD.DetectExitingBlocks();
+  REQUIRE(PD.getNumerOfPaths() == 2);
+  auto & PathList = PD.getPathSetRef();
+  // Expected number of intermediate basic blocks in each path.
+  REQUIRE( PathList[1].size() == 2);
+  REQUIRE( PathList[2].size() == 1);
 }
 
-TEST_CASE("detect multeiple goto target block") {
+TEST_CASE("detect path traces mulltiple goto targets") {
   auto M = parseIR(generateIR(std::string("batchmaker_test2.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("process_packet");
   PathDetector PD(F);
   PD.DetectExitingBlocks();
+  REQUIRE(PD.getNumerOfPaths() == 3);
+  auto & PathList = PD.getPathSetRef();
+  // Expected number of intermediate basic blocks in each path.
+  REQUIRE( PathList[1].size() == 2);
+  REQUIRE( PathList[2].size() == 5);
+  REQUIRE( PathList[3].size() == 6);
 }

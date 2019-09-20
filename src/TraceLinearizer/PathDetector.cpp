@@ -4,13 +4,26 @@
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/Dominators.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/Support/Debug.h>
 
 #include <cassert>
 
 using namespace llvm;
 using namespace std;
 
+#define DEBUG_TYPE "tas"
+
 namespace tas {
+
+void PathDetector::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
+  for (auto Pred : predecessors(BB)) {
+    if (BlockToPathIdMap[Pred].find(PathID) != BlockToPathIdMap[Pred].end())
+      continue;
+    BlockToPathIdMap[Pred].insert(PathID);
+    PathIDToBLockList[PathID].push_back(Pred);
+    visitPredecessor(Pred, PathID);
+  }
+}
 
 void PathDetector::DetectExitingBlocks() {
   PostDominatorTree PDT(*F);
@@ -28,44 +41,52 @@ void PathDetector::DetectExitingBlocks() {
   assert (ReturnBlocks.size() == 1);
   const auto * ReturnBlock = ReturnBlocks.front();
 
-  DenseMap<const BasicBlock *, unsigned> PathExitingBlocksToPathID;
   int i = 1;
-  // Note: Keep id = 0 for the root path, starting from entry basic block
-  // until first split point. Since root path is executed for all the paths,
-  // no need to add condition. Later when we find out that if basic block has
-  // all the path id, then we can replace multiple condition with single condition.
   for (auto * BB : predecessors(ReturnBlock))
-    PathExitingBlocksToPathID.insert(make_pair(BB, i++));
+    PathExitingBlocksToPathIDMap.insert(make_pair(BB, i++));
 
-  errs() << "Number of Paths = " << PathExitingBlocksToPathID.size() << "\n";
+  LLVM_DEBUG(errs() << "Number of Paths = " << PathExitingBlocksToPathIDMap.size() << "\n");
 
-  // Each basic block can belong to either one path or multiple
-  // paths. For example, entry block belongs to all the paths.
-  // We identify for each basic block, number of paths it belongs to.
-  DenseMap<BasicBlock *, SmallVector<unsigned, 4>> BlockToPaths;
-  for (BasicBlock & BB : *F) {
-    auto BE = BasicBlockEdge(&EntryBlock, &BB);
-    for (const auto & PathExitBlock : PathExitingBlocksToPathID) {
-      if (PDT.dominates(PathExitBlock.getFirst(), &BB)) {
-        BlockToPaths[&BB].push_back(PathExitBlock.getSecond());
-        continue;
-      }
-
-      if (DT.dominates(BE, PathExitBlock.getFirst())) {
-        BlockToPaths[&BB].push_back(PathExitBlock.getSecond());
-        continue;
-      }
-    }
+  // Mark each predecessor of path exiting block with path id.
+  for (const auto & KV : PathExitingBlocksToPathIDMap) {
+    const auto * EB = KV.getFirst();
+    auto PathID = KV.getSecond(); 
+    visitPredecessor(EB, PathID);
   }
 
+ // dumpDebugDataToConsole();
+}
+
+void PathDetector::dumpDebugDataToConsole() {
   errs() << "Basic block path information\n";
-  for (auto & E : BlockToPaths) {
+  errs() << "Path Exiting Blocks\n";
+  for (auto & E : PathExitingBlocksToPathIDMap) {
+    auto & BB = E.getFirst();
+    BB->printAsOperand(errs());
+    errs() << " : ";
+    auto & ID = E.getSecond();
+    errs() << to_string(ID) << "  ";
+    errs() << "\n";
+  }
+  errs() << "Block to Path memebers map\n";
+  for (auto & E : BlockToPathIdMap) {
     auto & BB = E.getFirst();
     BB->printAsOperand(errs());
     errs() << " : ";
     auto & IDs = E.getSecond();
     for (auto & ID : IDs) {
       errs() << to_string(ID) << "  ";
+    }
+    errs() << "\n";
+  }
+
+  errs() << "Path information\n";
+  for (auto & E : PathIDToBLockList) {
+    auto ID = E.getFirst();
+    errs() << to_string(ID) << " : ";
+    for (auto & BB : E.getSecond()) {
+      BB->printAsOperand(errs());
+      errs() << "  ";
     }
     errs() << "\n";
   }
