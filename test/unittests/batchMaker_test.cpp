@@ -2,7 +2,7 @@
 #include "catch.hpp"
 #include "Common/Util.h"
 #include "Common/ToolUtil.h"
-#include "TraceLinearizer/PathDetector.hpp"
+#include "PacketPathAnalysis/PacketPathAnalysis.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -138,8 +138,7 @@ TEST_CASE("detect path traces", "[RUN]") {
   auto M = parseIR(generateIR(std::string("goto_test1.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("main");
-  PathDetector PD(F);
-  PD.DetectExitingBlocks();
+  PacketPathAnalysis PD(F);
   REQUIRE(PD.getNumerOfPaths() == 2);
   auto & PathList = PD.getPathSetRef();
   // Expected number of intermediate basic blocks in each path.
@@ -151,8 +150,7 @@ TEST_CASE("detect path traces mulltiple goto targets") {
   auto M = parseIR(generateIR(std::string("batchmaker_test2.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("process_packet");
-  PathDetector PD(F);
-  PD.DetectExitingBlocks();
+  PacketPathAnalysis PD(F);
   REQUIRE(PD.getNumerOfPaths() == 3);
   auto & PathList = PD.getPathSetRef();
   // Expected number of intermediate basic blocks in each path.

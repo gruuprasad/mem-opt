@@ -1,11 +1,11 @@
-#ifndef PATH_DETECTOR_HPP
-#define PATH_DETECTOR_HPP
+#ifndef PACKET_PATH_TRACE_ANALYSIS
+#define PACKET_PATH_TRACE_ANALYSIS
 
 #include <llvm/IR/Function.h>
 
 namespace tas {
 
-class PathDetector {
+class PacketPathAnalysis {
   using IntToBasicBlocksMapType = llvm::DenseMap<unsigned, llvm::SmallVector<const llvm::BasicBlock *, 4>>;
   using BasicBlockToIntegersMapType = llvm::DenseMap<const llvm::BasicBlock *, llvm::DenseSet<unsigned>>;
 
@@ -17,9 +17,13 @@ class PathDetector {
   void dumpDebugDataToConsole();
 
 public:
-  PathDetector(llvm::Function * F_) : F(F_) {}
+  PacketPathAnalysis(llvm::Function * F_) : F(F_) {
+    computePathTrace();
+  }
 
-  void DetectExitingBlocks();
+  void recalculate();
+
+  void computePathTrace();
 
   void visitPredecessor(const llvm::BasicBlock * BB, unsigned PathID);
 

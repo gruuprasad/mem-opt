@@ -1,4 +1,4 @@
-#include "PathDetector.hpp"
+#include "PacketPathAnalysis.h"
 
 #include <llvm/Analysis/PostDominators.h>
 #include <llvm/IR/CFG.h>
@@ -15,7 +15,14 @@ using namespace std;
 
 namespace tas {
 
-void PathDetector::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
+void PacketPathAnalysis::recalculate() {
+  BlockToPathIdMap.clear();
+  PathExitingBlocksToPathIDMap.clear();
+  PathIDToBLockList.clear();
+  computePathTrace();
+}
+
+void PacketPathAnalysis::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
   for (auto Pred : predecessors(BB)) {
     if (BlockToPathIdMap[Pred].find(PathID) != BlockToPathIdMap[Pred].end())
       continue;
@@ -25,7 +32,7 @@ void PathDetector::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
   }
 }
 
-void PathDetector::DetectExitingBlocks() {
+void PacketPathAnalysis::computePathTrace() {
   PostDominatorTree PDT(*F);
   DominatorTree DT(*F);
   auto & EntryBlock = F->getEntryBlock();
@@ -57,7 +64,7 @@ void PathDetector::DetectExitingBlocks() {
  // dumpDebugDataToConsole();
 }
 
-void PathDetector::dumpDebugDataToConsole() {
+void PacketPathAnalysis::dumpDebugDataToConsole() {
   errs() << "Basic block path information\n";
   errs() << "Path Exiting Blocks\n";
   for (auto & E : PathExitingBlocksToPathIDMap) {

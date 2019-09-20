@@ -18,7 +18,7 @@ target_link_libraries(tests
                       cacheUsageInfo
                       catch_LIB
                       common
-                      pathDetector
+                      packetPathAnalysis
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser
