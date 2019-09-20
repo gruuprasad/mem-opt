@@ -10,10 +10,12 @@ class PacketPathAnalysis {
   using BasicBlockToIntegersMapType = llvm::DenseMap<const llvm::BasicBlock *, llvm::DenseSet<unsigned>>;
 
   llvm::Function * F;
-  BasicBlockToIntegersMapType BlockToPathIdMap;
+  BasicBlockToIntegersMapType IntermediateBBPathIdMap;
   llvm::DenseMap<const llvm::BasicBlock *, unsigned> PathExitingBlocksToPathIDMap;
   IntToBasicBlocksMapType PathIDToBLockList;
+  llvm::DenseMap<const llvm::BasicBlock *, unsigned> BlockToPathIdMap;
 
+  void prepareFinalMap();
   void dumpDebugDataToConsole();
 
 public:
@@ -36,7 +38,7 @@ public:
     return PathExitingBlocksToPathIDMap;
   }
 
-  BasicBlockToIntegersMapType getBlockToPathIDMapRef() {
+  llvm::DenseMap<const llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {
     return BlockToPathIdMap;
   }
 };

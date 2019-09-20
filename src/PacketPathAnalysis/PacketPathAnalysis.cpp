@@ -16,7 +16,7 @@ using namespace std;
 namespace tas {
 
 void PacketPathAnalysis::recalculate() {
-  BlockToPathIdMap.clear();
+  IntermediateBBPathIdMap.clear();
   PathExitingBlocksToPathIDMap.clear();
   PathIDToBLockList.clear();
   computePathTrace();
@@ -24,9 +24,10 @@ void PacketPathAnalysis::recalculate() {
 
 void PacketPathAnalysis::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
   for (auto Pred : predecessors(BB)) {
-    if (BlockToPathIdMap[Pred].find(PathID) != BlockToPathIdMap[Pred].end())
+    if (IntermediateBBPathIdMap[Pred].find(PathID) != IntermediateBBPathIdMap[Pred].end())
       continue;
-    BlockToPathIdMap[Pred].insert(PathID);
+
+    IntermediateBBPathIdMap[Pred].insert(PathID);
     PathIDToBLockList[PathID].push_back(Pred);
     visitPredecessor(Pred, PathID);
   }
@@ -61,7 +62,31 @@ void PacketPathAnalysis::computePathTrace() {
     visitPredecessor(EB, PathID);
   }
 
+  prepareFinalMap();
+
  // dumpDebugDataToConsole();
+}
+
+void PacketPathAnalysis::prepareFinalMap() {
+  // Prepare final Basic block to Path ID map.
+  // If block already has one id, that means it is part of some path.
+  // In that case, remove all ids and assign 0.
+  // 0 means this basic block will be executed for all kind of packet paths.
+  // XXX This meaning is not true for all cases. Suppose there are 3 paths,
+  // them some basic block can be part of 2 paths. I am not sure how to handle it
+  // correctly at this moment.
+  for (auto & KV : IntermediateBBPathIdMap) {
+    auto & V = KV.getSecond();
+    if (V.size() > 1) {
+      BlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
+    } else {
+      assert (V.size() == 1);
+      BlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
+    }
+  }
+  for (auto & KV : PathExitingBlocksToPathIDMap) {
+    BlockToPathIdMap.insert(make_pair(KV.getFirst(), KV.getSecond()));
+  }
 }
 
 void PacketPathAnalysis::dumpDebugDataToConsole() {
@@ -76,7 +101,7 @@ void PacketPathAnalysis::dumpDebugDataToConsole() {
     errs() << "\n";
   }
   errs() << "Block to Path memebers map\n";
-  for (auto & E : BlockToPathIdMap) {
+  for (auto & E : IntermediateBBPathIdMap) {
     auto & BB = E.getFirst();
     BB->printAsOperand(errs());
     errs() << " : ";
