@@ -2,6 +2,7 @@
 #include "catch.hpp"
 #include "Common/Util.h"
 #include "Common/ToolUtil.h"
+#include "TraceLinearizer/PathDetector.hpp"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -26,15 +27,15 @@ using namespace tas;
 LLVMContext C;
 SMDiagnostic Err;
 
-static std::unique_ptr<Module> parseIR(std::string Filename) {
-  std::unique_ptr<Module> M (parseIRFile(input_dir + Filename,  Err, C));
+static std::unique_ptr<Module> parseIR(std::string Filename, std::string FileDir = "") {
+  std::unique_ptr<Module> M (parseIRFile(FileDir + Filename,  Err, C));
   if (!M)
     Err.print("BatchMaker_tests:", errs());
   return M;
 }
 
 TEST_CASE("detect TAS_MAKE_BATCH annotation") {
-  auto M = parseIR(std::string("batchmaker_test1.ll"));
+  auto M = parseIR(std::string("batchmaker_test1.ll"), input_dir);
   REQUIRE( M != nullptr);
 
   DenseMap<Function *, StringRef> AnnotatedFnList;
@@ -50,7 +51,7 @@ TEST_CASE("detect TAS_MAKE_BATCH annotation") {
 }
 
 TEST_CASE("detect Batching Parameters") {
-  auto M = parseIR(std::string("batchmaker_test1.ll"));
+  auto M = parseIR(std::string("batchmaker_test1.ll"), input_dir);
   REQUIRE( M != nullptr);
 
   {
@@ -79,7 +80,7 @@ TEST_CASE("detect Batching Parameters") {
 }
 
 TEST_CASE("detect expensive variables") {
-  auto M = parseIR(std::string("batchmaker_test1.ll"));
+  auto M = parseIR(std::string("batchmaker_test1.ll"), input_dir);
   REQUIRE( M != nullptr);
 
   {
@@ -92,7 +93,7 @@ TEST_CASE("detect expensive variables") {
 }
 
 TEST_CASE("create batch function prototype") {
-  auto M = parseIR(std::string("batchmaker_test2.ll"));
+  auto M = parseIR(std::string("batchmaker_test2.ll"), input_dir);
   REQUIRE( M != nullptr);
 
   {
@@ -107,7 +108,7 @@ TEST_CASE("create batch function prototype") {
 }
 
 /* Explore graph related tools available in LLVM.
-TEST_CASE("Reverse Topological sorting of CFG") {
+TEST_CASE("Topological sorting of CFG") {
   auto M = parseIR(std::string("batchmaker_test2.ll"));
   REQUIRE( M != nullptr);
   auto F = M->getFunction("process_packet");
@@ -132,3 +133,19 @@ TEST_CASE("Reverse Topological sorting of CFG") {
   }
 }
 */
+
+TEST_CASE("detect goto target block") {
+  auto M = parseIR(generateIR(std::string("goto_test1.c"), input_dir));
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("main");
+  PathDetector PD(F);
+  PD.DetectExitingBlocks();
+}
+
+TEST_CASE("detect multeiple goto target block") {
+  auto M = parseIR(generateIR(std::string("batchmaker_test2.c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("process_packet");
+  PathDetector PD(F);
+  PD.DetectExitingBlocks();
+}

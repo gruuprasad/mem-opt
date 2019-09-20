@@ -1,12 +1,12 @@
-; ModuleID = 'batchmaker_test2.c'
-source_filename = "batchmaker_test2.c"
+; ModuleID = '../../test/unittests/inputs/batchmaker_test2.c'
+source_filename = "../../test/unittests/inputs/batchmaker_test2.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
 %struct.packet = type { i32, i32, i32, i32 }
 
 @.str = private unnamed_addr constant [10 x i8] c"batch_arg\00", section "llvm.metadata"
-@.str.1 = private unnamed_addr constant [19 x i8] c"batchmaker_test2.c\00", section "llvm.metadata"
+@.str.1 = private unnamed_addr constant [47 x i8] c"../../test/unittests/inputs/batchmaker_test2.c\00", section "llvm.metadata"
 @.str.2 = private unnamed_addr constant [16 x i8] c"packet ip = %d\0A\00", align 1
 @.str.3 = private unnamed_addr constant [16 x i8] c"packet id = %d\0A\00", align 1
 @.str.4 = private unnamed_addr constant [9 x i8] c"fastpath\00", align 1
@@ -14,9 +14,9 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.6 = private unnamed_addr constant [7 x i8] c"unlock\00", align 1
 @.str.7 = private unnamed_addr constant [16 x i8] c"tas_batch_maker\00", section "llvm.metadata"
 @.str.8 = private unnamed_addr constant [7 x i8] c"x = %d\00", align 1
-@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (i32 (%struct.packet*)* @process_packet to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17 }], section "llvm.metadata"
+@llvm.global.annotations = appending global [1 x { i8*, i8*, i8*, i32 }] [{ i8*, i8*, i8*, i32 } { i8* bitcast (i32 (%struct.packet*)* @process_packet to i8*), i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([47 x i8], [47 x i8]* @.str.1, i32 0, i32 0), i32 17 }], section "llvm.metadata"
 
-; Function Attrs: noinline nounwind optnone sspstrong uwtable
+; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @process_packet(%struct.packet*) #0 {
   %2 = alloca i32, align 4
   %3 = alloca %struct.packet*, align 8
@@ -26,7 +26,7 @@ define dso_local i32 @process_packet(%struct.packet*) #0 {
   %7 = alloca i32, align 4
   store %struct.packet* %0, %struct.packet** %3, align 8
   %8 = bitcast %struct.packet** %3 to i8*
-  call void @llvm.var.annotation(i8* %8, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.1, i32 0, i32 0), i32 17)
+  call void @llvm.var.annotation(i8* %8, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([47 x i8], [47 x i8]* @.str.1, i32 0, i32 0), i32 17)
   %9 = load %struct.packet*, %struct.packet** %3, align 8
   store %struct.packet* %9, %struct.packet** %4, align 8
   store i32 0, i32* %5, align 4
@@ -125,7 +125,7 @@ declare void @llvm.var.annotation(i8*, i8*, i8*, i32) #1
 
 declare i32 @printf(i8*, ...) #2
 
-; Function Attrs: noinline nounwind optnone sspstrong uwtable
+; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @process_packet_batch(%struct.packet**) #0 {
   %2 = alloca %struct.packet**, align 8
   %3 = alloca i32, align 4
@@ -245,7 +245,7 @@ define dso_local i32 @process_packet_batch(%struct.packet**) #0 {
   ret i32 0
 }
 
-; Function Attrs: noinline nounwind optnone sspstrong uwtable
+; Function Attrs: noinline nounwind sspstrong uwtable
 define dso_local i32 @caller_fn() #0 {
   %1 = alloca %struct.packet*, align 8
   %2 = call noalias i8* @malloc(i64 16) #1
@@ -277,7 +277,7 @@ declare noalias i8* @malloc(i64) #3
 ; Function Attrs: nounwind
 declare void @free(i8*) #3
 
-attributes #0 = { noinline nounwind optnone sspstrong uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { noinline nounwind sspstrong uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "min-legal-vector-width"="0" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { nounwind }
 attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #3 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }

@@ -5,6 +5,8 @@ examples
 
 test/litTests/batch_fn_test2/batch_process_test1
 test/litTests/batch_fn_test2/batch_process_test1.ll
+test/unittests/inputs/*.pdf
+test/unittests/output/*.pdf
 
 *.o
 
