@@ -3,6 +3,7 @@
 #include "Common/Util.h"
 #include "Common/ToolUtil.h"
 #include "PacketPathAnalysis/PacketPathAnalysis.h"
+#include "BlockPredication/BlockPredication.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/PostOrderIterator.h>
@@ -157,4 +158,12 @@ TEST_CASE("detect path traces mulltiple goto targets") {
   REQUIRE( PathList[1].size() == 2);
   REQUIRE( PathList[2].size() == 5);
   REQUIRE( PathList[3].size() == 6);
+}
+
+TEST_CASE("predicated block execution") {
+  auto M = parseIR(generateIR(std::string("ifelse_predicate.c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("if_else_fn");
+  BlockPredication BP(F);
+  BP.run();
 }

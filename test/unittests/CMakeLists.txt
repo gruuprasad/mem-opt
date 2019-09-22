@@ -15,6 +15,7 @@ set(LLVM_LINK_COMPONENTS
 
 target_link_libraries(tests
                       batchMaker
+                      blockPredication
                       cacheUsageInfo
                       catch_LIB
                       common
