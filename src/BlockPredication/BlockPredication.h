@@ -21,6 +21,7 @@ class BlockPredication {
   using BlockIDPairType = std::pair<llvm::BasicBlock *, unsigned>;
   llvm::Function * F;
   PacketPathAnalysis PPA;
+  llvm::BasicBlock * EntryBlock;
   llvm::AllocaInst * PathIdAlloca;
   llvm::IRBuilder<> Builder;
   llvm::SmallVector<llvm::BasicBlock *, 16> BlockExecutionOrder;
@@ -32,7 +33,8 @@ class BlockPredication {
 
 public:
   BlockPredication(llvm::Function * F_)
-    : F(F_), PPA(F), Builder(F->getContext()) {}
+    : F(F_), PPA(F), EntryBlock(&F->getEntryBlock()),
+      Builder(F->getContext()) {}
 
   bool run();
 };

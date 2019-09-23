@@ -39,7 +39,6 @@ void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
 void PacketPathAnalysis::computePathTrace() {
   PostDominatorTree PDT(*F);
   DominatorTree DT(*F);
-  auto & EntryBlock = F->getEntryBlock();
   // Check all the return blocks.
   SmallVector<BasicBlock *, 4> ReturnBlocks;
   for (BasicBlock & BB : *F)

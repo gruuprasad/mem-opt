@@ -53,12 +53,7 @@ void BlockPredication::flattenConditionBranchPaths(BranchInst * BI) {
 }
 
 void BlockPredication::linearizeControlFlow() {
-  // Find conditional branch instructions, for each branch
-  // instruction insert "select" instruction which sets
-  // pathid variable corresponding to branch targets.
-  // Branch instruction is a terminator instruction, hence
-  // look for each terminator instruction in basic block.
-  Builder.SetInsertPoint(&F->getEntryBlock().front());
+  Builder.SetInsertPoint(&EntryBlock->front());
   PathIdAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
   auto PathIDMap = PPA.getBlockToPathIDMapRef();
