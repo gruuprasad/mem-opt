@@ -5,22 +5,35 @@
 
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/IRBuilder.h>
 
 namespace tas {
 
+class TasException {
+public:
+  llvm::Function * F_state;
+  TasException(llvm::Function * F_) : F_state(F_) {}
+  void dump() { F_state->print(llvm::errs()); }
+};
+
 // This class transforms the function in place.
 class BlockPredication {
+  using BlockIDPairType = std::pair<llvm::BasicBlock *, unsigned>;
   llvm::Function * F;
   PacketPathAnalysis PPA;
+  llvm::AllocaInst * PathIdAlloca;
+  llvm::IRBuilder<> Builder;
 
-  void savePathState(llvm::BranchInst * BI, llvm::AllocaInst * AI);
+  void flattenConditionBranchPaths(llvm::BranchInst * BI, llvm::AllocaInst * AI);
+  void linearizeControlFlow();
+  llvm::BasicBlock * insertPredicateBlock(BlockIDPairType ActionBB, llvm::BasicBlock * SuccBB);
+  llvm::BasicBlock * predicateIfElseBlock(BlockIDPairType IfBB, BlockIDPairType ElseBB);
 
 public:
-  BlockPredication(llvm::Function * F_) : F(F_), PPA(F) {}
+  BlockPredication(llvm::Function * F_)
+    : F(F_), PPA(F), Builder(F->getContext()) {}
 
   bool run();
-
-  void setPathStateForEachCondBranch();
 };
 
 }

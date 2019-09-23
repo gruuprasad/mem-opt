@@ -22,7 +22,7 @@ void PacketPathAnalysis::recalculate() {
   computePathTrace();
 }
 
-void PacketPathAnalysis::visitPredecessor(const BasicBlock * BB, unsigned PathID) {
+void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
   for (auto Pred : predecessors(BB)) {
     if (IntermediateBBPathIdMap[Pred].find(PathID) != IntermediateBBPathIdMap[Pred].end())
       continue;
@@ -47,7 +47,7 @@ void PacketPathAnalysis::computePathTrace() {
   // TODO Else, make function single exit block.
   // Use unifysingleexitnode pass.
   assert (ReturnBlocks.size() == 1);
-  const auto * ReturnBlock = ReturnBlocks.front();
+  ReturnBlock = ReturnBlocks.front();
 
   int i = 1;
   for (auto * BB : predecessors(ReturnBlock))
@@ -56,8 +56,8 @@ void PacketPathAnalysis::computePathTrace() {
   LLVM_DEBUG(errs() << "Number of Paths = " << PathExitingBlocksToPathIDMap.size() << "\n");
 
   // Mark each predecessor of path exiting block with path id.
-  for (const auto & KV : PathExitingBlocksToPathIDMap) {
-    const auto * EB = KV.getFirst();
+  for (auto & KV : PathExitingBlocksToPathIDMap) {
+    auto * EB = KV.getFirst();
     auto PathID = KV.getSecond(); 
     visitPredecessor(EB, PathID);
   }
@@ -78,9 +78,11 @@ void PacketPathAnalysis::prepareFinalMap() {
   for (auto & KV : IntermediateBBPathIdMap) {
     auto & V = KV.getSecond();
     if (V.size() > 1) {
+      MiddleBlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
     } else {
       assert (V.size() == 1);
+      MiddleBlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
     }
   }

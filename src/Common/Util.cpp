@@ -216,4 +216,9 @@ StoreInst * findFirstUseInStoreInst(Value * V) {
   return SI;
 }
 
+void setSuccessor(BasicBlock * BB, BasicBlock * SuccBB) {
+  auto TermI = BB->getTerminator();
+  TermI->setSuccessor(0, SuccBB);
+}
+
 }

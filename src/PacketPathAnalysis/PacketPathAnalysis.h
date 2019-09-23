@@ -6,17 +6,18 @@
 namespace tas {
 
 class PacketPathAnalysis {
-  using IntToBasicBlocksMapType = llvm::DenseMap<unsigned, llvm::SmallVector<const llvm::BasicBlock *, 4>>;
-  using BasicBlockToIntegersMapType = llvm::DenseMap<const llvm::BasicBlock *, llvm::DenseSet<unsigned>>;
+  using IntToBasicBlocksMapType = llvm::DenseMap<unsigned, llvm::SmallVector<llvm::BasicBlock *, 4>>;
+  using BasicBlockToIntegersMapType = llvm::DenseMap<llvm::BasicBlock *, llvm::DenseSet<unsigned>>;
 
   llvm::Function * F;
+  llvm::BasicBlock * ReturnBlock;
   BasicBlockToIntegersMapType IntermediateBBPathIdMap;
-  llvm::DenseMap<const llvm::BasicBlock *, unsigned> PathExitingBlocksToPathIDMap;
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> PathExitingBlocksToPathIDMap;
   IntToBasicBlocksMapType PathIDToBLockList;
-  llvm::DenseMap<const llvm::BasicBlock *, unsigned> BlockToPathIdMap;
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> BlockToPathIdMap;
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> MiddleBlockToPathIdMap;
 
   void prepareFinalMap();
-  void dumpDebugDataToConsole();
 
 public:
   PacketPathAnalysis(llvm::Function * F_) : F(F_) {
@@ -27,20 +28,28 @@ public:
 
   void computePathTrace();
 
-  void visitPredecessor(const llvm::BasicBlock * BB, unsigned PathID);
+  void dumpDebugDataToConsole();
+
+  void visitPredecessor(llvm::BasicBlock * BB, unsigned PathID);
 
   unsigned getNumerOfPaths() { return PathExitingBlocksToPathIDMap.size(); }
 
   IntToBasicBlocksMapType & getPathSetRef() { return PathIDToBLockList; }
 
-  llvm::DenseMap<const llvm::BasicBlock *, unsigned> & getPathExitingBlockListRef()
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> & getPathExitingBlockListRef()
   {
     return PathExitingBlocksToPathIDMap;
   }
 
-  llvm::DenseMap<const llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {
     return BlockToPathIdMap;
   }
+
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> & getIntermediatePathMap() {
+    return MiddleBlockToPathIdMap;
+  }
+
+  llvm::BasicBlock * getReturnBlock() { return ReturnBlock; }
 };
 
 }

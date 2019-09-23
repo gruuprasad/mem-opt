@@ -29,7 +29,7 @@ namespace tas {
 /// BatchForm Fn Prototype:
 ///    void Fn_batch(Type1 A, Type2 * B, Type3 * C, int16_t TAS_BATCHSIZE, Ret * TAS_RETURNS);
 void BatchMaker::createBatchedFormFnPrototype() {
-  errs() << "Function = " << NonBatchFunc->getName() << "\n";
+  LLVM_DEBUG(errs() << "Function = " << NonBatchFunc->getName() << "\n");
 
   // Name of the argument to be batched is prefixed with string "batch_arg_i", where
   // i goes from [1, ArgsToBatch.size()]

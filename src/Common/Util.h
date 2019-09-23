@@ -57,6 +57,8 @@ llvm::Instruction * findValueFirstUseInInstruction(llvm::Value * V);
 unsigned getGEPIndex(const llvm::GetElementPtrInst * GEP);
 
 llvm::StoreInst * findFirstUseInStoreInst(llvm::Value * V);
+
+void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB);
 } // namespace tas
 
 #endif

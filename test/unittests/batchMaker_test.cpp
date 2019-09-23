@@ -166,4 +166,6 @@ TEST_CASE("predicated block execution") {
   auto F = M->getFunction("if_else_fn");
   BlockPredication BP(F);
   BP.run();
+  // Verifed the transformation manually
+  // XXX How to test this automagically?!!
 }
