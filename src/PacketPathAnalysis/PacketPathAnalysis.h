@@ -13,15 +13,13 @@ class PacketPathAnalysis {
   llvm::Function * F;
   llvm::BasicBlock * EntryBlock;
   llvm::BasicBlock * ReturnBlock;
-  BasicBlockToIntegersMapType IntermediateBBPathIdMap;
-  llvm::DenseMap<llvm::BasicBlock *, unsigned> PathExitingBlocksToPathIDMap;
+  BasicBlockToIntegersMapType BlockToPathSet;
+  llvm::DenseMap<llvm::BasicBlock *, unsigned> ExitingBlockPathIDMap;
   IntToBasicBlocksMapType PathIDToBLockList;
   llvm::DenseMap<llvm::BasicBlock *, unsigned> BlockToPathIdMap;
 
   void computePathTraces();
   void visitPredecessor(llvm::BasicBlock * BB, unsigned PathID);
-  void dumpDebugDataToConsole();
-
   void prepareFinalMap();
 
 public:
@@ -30,15 +28,16 @@ public:
   }
 
   void recalculate();
+  void dumpDebugDataToConsole();
 
   // Accessors
-  unsigned getNumerOfPaths() { return PathExitingBlocksToPathIDMap.size(); }
+  unsigned getNumerOfPaths() { return ExitingBlockPathIDMap.size(); }
 
   IntToBasicBlocksMapType & getPathSetRef() { return PathIDToBLockList; }
 
   llvm::DenseMap<llvm::BasicBlock *, unsigned> & getPathExitingBlockListRef()
   {
-    return PathExitingBlocksToPathIDMap;
+    return ExitingBlockPathIDMap;
   }
 
   llvm::DenseMap<llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {

@@ -17,15 +17,13 @@ using namespace std;
 namespace tas {
 
 void PacketPathAnalysis::recalculate() {
-  IntermediateBBPathIdMap.clear();
-  PathExitingBlocksToPathIDMap.clear();
+  BlockToPathSet.clear();
+  ExitingBlockPathIDMap.clear();
   PathIDToBLockList.clear();
   computePathTraces();
 }
 
 void PacketPathAnalysis::computePathTraces() {
-  PostDominatorTree PDT(*F);
-  DominatorTree DT(*F);
   // Check all the return blocks.
   SmallVector<BasicBlock *, 4> ReturnBlocks;
   for (BasicBlock & BB : *F)
@@ -40,43 +38,34 @@ void PacketPathAnalysis::computePathTraces() {
 
   int i = 1;
   for (auto * BB : predecessors(ReturnBlock))
-    PathExitingBlocksToPathIDMap.insert(make_pair(BB, i++));
+    ExitingBlockPathIDMap.insert(make_pair(BB, i++));
 
-  LLVM_DEBUG(errs() << "Number of Paths = " << PathExitingBlocksToPathIDMap.size() << "\n");
+  LLVM_DEBUG(errs() << "Number of Paths = " << ExitingBlockPathIDMap.size() << "\n");
 
   // Mark each predecessor of path exiting block with path id.
-  for (auto & KV : PathExitingBlocksToPathIDMap) {
-    auto * EB = KV.getFirst();
-    auto PathID = KV.getSecond(); 
-    visitPredecessor(EB, PathID);
-  }
+  for (auto & KV : ExitingBlockPathIDMap)
+    visitPredecessor(KV.getFirst(), KV.getSecond());
 
-  // Remove duplicate blocks.
   prepareFinalMap();
-
- // dumpDebugDataToConsole();
 }
 
 void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
   for (auto Pred : predecessors(BB)) {
-    if (IntermediateBBPathIdMap[Pred].find(PathID) != IntermediateBBPathIdMap[Pred].end())
+    auto & PathIDSet = BlockToPathSet[Pred];
+    if (PathIDSet.find(PathID) != PathIDSet.end())
       continue;
 
-    IntermediateBBPathIdMap[Pred].insert(PathID);
+    PathIDSet.insert(PathID);
     PathIDToBLockList[PathID].push_back(Pred);
     visitPredecessor(Pred, PathID);
   }
 }
 
 void PacketPathAnalysis::prepareFinalMap() {
-  // Prepare final Basic block to Path ID map.
-  // If block already has one id, that means it is part of some path.
-  // In that case, remove all ids and assign 0.
-  // 0 means this basic block will be executed for all kind of packet paths.
-  // XXX This meaning is not true for all cases. Suppose there are 3 paths,
-  // then some basic block can be part of 2 paths. I am not sure how to handle it
-  // correctly at this moment.
-  for (auto & KV : IntermediateBBPathIdMap) {
+  // XXX If Block is part of more than one path, assign id = 0.
+  // In predicate block, check for each path id can be done.
+  // This way is simple for now.
+  for (auto & KV : BlockToPathSet) {
     auto & V = KV.getSecond();
     if (V.size() > 1) {
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
@@ -85,7 +74,7 @@ void PacketPathAnalysis::prepareFinalMap() {
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
     }
   }
-  for (auto & KV : PathExitingBlocksToPathIDMap) {
+  for (auto & KV : ExitingBlockPathIDMap) {
     BlockToPathIdMap.insert(make_pair(KV.getFirst(), KV.getSecond()));
   }
 }
@@ -93,7 +82,7 @@ void PacketPathAnalysis::prepareFinalMap() {
 void PacketPathAnalysis::dumpDebugDataToConsole() {
   errs() << "Basic block path information\n";
   errs() << "Path Exiting Blocks\n";
-  for (auto & E : PathExitingBlocksToPathIDMap) {
+  for (auto & E : ExitingBlockPathIDMap) {
     auto & BB = E.getFirst();
     BB->printAsOperand(errs());
     errs() << " : ";
@@ -102,7 +91,7 @@ void PacketPathAnalysis::dumpDebugDataToConsole() {
     errs() << "\n";
   }
   errs() << "Block to Path memebers map\n";
-  for (auto & E : IntermediateBBPathIdMap) {
+  for (auto & E : BlockToPathSet) {
     auto & BB = E.getFirst();
     BB->printAsOperand(errs());
     errs() << " : ";
