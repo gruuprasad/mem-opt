@@ -7,6 +7,8 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/IRBuilder.h>
 
+#include <deque>
+
 namespace tas {
 
 class TasException {
@@ -24,12 +26,14 @@ class BlockPredication {
   llvm::BasicBlock * EntryBlock;
   llvm::AllocaInst * PathIdAlloca;
   llvm::IRBuilder<> Builder;
-  llvm::SmallVector<llvm::BasicBlock *, 16> BlockExecutionOrder;
+  std::deque<llvm::BasicBlock *> ActionBlocks;
+  std::deque<llvm::BasicBlock *> PredicateBlocks;
 
-  void flattenConditionBranchPaths(llvm::BranchInst * BI);
+  void setPathIDCondition(llvm::BranchInst * BI);
+  void setActionBlocksSuccessors();
+  llvm::BasicBlock * insertPredicateBlock(llvm::BasicBlock * ActionBB, unsigned PathID);
+  void setPredicateBlocksFalseEdges();
   void linearizeControlFlow();
-  llvm::BasicBlock * insertPredicateBlock(BlockIDPairType ActionBB, llvm::BasicBlock * SuccBB);
-  llvm::BasicBlock * predicateIfElseBlock(BlockIDPairType IfBB, BlockIDPairType ElseBB);
 
 public:
   BlockPredication(llvm::Function * F_)
