@@ -23,8 +23,9 @@ class BlockPredication {
   PacketPathAnalysis PPA;
   llvm::AllocaInst * PathIdAlloca;
   llvm::IRBuilder<> Builder;
+  llvm::SmallVector<llvm::BasicBlock *, 16> BlockExecutionOrder;
 
-  void flattenConditionBranchPaths(llvm::BranchInst * BI, llvm::AllocaInst * AI);
+  void flattenConditionBranchPaths(llvm::BranchInst * BI);
   void linearizeControlFlow();
   llvm::BasicBlock * insertPredicateBlock(BlockIDPairType ActionBB, llvm::BasicBlock * SuccBB);
   llvm::BasicBlock * predicateIfElseBlock(BlockIDPairType IfBB, BlockIDPairType ElseBB);

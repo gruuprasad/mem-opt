@@ -35,7 +35,7 @@ BasicBlock * BlockPredication::predicateIfElseBlock(BlockIDPairType IfActionBB, 
   return IfPred;
 }
 
-void BlockPredication::flattenConditionBranchPaths(BranchInst * BI, AllocaInst * AI) {
+void BlockPredication::flattenConditionBranchPaths(BranchInst * BI) {
   Builder.SetInsertPoint(BI);
   auto PathIDMap = PPA.getBlockToPathIDMapRef();
   auto TruePath = PathIDMap.FindAndConstruct(BI->getSuccessor(0));
@@ -44,7 +44,7 @@ void BlockPredication::flattenConditionBranchPaths(BranchInst * BI, AllocaInst *
   auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
                                         Builder.getInt32(TruePath.getSecond()),
                                         Builder.getInt32(FalsePath.getSecond()));
-  Builder.CreateStore(PathIdVal, AI);
+  Builder.CreateStore(PathIdVal, PathIdAlloca);
   auto IfPred = predicateIfElseBlock(make_pair(TruePath.first, TruePath.second),
                        make_pair(FalsePath.first, FalsePath.second));
   Builder.SetInsertPoint(BI);
@@ -70,7 +70,7 @@ void BlockPredication::linearizeControlFlow() {
 
     if (auto * BI = dyn_cast<BranchInst>(BB->getTerminator())) {
       if (BI->isUnconditional()) continue;
-      flattenConditionBranchPaths(BI, PathIdAlloca);
+      flattenConditionBranchPaths(BI);
     }
   }
 }
