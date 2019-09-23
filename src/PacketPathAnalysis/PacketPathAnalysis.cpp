@@ -6,6 +6,7 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/Support/Debug.h>
 
+#include <algorithm>
 #include <cassert>
 
 using namespace llvm;
@@ -29,6 +30,8 @@ void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
 
     IntermediateBBPathIdMap[Pred].insert(PathID);
     PathIDToBLockList[PathID].push_back(Pred);
+    if (find(TotalOrder.begin(), TotalOrder.end(), Pred) == TotalOrder.end())
+      PathOrder.push_back(Pred);
     visitPredecessor(Pred, PathID);
   }
 }
@@ -59,9 +62,13 @@ void PacketPathAnalysis::computePathTrace() {
   for (auto & KV : PathExitingBlocksToPathIDMap) {
     auto * EB = KV.getFirst();
     auto PathID = KV.getSecond(); 
+    PathOrder.push_back(EB);
     visitPredecessor(EB, PathID);
+    TotalOrder.insert(TotalOrder.end(), PathOrder.rbegin(), PathOrder.rend());
+    PathOrder.clear();
   }
 
+  // Remove duplicate blocks.
   prepareFinalMap();
 
  // dumpDebugDataToConsole();
@@ -124,6 +131,14 @@ void PacketPathAnalysis::dumpDebugDataToConsole() {
     }
     errs() << "\n";
   }
+
+  errs() << "Total Order Size = " << TotalOrder.size() << "\n";
+  errs() << "Total Execution Order\n";
+  for (auto & BB : TotalOrder) {
+    BB->printAsOperand(errs());
+    errs() << " --> ";
+  }
+  errs() << "\n";
 }
 
 }

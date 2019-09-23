@@ -174,9 +174,8 @@ TEST_CASE("predicated block execution, multiple goto") {
   auto M = parseIR(generateIR(std::string("ifelse_multi_goto.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("process_packet");
-  BlockPredication BP(F);
-  BP.run();
-  F->print(errs());
+  PacketPathAnalysis PD(F);
+  PD.dumpDebugDataToConsole();
   // Verifed the transformation manually
   // XXX How to test this automagically?!!
 }

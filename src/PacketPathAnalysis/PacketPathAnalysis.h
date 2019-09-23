@@ -16,6 +16,8 @@ class PacketPathAnalysis {
   IntToBasicBlocksMapType PathIDToBLockList;
   llvm::DenseMap<llvm::BasicBlock *, unsigned> BlockToPathIdMap;
   llvm::DenseMap<llvm::BasicBlock *, unsigned> MiddleBlockToPathIdMap;
+  llvm::SmallVector<llvm::BasicBlock *, 16> TotalOrder;
+  llvm::SmallVector<llvm::BasicBlock *, 8> PathOrder;
 
   void prepareFinalMap();
 
