@@ -2,6 +2,7 @@
 #define PACKET_PATH_TRACE_ANALYSIS
 
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Dominators.h>
 
 namespace tas {
 
@@ -16,25 +17,21 @@ class PacketPathAnalysis {
   llvm::DenseMap<llvm::BasicBlock *, unsigned> PathExitingBlocksToPathIDMap;
   IntToBasicBlocksMapType PathIDToBLockList;
   llvm::DenseMap<llvm::BasicBlock *, unsigned> BlockToPathIdMap;
-  llvm::DenseMap<llvm::BasicBlock *, unsigned> MiddleBlockToPathIdMap;
-  llvm::SmallVector<llvm::BasicBlock *, 16> TotalOrder;
-  llvm::SmallVector<llvm::BasicBlock *, 8> PathOrder;
+
+  void computePathTraces();
+  void visitPredecessor(llvm::BasicBlock * BB, unsigned PathID);
+  void dumpDebugDataToConsole();
 
   void prepareFinalMap();
 
 public:
   PacketPathAnalysis(llvm::Function * F_) : F(F_), EntryBlock(&F->getEntryBlock()) {
-    computePathTrace();
+    computePathTraces();
   }
 
   void recalculate();
 
-  void computePathTrace();
-
-  void dumpDebugDataToConsole();
-
-  void visitPredecessor(llvm::BasicBlock * BB, unsigned PathID);
-
+  // Accessors
   unsigned getNumerOfPaths() { return PathExitingBlocksToPathIDMap.size(); }
 
   IntToBasicBlocksMapType & getPathSetRef() { return PathIDToBLockList; }
@@ -46,10 +43,6 @@ public:
 
   llvm::DenseMap<llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {
     return BlockToPathIdMap;
-  }
-
-  llvm::DenseMap<llvm::BasicBlock *, unsigned> & getIntermediatePathMap() {
-    return MiddleBlockToPathIdMap;
   }
 
   llvm::BasicBlock * getReturnBlock() { return ReturnBlock; }

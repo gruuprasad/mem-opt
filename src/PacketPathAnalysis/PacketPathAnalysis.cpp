@@ -20,23 +20,10 @@ void PacketPathAnalysis::recalculate() {
   IntermediateBBPathIdMap.clear();
   PathExitingBlocksToPathIDMap.clear();
   PathIDToBLockList.clear();
-  computePathTrace();
+  computePathTraces();
 }
 
-void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
-  for (auto Pred : predecessors(BB)) {
-    if (IntermediateBBPathIdMap[Pred].find(PathID) != IntermediateBBPathIdMap[Pred].end())
-      continue;
-
-    IntermediateBBPathIdMap[Pred].insert(PathID);
-    PathIDToBLockList[PathID].push_back(Pred);
-    if (find(TotalOrder.begin(), TotalOrder.end(), Pred) == TotalOrder.end())
-      PathOrder.push_back(Pred);
-    visitPredecessor(Pred, PathID);
-  }
-}
-
-void PacketPathAnalysis::computePathTrace() {
+void PacketPathAnalysis::computePathTraces() {
   PostDominatorTree PDT(*F);
   DominatorTree DT(*F);
   // Check all the return blocks.
@@ -61,10 +48,7 @@ void PacketPathAnalysis::computePathTrace() {
   for (auto & KV : PathExitingBlocksToPathIDMap) {
     auto * EB = KV.getFirst();
     auto PathID = KV.getSecond(); 
-    PathOrder.push_back(EB);
     visitPredecessor(EB, PathID);
-    TotalOrder.insert(TotalOrder.end(), PathOrder.rbegin(), PathOrder.rend());
-    PathOrder.clear();
   }
 
   // Remove duplicate blocks.
@@ -73,22 +57,31 @@ void PacketPathAnalysis::computePathTrace() {
  // dumpDebugDataToConsole();
 }
 
+void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
+  for (auto Pred : predecessors(BB)) {
+    if (IntermediateBBPathIdMap[Pred].find(PathID) != IntermediateBBPathIdMap[Pred].end())
+      continue;
+
+    IntermediateBBPathIdMap[Pred].insert(PathID);
+    PathIDToBLockList[PathID].push_back(Pred);
+    visitPredecessor(Pred, PathID);
+  }
+}
+
 void PacketPathAnalysis::prepareFinalMap() {
   // Prepare final Basic block to Path ID map.
   // If block already has one id, that means it is part of some path.
   // In that case, remove all ids and assign 0.
   // 0 means this basic block will be executed for all kind of packet paths.
   // XXX This meaning is not true for all cases. Suppose there are 3 paths,
-  // them some basic block can be part of 2 paths. I am not sure how to handle it
+  // then some basic block can be part of 2 paths. I am not sure how to handle it
   // correctly at this moment.
   for (auto & KV : IntermediateBBPathIdMap) {
     auto & V = KV.getSecond();
     if (V.size() > 1) {
-      MiddleBlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), 0));
     } else {
       assert (V.size() == 1);
-      MiddleBlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
     }
   }
@@ -130,14 +123,6 @@ void PacketPathAnalysis::dumpDebugDataToConsole() {
     }
     errs() << "\n";
   }
-
-  errs() << "Total Order Size = " << TotalOrder.size() << "\n";
-  errs() << "Total Execution Order\n";
-  for (auto & BB : TotalOrder) {
-    BB->printAsOperand(errs());
-    errs() << " --> ";
-  }
-  errs() << "\n";
 }
 
 }
