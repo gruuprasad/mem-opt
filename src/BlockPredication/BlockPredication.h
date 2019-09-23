@@ -20,7 +20,7 @@ public:
 
 // This class transforms the function in place.
 class BlockPredication {
-  using BlockIDPairType = std::pair<llvm::BasicBlock *, unsigned>;
+  using BlockToIntMapType = llvm::DenseMap<llvm::BasicBlock *, unsigned>;
   llvm::Function * F;
   PacketPathAnalysis PPA;
   llvm::BasicBlock * EntryBlock;
@@ -29,7 +29,7 @@ class BlockPredication {
   std::deque<llvm::BasicBlock *> ActionBlocks;
   std::deque<llvm::BasicBlock *> PredicateBlocks;
 
-  void setPathIDCondition(llvm::BranchInst * BI);
+  void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & PathIDMap);
   void setActionBlocksSuccessors();
   llvm::BasicBlock * insertPredicateBlock(llvm::BasicBlock * ActionBB, unsigned PathID);
   void setPredicateBlocksFalseEdges();

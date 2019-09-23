@@ -18,17 +18,15 @@ bool BlockPredication::run() {
   return true;
 }
 
-void BlockPredication::setPathIDCondition(BranchInst * BI) {
-  Builder.SetInsertPoint(BI);
-  auto PathIDMap = PPA.getBlockToPathIDMapRef();
-  assert (BI->getSuccessor(0) != nullptr);
-  assert (BI->getSuccessor(1) != nullptr);
+void BlockPredication::setPathIDCondition(BranchInst * BI, BlockToIntMapType & PathIDMap) {
   auto TruePathIt = PathIDMap.find(BI->getSuccessor(0));
   auto FalsePathIt = PathIDMap.find(BI->getSuccessor(1));
 
-  if (TruePathIt == PathIDMap.end() || FalsePathIt == PathIDMap.end())
-    return;
+  // Sanity check
+  assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
+  assert (TruePathIt != PathIDMap.end() && FalsePathIt != PathIDMap.end());
 
+  Builder.SetInsertPoint(BI);
   auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
                                         Builder.getInt32(TruePathIt->getSecond()),
                                         Builder.getInt32(FalsePathIt->getSecond()));
@@ -51,6 +49,7 @@ BasicBlock * BlockPredication::insertPredicateBlock(BasicBlock * ActionBB, unsig
   auto PB = BasicBlock::Create(F->getContext(),
             string("predicate_") + std::to_string(PathID), F, ActionBB);
   ActionBB->replaceAllUsesWith(PB);
+
   Builder.SetInsertPoint(PB);
   auto PathIDVal = Builder.CreateLoad(PathIdAlloca);
   auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal, Builder.getInt32(PathID));
@@ -77,7 +76,7 @@ void BlockPredication::linearizeControlFlow() {
 
     if (auto * BI = dyn_cast<BranchInst>(BB.getTerminator())) {
       if (BI->isUnconditional()) continue;
-      setPathIDCondition(BI);
+      setPathIDCondition(BI, PathIDMap);
     }
   }
 
