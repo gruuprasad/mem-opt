@@ -1,7 +1,7 @@
 #include "BatchMaker.h"
-#include "BatchProcess/BatchProcess.h"
-#include "Common/ForLoop.h"
-#include "Common/Util.h"
+#include "BatchProcess.h"
+#include "ForLoop.h"
+#include "Util.h"
 
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SmallVector.h>

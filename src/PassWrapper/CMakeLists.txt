@@ -5,7 +5,6 @@ add_library(TASPass SHARED
             CacheUsageAnalysisPass.cpp)
 
 target_link_libraries(TASPass
-                      batchMaker
-                      LLVMCore
-                      common)
+                      tasopt_src
+                      LLVMCore)
 

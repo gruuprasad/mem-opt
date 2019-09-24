@@ -1,7 +1,11 @@
-add_subdirectory(BatchMaker)
-add_subdirectory(BatchProcess)
-add_subdirectory(CacheAnalysis)
-add_subdirectory(Common)
 add_subdirectory(PassWrapper)
-add_subdirectory(PacketPathAnalysis)
-add_subdirectory(BlockPredication)
+
+add_library(tasopt_src
+            BatchMaker.cpp
+            BatchProcess.cpp
+            BlockPredication.cpp
+            CacheUsageInfo.cpp
+            ForLoop.cpp
+            PacketPathAnalysis.cpp
+            ToolUtil.cpp
+            Util.cpp)

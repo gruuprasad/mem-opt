@@ -1,5 +1,5 @@
-#include "BlockPredication/BlockPredication.h"
-#include "Common/Util.h"
+#include "BlockPredication.h"
+#include "Util.h"
 
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/IR/Instructions.h>

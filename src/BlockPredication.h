@@ -1,7 +1,7 @@
 #ifndef BLOCK_PREDICATION_H
 #define BLOCK_PREDICATION_H
 
-#include "PacketPathAnalysis/PacketPathAnalysis.h"
+#include "PacketPathAnalysis.h"
 
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>

@@ -15,12 +15,8 @@ set(LLVM_LINK_COMPONENTS
   TransformUtils)
 
 target_link_libraries(tests
-                      batchMaker
-                      blockPredication
-                      cacheUsageInfo
+                      tasopt_src
                       catch_LIB
-                      common
-                      packetPathAnalysis
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser

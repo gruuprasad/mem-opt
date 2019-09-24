@@ -1,9 +1,9 @@
-#include "BatchMaker/BatchMaker.h"
+#include "BatchMaker.h"
 #include "catch.hpp"
-#include "Common/Util.h"
-#include "Common/ToolUtil.h"
-#include "PacketPathAnalysis/PacketPathAnalysis.h"
-#include "BlockPredication/BlockPredication.h"
+#include "Util.h"
+#include "ToolUtil.h"
+#include "PacketPathAnalysis.h"
+#include "BlockPredication.h"
 
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/ADT/PostOrderIterator.h>

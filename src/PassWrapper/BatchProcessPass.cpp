@@ -1,6 +1,6 @@
-#include "BatchProcess/BatchProcess.h"
+#include "BatchProcess.h"
 #include "BatchProcessPass.h"
-#include "Common/Util.h"
+#include "Util.h"
 
 #include <llvm/Transforms/Utils.h>
 #include <llvm/Transforms/Scalar.h>

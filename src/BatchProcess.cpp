@@ -1,6 +1,6 @@
 #include "BatchProcess.h"
-#include "Common/ForLoop.h"
-#include "Common/Util.h"
+#include "ForLoop.h"
+#include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>

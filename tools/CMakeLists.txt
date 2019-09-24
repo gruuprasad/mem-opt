@@ -1,9 +1,8 @@
 add_executable(tasopt tasopt.cpp)
 
 target_link_libraries(tasopt
+                      tasopt_src
                       TASPass
-                      batchMaker
-                      cacheUsageInfo
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser

@@ -1,6 +1,6 @@
 #include "CacheUsageInfo.h"
-#include "Common/Macros.h"
-#include "Common/Util.h"
+#include "Macros.h"
+#include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>

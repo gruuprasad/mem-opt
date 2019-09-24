@@ -14,8 +14,8 @@
 
 #include "PassWrapper/BatchMakerPass.h"
 #include "PassWrapper/CacheUsageAnalysisPass.h"
-#include "CacheAnalysis/CacheUsageInfo.h"
-#include "Common/ToolUtil.h"
+#include "CacheUsageInfo.h"
+#include "ToolUtil.h"
 
 #include <cstdlib>
 

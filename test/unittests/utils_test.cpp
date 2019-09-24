@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "Common/ToolUtil.h"
+#include "ToolUtil.h"
 
 #include <string>
 #include <vector>
