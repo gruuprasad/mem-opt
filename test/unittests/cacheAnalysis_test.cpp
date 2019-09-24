@@ -22,14 +22,6 @@ extern std::string input_dir; // This contains path to input test files
 using namespace llvm;
 using namespace tas;
 
-static std::unique_ptr<Module> parseIR(LLVMContext &C, const char *IR) {
-  SMDiagnostic Err;
-  std::unique_ptr<Module> Mod = parseAssemblyString(IR, Err, C);
-  if (!Mod)
-    Err.print("CacheAnalysisTests", errs());
-  return Mod;
-}
-
 /*
 TEST_CASE("Calculate struct size") {
   LLVMContext C;
