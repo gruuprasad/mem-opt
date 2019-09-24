@@ -6,14 +6,18 @@
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/Debug.h>
+#include <llvm/Support/SourceMgr.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
+#include <memory.h>
 #include <string>
 
 #include "Util.h"
 
 using namespace llvm;
+using namespace std;
 
 namespace tas {
 
@@ -219,6 +223,15 @@ StoreInst * findFirstUseInStoreInst(Value * V) {
 void setSuccessor(BasicBlock * BB, BasicBlock * SuccBB, unsigned Idx) {
   auto TermI = BB->getTerminator();
   TermI->setSuccessor(Idx, SuccBB);
+}
+
+unique_ptr<Module> parseIR(string Filename, string FileDir) {
+  LLVMContext C;
+  SMDiagnostic Err; 
+  std::unique_ptr<Module> M (parseIRFile(FileDir + Filename,  Err, C));
+  if (!M)
+    Err.print("Error parsing IR: ", errs());
+  return M;
 }
 
 }
