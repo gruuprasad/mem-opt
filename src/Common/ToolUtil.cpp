@@ -54,8 +54,7 @@ bool compileBinary(vector<string> Files, string OutFile = "", string Output_dir 
   ostringstream Args;
   copy(Files.begin(), Files.end(), ostream_iterator<string>(Args, " "));
 
-  string LinkerCmd = string("clang ") + Args.str() + " -o " + Output_dir + OutFile;
-  cout << LinkerCmd << "\n";
+  string LinkerCmd = string("clang -no-pie ") + Args.str() + " -o " + Output_dir + OutFile;
 
   auto ret = system(LinkerCmd.c_str());
   if (ret != 0) {
