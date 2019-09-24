@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -64,18 +65,20 @@ bool compileBinary(vector<string> Files, string OutFile = "", string Output_dir 
   return true;
 }
 
-void compileWithClangDriver(vector<string> Files, string Input_dir = "") {
-  string OptLevel = " -O2 ";
+bool compileWithClangDriver(vector<string> Files, string Input_dir = "") {
+  if (!Input_dir.empty())
+    for_each(Files.begin(), Files.end(), [&] (string & File) { File.insert(0, Input_dir); });
 
   ostringstream Args;
   copy(Files.begin(), Files.end(), ostream_iterator<string>(Args, " "));
 
-  string ClangCmd = string("clang ") + OptLevel + string("-fPIC -c ") + Args.str();
+  string ClangCmd = string("clang -O0 -c ") + Args.str();
   auto ret = system(ClangCmd.c_str());
   if (ret != 0) {
     cerr << "clanLg:linker failed with error code " << ret << "\n";
     exit(EXIT_FAILURE);
   }
+  return true;
 }
 
 }

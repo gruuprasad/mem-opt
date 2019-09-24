@@ -29,6 +29,7 @@ TEST_CASE("compile binary") {
 }
 
 TEST_CASE("compile with clang driver") {
-  // TODO(
-  REQUIRE(true);
+  vector<string> files = { "hello.c", "main.c" };
+  auto Ret = compileWithClangDriver(files, input_dir);
+  REQUIRE( Ret == true);
 }

@@ -13,7 +13,7 @@ std::string generateObject(std::string InFile, std::string Input_dir = "");
 bool compileBinary(std::vector<std::string> Files, std::string OutFile = "",
                   std::string Output_dir = "");
 
-void compileWithClangDriver(std::vector<std::string> Files, std::string Input_dir = "");
+bool compileWithClangDriver(std::vector<std::string> Files, std::string Input_dir = "");
 }
 
 #endif
