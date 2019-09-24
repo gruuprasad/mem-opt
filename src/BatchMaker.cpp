@@ -30,74 +30,62 @@ namespace tas {
 ///    void Fn_batch(Type1 A, Type2 * B, Type3 * C, int16_t TAS_BATCHSIZE, Ret * TAS_RETURNS);
 void BatchMaker::createBatchedFormFnPrototype() {
   LLVM_DEBUG(errs() << "Function = " << NonBatchFunc->getName() << "\n");
+  auto & Ctx = NonBatchFunc->getContext();
 
-  // Name of the argument to be batched is prefixed with string "batch_arg_i", where
-  // i goes from [1, ArgsToBatch.size()]
-  std::string prefix { "batch_arg_" }; int i = 0;
-  unsigned BatchParamIndex = 0;
+  int i = 0;
   for (auto & Arg : NonBatchFunc->args()) {
-    if (ArgsToBatch.find(&Arg) != ArgsToBatch.end()) {
-      BatchArgTypes.push_back(PointerType::get(Arg.getType(), 0));
-      BatchArgNames.push_back(prefix + std::to_string(i++));
-      BatchParamIndices.push_back(BatchParamIndex++);
-    } else {
-      // Add argument unmodified
-      BatchArgTypes.push_back(Arg.getType());
-      BatchArgNames.push_back(Arg.getName());
-      BatchParamIndex++;
-    }
+    bool IsBatch = ArgsToBatch.find(&Arg) != ArgsToBatch.end();
+    BatchFuncArgList.emplace_back(TASArgAttr { IsBatch, i++, Arg.getType(), &Arg, Arg.getName() }); 
   }
 
-  // Adding Parameter representing actual batch size during run time
-  BatchArgTypes.push_back(Type::getInt32Ty(NonBatchFunc->getContext()));
-  BatchArgNames.push_back(std::string("TAS_BATCHSIZE"));
+  // Batch size parameter
+  BatchFuncArgList.emplace_back(
+      TASArgAttr { false, i++, Type::getInt32Ty(Ctx), nullptr, std::string("TAS_BatchSize") });
 
-  auto RetType = NonBatchFunc->getReturnType();
-  // Add pointer as output parameter, where return value is stored.
-  BatchArgTypes.push_back(PointerType::get(RetType, 0));
-  BatchArgNames.push_back(std::string("TAS_RETURNS"));
+  // Return value pointer
+  BatchFuncArgList.emplace_back(
+      TASArgAttr { false, i++, PointerType::get(NonBatchFunc->getReturnType(), 0),
+                   nullptr, std::string("TAS_ReturnVar") });
+
+
+  llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
+  for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
+            [&] (TASArgAttr & Attr) { BatchArgTypes.push_back(Attr.Ty); });
 
   // Create Function prototype
-  FunctionType *BatchFuncType = FunctionType::get(RetType, BatchArgTypes, false);
+  std::string Suffix { "_batch" };
+  FunctionType *BatchFuncType = FunctionType::get(Type::getVoidTy(Ctx), BatchArgTypes, false);
   BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
-                                        NonBatchFunc->getName() + "_batch", NonBatchFunc->getParent());
-}
+                                        NonBatchFunc->getName() + Suffix, NonBatchFunc->getParent());
 
-void BatchMaker::setArgumentNamesInBatchFunc() {
-  // Set argument names.
-  auto NewArgIt = BatchFunc->arg_begin();
-  for (int i = 0; i < BatchFunc->arg_size() - 1; ++i) {
-    NewArgIt->setName(BatchArgNames[i]);
-    if (i == BatchParamIndices.front()) {
-      BatchArgs.push_back(&*NewArgIt);
-      BatchParamIndices.pop_front();
-    }
-    ++NewArgIt;
+  auto AI = BatchFunc->arg_begin();
+  for (auto i = 0; i != BatchFunc->arg_size(); ++i) {
+    // Setting name helps in debugging the code, it is not mandatory.
+    AI->setName(BatchFuncArgList[i].Name);
+    // Set Value object for newly created types, overwrite for old types.
+    BatchFuncArgList[i].Val = &*AI;
   }
-
-  NewArgIt->setName(BatchArgNames[BatchFunc->arg_size() - 1]);
-  RetArg = &*NewArgIt;
 }
 
-void BatchMaker::fillBasicBlocksInBatchFunc() {
-  // Store the mapping from old Value to new Value.
-  ValueToValueMapTy VMap;
-  auto NewArg = BatchFunc->arg_begin();
-  for (const Argument & OldArg : NonBatchFunc->args()) {
-    VMap[&OldArg] = &*NewArg++;
-  }
+void BatchMaker::updateBasicBlocksInBatchFunc(){
+  auto EntryBB = &BatchFunc->front();
+  Builder.SetInsertPoint(&EntryBB->front());
 
-  SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
-  CloneFunctionInto(BatchFunc, NonBatchFunc, VMap, NonBatchFunc->getSubprogram() != nullptr, Returns);
-}
+  // Create batch index variable, set to 0.
+  IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
 
-void BatchMaker::replaceArgUsesWithBatchArgVal() {
-  IRBuilder<> Builder(EntryBB);
-  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
-  // For each argument, replace all uses.
+  // Store Ret parameter in alloca.
+  auto RetArg = BatchFuncArgList.back().Val;
+  RetAlloca = Builder.CreateAlloca(RetArg->getType());
+  Builder.CreateStore(RetArg, RetAlloca);
+
+  SmallVector<Value *, 4> BatchArgs;
+  for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
+            [&] (TASArgAttr & Attr) { if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
+
   for (auto & BatchArg : BatchArgs) {
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
-    BatchAllocas.insert(BatchArgAlloca);
     auto StoreI = findFirstUseInStoreInst(BatchArg);
 
     // Store argument in alloca variable.
@@ -120,38 +108,20 @@ void BatchMaker::replaceArgUsesWithBatchArgVal() {
       auto IndexVal = Builder.CreateLoad(IndexVarPtr);
       auto DerefAPtr = Builder.CreateLoad(BatchArgAlloca);
       auto ElemPtr = Builder.CreateGEP(DerefAPtr, IndexVal);
-      BatchGEPs.push_back(ElemPtr);
       U->replaceUsesOfWith(OldAlloca, ElemPtr);
       NumUses--;
     }
   }
 }
 
-void BatchMaker::updateBasicBlocksInBatchFunc(){
-  EntryBB = &BatchFunc->getEntryBlock();
-  IRBuilder<> Builder(EntryBB);
-  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
-
-  // Batch index variable:
-  // int i = 0;
-  IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
-  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
-  // Store Ret parameter in alloca.
-  Builder.SetInsertPoint(EntryBB, EntryBB->begin());
-  auto RetAlloca = Builder.CreateAlloca(RetArg->getType());
-  Builder.CreateStore(RetArg, RetAlloca);
-
-  replaceArgUsesWithBatchArgVal();
-}
-
 bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
   createBatchedFormFnPrototype();
-  setArgumentNamesInBatchFunc();
-  fillBasicBlocksInBatchFunc();
+  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
   updateBasicBlocksInBatchFunc();
-  
   return true;
 }
+
+// TODO RetArg not set
 
 } // tas namespace

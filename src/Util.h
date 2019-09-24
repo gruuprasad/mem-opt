@@ -60,6 +60,8 @@ llvm::StoreInst * findFirstUseInStoreInst(llvm::Value * V);
 
 void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB, unsigned Idx = 0);
 
+void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
+
 } // namespace tas
 
 #endif

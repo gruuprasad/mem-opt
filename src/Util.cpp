@@ -87,6 +87,7 @@ void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParam
       }
     }
   }
+
 }
 
 void setAnnotationInFunctionObject(Module * M) {
@@ -225,4 +226,15 @@ void setSuccessor(BasicBlock * BB, BasicBlock * SuccBB, unsigned Idx) {
   TermI->setSuccessor(Idx, SuccBB);
 }
 
+void cloneBasicBlocksInto(Function * From, Function * To) {
+  // Store the mapping from old Value to new Value.
+  ValueToValueMapTy VMap;
+  auto ToArg = To->arg_begin();
+  for (const Argument & FromArg : From->args()) {
+    VMap[&FromArg] = &*ToArg++;
+  }
+
+  SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
+  CloneFunctionInto(To, From, VMap, From->getSubprogram() != nullptr, Returns);
+}
 }
