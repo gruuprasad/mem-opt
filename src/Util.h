@@ -60,7 +60,6 @@ llvm::StoreInst * findFirstUseInStoreInst(llvm::Value * V);
 
 void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB, unsigned Idx = 0);
 
-std::unique_ptr<llvm::Module> parseIR(std::string Filename, std::string FileDir = "");
 } // namespace tas
 
 #endif

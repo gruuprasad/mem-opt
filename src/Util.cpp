@@ -225,13 +225,4 @@ void setSuccessor(BasicBlock * BB, BasicBlock * SuccBB, unsigned Idx) {
   TermI->setSuccessor(Idx, SuccBB);
 }
 
-unique_ptr<Module> parseIR(string Filename, string FileDir) {
-  LLVMContext C;
-  SMDiagnostic Err; 
-  std::unique_ptr<Module> M (parseIRFile(FileDir + Filename,  Err, C));
-  if (!M)
-    Err.print("Error parsing IR: ", errs());
-  return M;
-}
-
 }

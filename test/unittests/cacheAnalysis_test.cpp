@@ -20,7 +20,18 @@
 extern std::string input_dir; // This contains path to input test files
 
 using namespace llvm;
+using namespace std;
 using namespace tas;
+
+static LLVMContext C;
+static SMDiagnostic Err; 
+
+static unique_ptr<Module> parseIR(string Filename, string FileDir) {
+  std::unique_ptr<Module> M (parseIRFile(FileDir + Filename,  Err, C));
+  if (!M)
+    Err.print("Error parsing IR: ", errs());
+  return M;
+}
 
 /*
 TEST_CASE("Calculate struct size") {
