@@ -146,7 +146,6 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
 
 bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  detectExpensivePointerVariables(NonBatchFunc, PrefetchVars);
   createBatchedFormFnPrototype();
   setArgumentNamesInBatchFunc();
   fillBasicBlocksInBatchFunc();

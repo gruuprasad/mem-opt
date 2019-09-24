@@ -20,7 +20,6 @@ class TASForLoop;
 class BatchMaker {
   llvm::Function * NonBatchFunc;
   llvm::Function * BatchFunc;
-  llvm::SmallVector<llvm::Value *, 4> PrefetchVars;
   llvm::SmallPtrSet<llvm::Value *, 4> ArgsToBatch;
 
   llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
