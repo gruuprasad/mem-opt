@@ -97,6 +97,7 @@ void BlockPredication::linearizeControlFlow() {
   for (auto & BB : ActionBlocks) {
     auto It = PathIDMap.find(BB);
     if (It == PathIDMap.end()) continue; // Could be Return Block
+
     auto PathID = It->getSecond();
     auto PB = insertPredicateBlock(BB, PathID);
     PredicateBlocks.push_back(PB);
