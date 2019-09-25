@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -49,20 +50,22 @@ string generateObject(string InFile, string Input_dir = "") {
   return Input_dir + ObjectFile;
 }
 
-bool compileBinary(vector<string> Files, string OutFile = "", string Output_dir = "") {
+string linkObjects(vector<string> Files, string OutFile = "", string Output_dir = "") {
+  const char * Cstr = std::getenv("CC");
+  auto CC = Cstr == nullptr ? string("clang") : string(Cstr);
   if (OutFile.empty()) OutFile = "a.out";
 
   ostringstream Args;
   copy(Files.begin(), Files.end(), ostream_iterator<string>(Args, " "));
 
-  string LinkerCmd = string("clang -no-pie ") + Args.str() + " -o " + Output_dir + OutFile;
+  string LinkerCmd = CC + string(" -no-pie ") + Args.str() + " -o " + Output_dir + OutFile;
 
   auto ret = system(LinkerCmd.c_str());
   if (ret != 0) {
     cerr << "clang:linker failed with error code " << ret << "\n";
     exit(EXIT_FAILURE);
   }
-  return true;
+  return Output_dir + OutFile;
 }
 
 bool compileWithClangDriver(vector<string> Files, string Input_dir = "") {
