@@ -113,6 +113,18 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
       NumUses--;
     }
   }
+
+  // Replace return instruction with storing in return alloca instruction.
+  SmallVector<ReturnInst *, 4> Returns;
+  getReturnInstList(BatchFunc, Returns);
+  for (auto & RI : Returns) {
+    Builder.SetInsertPoint(RI);
+    auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
+                                      Builder.CreateLoad(IndexVarPtr)); 
+    Builder.CreateStore(RI->getReturnValue(), BatchPtr);
+    Builder.CreateRetVoid();
+    RI->eraseFromParent();
+  }
 }
 
 bool BatchMaker::run() {
@@ -122,7 +134,5 @@ bool BatchMaker::run() {
   updateBasicBlocksInBatchFunc();
   return true;
 }
-
-// TODO RetArg not set
 
 } // tas namespace

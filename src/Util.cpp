@@ -237,4 +237,12 @@ void cloneBasicBlocksInto(Function * From, Function * To) {
   SmallVector<ReturnInst*, 8> Returns;  // Ignore returns cloned
   CloneFunctionInto(To, From, VMap, From->getSubprogram() != nullptr, Returns);
 }
+
+void getReturnInstList(Function * F, SmallVectorImpl<ReturnInst *> & Result) {
+  // Check all the return blocks.
+  for (BasicBlock & BB : *F)
+    if (isa<ReturnInst>(BB.getTerminator()))
+      Result.push_back((cast<ReturnInst>(BB.getTerminator())));
+}
+
 }

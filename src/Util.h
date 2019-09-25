@@ -62,6 +62,8 @@ void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB, unsigned Idx
 
 void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
 
+void getReturnInstList(llvm::Function * F, llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
+
 } // namespace tas
 
 #endif
