@@ -14,8 +14,6 @@
 
 namespace tas {
 
-class TASForLoop;
-
 struct TASArgAttr {
   std::string Prefix;
   bool IsBatch;

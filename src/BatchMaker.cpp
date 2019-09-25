@@ -35,7 +35,8 @@ void BatchMaker::createBatchedFormFnPrototype() {
   int i = 0;
   for (auto & Arg : NonBatchFunc->args()) {
     bool IsBatch = ArgsToBatch.find(&Arg) != ArgsToBatch.end();
-    BatchFuncArgList.emplace_back(TASArgAttr { IsBatch, i++, Arg.getType(), &Arg, Arg.getName() }); 
+    BatchFuncArgList.emplace_back(TASArgAttr { IsBatch, i++, Arg.getType(), &Arg,
+                                               Arg.getName() }); 
   }
 
   // Batch size parameter
@@ -56,7 +57,7 @@ void BatchMaker::createBatchedFormFnPrototype() {
   std::string Suffix { "_batch" };
   FunctionType *BatchFuncType = FunctionType::get(Type::getVoidTy(Ctx), BatchArgTypes, false);
   BatchFunc = Function::Create(BatchFuncType, GlobalValue::ExternalLinkage,
-                                        NonBatchFunc->getName() + Suffix, NonBatchFunc->getParent());
+                               NonBatchFunc->getName() + Suffix, NonBatchFunc->getParent());
 
   auto AI = BatchFunc->arg_begin();
   for (auto i = 0; i != BatchFunc->arg_size(); ++i) {
@@ -69,6 +70,9 @@ void BatchMaker::createBatchedFormFnPrototype() {
 }
 
 void BatchMaker::updateBasicBlocksInBatchFunc(){
+  // First copy over basic blocks without modifying.
+  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
+
   auto EntryBB = &BatchFunc->front();
   Builder.SetInsertPoint(&EntryBB->front());
 
@@ -83,7 +87,8 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
 
   SmallVector<Value *, 4> BatchArgs;
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
-            [&] (TASArgAttr & Attr) { if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
+            [&] (TASArgAttr & Attr) {
+            if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
 
   for (auto & BatchArg : BatchArgs) {
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
@@ -134,17 +139,19 @@ void BatchMaker::addBatchLoop() {
   auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
 
   // Split at return instruction
-  auto ReturnBB = Return->getParent()->splitBasicBlock(BasicBlock::iterator(*Return), "exit_block");
+  auto ReturnBB = Return->getParent()->splitBasicBlock(BasicBlock::iterator(*Return),
+                                                       "exit_block");
 
   auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
-  auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, ReturnBB, std::string("loop0"), BatchFunc, BatchSizeVal);
+  auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, ReturnBB,
+                        std::string("loop0"), BatchFunc, BatchSizeVal);
   TL0.setLoopBody(BatchBB);
 
   // Workaround for existence of two index variable.
-  // XXX We have two index variable. TASForLoop uses its own variable which is SSA value.
-  // Other one is alloca variable. Combine them to have only one.
-  // Using workaround for now. In latch block we increment the alloca variable, so that instructions
-  // which use alloca variable need not be updated.
+  // XXX We have two index variable. TASForLoop uses its own variable which is
+  // SSA value. Other one is alloca variable. Combine them to have only one.
+  // Using workaround for now. In latch block we increment the alloca variable,
+  // so that instructions which use alloca variable need not be updated.
   auto Latch = TL0.getLatch();
   Instruction * NonPhiI = nullptr;
   for (auto & I : *Latch) {
@@ -163,7 +170,6 @@ void BatchMaker::addBatchLoop() {
 bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
   createBatchedFormFnPrototype();
-  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
   updateBasicBlocksInBatchFunc();
   addBatchLoop();
   return true;

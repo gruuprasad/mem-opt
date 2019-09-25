@@ -61,7 +61,7 @@ TEST_CASE("simple batch case") {
   auto F = M->getFunction("simple_fn");
   REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
   REQUIRE(F->arg_size() == 2);
-  //REQUIRE(M->getFunction("simple_fn_batch") == nullptr);
+  REQUIRE(M->getFunction("simple_fn_batch") == nullptr);
 
   BatchMaker BM(F);
   BM.run();
