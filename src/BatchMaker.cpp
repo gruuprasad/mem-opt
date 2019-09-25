@@ -17,7 +17,9 @@
 #include <deque>
 #include <iostream>
 #include <string>
+#include <vector>
 
+using namespace std;
 using namespace llvm;
 
 #define DEBUG_TYPE "tas-batch-maker"
@@ -28,7 +30,7 @@ namespace tas {
 ///    Ret Fn(Type1 A, Type2 B BATCH_ARG, Type3 C BATCH_ARG);
 /// BatchForm Fn Prototype:
 ///    void Fn_batch(Type1 A, Type2 * B, Type3 * C, int16_t TAS_BATCHSIZE, Ret * TAS_RETURNS);
-void BatchMaker::createBatchedFormFnPrototype() {
+void BatchMaker::createBatchedFormFnPrototype(vector<TASArgAttr> & BatchFuncArgList) {
   LLVM_DEBUG(errs() << "Function = " << NonBatchFunc->getName() << "\n");
   auto & Ctx = NonBatchFunc->getContext();
 
@@ -69,26 +71,15 @@ void BatchMaker::createBatchedFormFnPrototype() {
   }
 }
 
-void BatchMaker::updateBasicBlocksInBatchFunc(){
-  // First copy over basic blocks without modifying.
-  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
-
+void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncArgList,
+                                                AllocaInst * IdxPtr) {
   auto EntryBB = &BatchFunc->front();
   Builder.SetInsertPoint(&EntryBB->front());
 
-  // Create batch index variable, set to 0.
-  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
-  Builder.CreateStore(Builder.getInt32(0), IdxPtr);
-
-  // Store Ret parameter in alloca.
-  auto RetArg = BatchFuncArgList.back().Val;
-  RetAlloca = Builder.CreateAlloca(RetArg->getType());
-  Builder.CreateStore(RetArg, RetAlloca);
-
   SmallVector<Value *, 4> BatchArgs;
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
-            [&] (TASArgAttr & Attr) {
-            if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
+      [&] (TASArgAttr & Attr) {
+      if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
 
   for (auto & BatchArg : BatchArgs) {
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
@@ -112,38 +103,58 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
       User * U = OldAlloca->user_back();
       Builder.SetInsertPoint(cast<Instruction>(U));
       auto ElemPtr = Builder.CreateGEP(Builder.CreateLoad(BatchArgAlloca),
-                                       Builder.CreateLoad(IdxPtr));
+          Builder.CreateLoad(IdxPtr));
       U->replaceUsesOfWith(OldAlloca, ElemPtr);
       NumUses--;
     }
   }
+}
 
-  // Replace return instruction with storing in return alloca instruction.
+BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg, 
+                                            AllocaInst * IdxPtr) {
+  auto EntryBB = &BatchFunc->front();
+  Builder.SetInsertPoint(&EntryBB->front());
+
+  // Store Ret parameter in alloca.
+  auto RetAlloca = Builder.CreateAlloca(RetArg->getType());
+  Builder.CreateStore(RetArg, RetAlloca);
+
+  // Store return value in RetAlloca. Now instead return void.
   SmallVector<ReturnInst *, 4> Returns;
   getReturnInstList(BatchFunc, Returns);
+
+  SmallVector<ReturnInst *, 4> NewReturns;
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
-                                      Builder.CreateLoad(IdxPtr)); 
+        Builder.CreateLoad(IdxPtr)); 
     Builder.CreateStore(RI->getReturnValue(), BatchPtr);
-    Return = Builder.CreateRetVoid();
+    NewReturns.push_back(Builder.CreateRetVoid());
     RI->eraseFromParent();
   }
+
+  if (NewReturns.size() == 1) return NewReturns.front()->getParent();
+  // Have a single return block.
+  auto * NewRetBlock = BasicBlock::Create(BatchFunc->getContext(),
+      "UnifiedReturnBlock", BatchFunc);
+  ReturnInst::Create(BatchFunc->getContext(), nullptr, NewRetBlock);
+  // Since we converted return type to void, no need to add phi nodes.
+  for (auto & RI : NewReturns) {
+    RI->getParent()->getInstList().pop_back();  // Remove the return insn
+    BranchInst::Create(NewRetBlock, RI->getParent());
+  }
+  return NewRetBlock;
 }
 
-void BatchMaker::addBatchLoop() {
+void BatchMaker::addBatchLoop(BasicBlock * RetBlock) {
   auto * BBM = findBatchBeginMarkerInstruction(BatchFunc);
   if (BBM == nullptr) return; // Do nothing for now. XXX Try auto detection
   auto * SI = BBM->getNextNode(); // This instruction belongs to new block
   auto ParentBB = SI->getParent();
   auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
 
-  // Split at return instruction
-  auto ReturnBB = Return->getParent()->splitBasicBlock(BasicBlock::iterator(*Return),
-                                                       "exit_block");
-
   auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
-  auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, ReturnBB,
+  auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, RetBlock,
                         std::string("loop0"), BatchFunc, BatchSizeVal);
   TL0.setLoopBody(BatchBB);
 
@@ -167,11 +178,29 @@ void BatchMaker::addBatchLoop() {
   Builder.CreateStore(NewIdxVal, IdxPtr);
 }
 
+void BatchMaker::doBatchTransform() {
+  vector<TASArgAttr> BatchFuncArgList;
+  createBatchedFormFnPrototype(BatchFuncArgList);
+
+  // First copy over basic blocks without modifying.
+  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
+  
+  // Create batch index variable, set to 0.
+  auto EntryBB = &BatchFunc->front();
+  Builder.SetInsertPoint(&EntryBB->front());
+  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IdxPtr);
+  replaceOldArgUsesWithBatchArgs(BatchFuncArgList, IdxPtr);
+
+  auto RetBlock = storeRetValInPtrArg(BatchFuncArgList.back().Val, IdxPtr);
+  assert(RetBlock != nullptr);
+
+  addBatchLoop(RetBlock);
+}
+
 bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  createBatchedFormFnPrototype();
-  updateBasicBlocksInBatchFunc();
-  addBatchLoop();
+  doBatchTransform();
   return true;
 }
 
