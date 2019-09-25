@@ -6,7 +6,7 @@ project(tas-opt)
 #Script debug purpose: print to check cmake variable value
 #message(STATUS "Value is: ${CMAKE_PREFIX_PATH}")
 
-  set(CMAKE_PREFIX_PATH "/home/gp/llvm_projects//install" CACHE STRING "Location to search for LLVM directory")
+#set(CMAKE_PREFIX_PATH "/home/gp/llvm_projects//install" CACHE STRING "Location to search for LLVM directory")
 
 # C++, compiler related flags and build type
 set(CMAKE_CXX_STANDARD 14)
@@ -34,7 +34,7 @@ enable_testing()
 
 find_package(glog 0.4.0 REQUIRED)
 
-set(LLVM_DIR "/home/gp/llvm_projects/install/lib/cmake/llvm")
+#set(LLVM_DIR "/home/gp/llvm_projects/install/lib/cmake/llvm")
 # Find LLVM libraries
 find_package(LLVM REQUIRED CONFIG)
 if (LLVM_FOUND)
