@@ -13,11 +13,12 @@ int main() {
   int ret_batch = 0;
   simple_fn_batch(&a, &b, batch_size, &ret_batch);
 
-  printf("ret = %d", ret);
-  printf("ret_batch = %d", ret_batch);
+  /*
+  printf("ret = %d\n", ret);
+  printf("ret_batch = %d\n", ret_batch);
+  */
 
   if (ret == ret_batch)
     return 0;
-  printf("FAIL\n");
   return -1;
 }

@@ -72,16 +72,16 @@ TEST_CASE("simple batch case") {
   REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
   REQUIRE(BF->arg_size() == 4);
 
-  // Check the correctness of the transformation.
-  
-  // Write to bitcode file.
-  string bitCodeFile = "BatchMaker_test3.bc";
-  std::error_code EC;
-  llvm::raw_fd_ostream OS(bitCodeFile, EC, llvm::sys::fs::F_None);
-  WriteBitcodeToFile(*M, OS);
-  OS.flush();
 
-  auto TestObject = generateObject(bitCodeFile);
+  // MainObject contains checks to verify the correctness of transformation.
   auto MainObject = generateObject("batchMaker_main.c", input_dir);
-  auto binary = compileBinary(vector<string>{TestObject, MainObject}, string("batchMaker_test3"));
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject, MainObject}, string("batchMaker_test3"));
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
 }

@@ -6,6 +6,7 @@ target_link_libraries(tasopt
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser
+                      LLVMBitWriter
                       LLVMSupport
                       LLVMIRReader
                       LLVMTransformUtils)

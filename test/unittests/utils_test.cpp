@@ -23,9 +23,9 @@ TEST_CASE("compile binary") {
   auto IRFile = generateIR(std::string("hello.c"), input_dir);
   auto HelloObject = generateObject(std::string("hello.ll"), input_dir);
   auto Main = generateObject(std::string("main.c"), input_dir);
-  auto Binary = compileBinary(vector<string>{HelloObject, Main}, string("hello"));
+  auto Binary = linkObjects(vector<string>{HelloObject, Main}, string("hello"));
 
-  REQUIRE(Binary == true);
+  REQUIRE(Binary == string("hello"));
 }
 
 TEST_CASE("compile with clang driver") {
