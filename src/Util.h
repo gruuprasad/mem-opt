@@ -64,6 +64,7 @@ void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
 
 void getReturnInstList(llvm::Function * F, llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
 
+std::string writeToBitCodeFile(llvm::Module & M);
 } // namespace tas
 
 #endif

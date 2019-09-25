@@ -1,4 +1,5 @@
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
@@ -245,4 +246,14 @@ void getReturnInstList(Function * F, SmallVectorImpl<ReturnInst *> & Result) {
       Result.push_back((cast<ReturnInst>(BB.getTerminator())));
 }
 
+string writeToBitCodeFile(Module & M) {
+  // Write to bitcode file.
+  std::error_code EC;
+  auto Idx = M.getSourceFileName().find_last_of(".");
+  auto OutFile = M.getSourceFileName().substr(0, Idx) + string(".bc");
+  raw_fd_ostream OS(OutFile, EC, llvm::sys::fs::F_None);
+  WriteBitcodeToFile(M, OS);
+  OS.flush();
+  return OutFile;
+}
 }
