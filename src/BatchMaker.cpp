@@ -64,6 +64,7 @@ void BatchMaker::createBatchedFormFnPrototype() {
     AI->setName(BatchFuncArgList[i].Name);
     // Set Value object for newly created types, overwrite for old types.
     BatchFuncArgList[i].Val = &*AI;
+    AI++;
   }
 }
 
