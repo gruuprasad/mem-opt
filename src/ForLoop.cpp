@@ -23,21 +23,21 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   IRBuilder<> Builder(Next);
   auto * PN = &*(Next->phis().begin());
   if (PN)
-    PN->addIncoming(Builder.getInt16(0), Header);
+    PN->addIncoming(Builder.getInt32(0), Header);
 
   Builder.SetInsertPoint(PreHeader);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  IndexVar = Builder.CreatePHI(Type::getInt16Ty(Ctx), 2, "indV");
+  IndexVar = Builder.CreatePHI(Type::getInt32Ty(Ctx), 2, "indV");
   IndexVar64 = Builder.CreateSExtOrBitCast(IndexVar, Type::getInt64Ty(Ctx), "indV64");
 
   Builder.SetInsertPoint(Latch);
-  auto *IVNext = Builder.CreateAdd(IndexVar, Builder.getInt16(1));
+  auto *IVNext = Builder.CreateAdd(IndexVar, Builder.getInt32(1));
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  IndexVar->addIncoming(Builder.getInt16(0), PreHeader);
+  IndexVar->addIncoming(Builder.getInt32(0), PreHeader);
   IndexVar->addIncoming(IVNext, Latch);
   auto * icmp = Builder.CreateICmpSLT(IndexVar, TripCount, "loop-predicate");
   

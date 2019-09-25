@@ -49,6 +49,8 @@ void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVectorImpl<l
 
 void detectBatchingParameters(llvm::Function * F, llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
 
+llvm::Instruction * findBatchBeginMarkerInstruction(llvm::Function * F);
+
 llvm::Value * createArray(llvm::Function * F, llvm::Type * Ty, unsigned size);
 
 template <typename InstType>
@@ -65,6 +67,8 @@ void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
 void getReturnInstList(llvm::Function * F, llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
 
 std::string writeToBitCodeFile(llvm::Module & M);
+
+std::string writeToAsmFile(llvm::Module & M);
 } // namespace tas
 
 #endif

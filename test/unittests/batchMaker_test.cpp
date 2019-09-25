@@ -72,6 +72,8 @@ TEST_CASE("simple batch case") {
   REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
   REQUIRE(BF->arg_size() == 4);
 
+  M->setSourceFileName(string("batchMaker_test3_batch.ll"));
+  writeToAsmFile(*M);
 
   // MainObject contains checks to verify the correctness of transformation.
   auto MainObject = generateObject("batchMaker_main.c", input_dir);

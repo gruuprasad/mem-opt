@@ -40,12 +40,12 @@ void BatchMaker::createBatchedFormFnPrototype() {
 
   // Batch size parameter
   BatchFuncArgList.emplace_back(
-      TASArgAttr { false, i++, Type::getInt32Ty(Ctx), nullptr, std::string("TAS_BatchSize") });
+      TASArgAttr { false, i++, Type::getInt32Ty(Ctx), nullptr, BatchSizeVarName});
 
   // Return value pointer
   BatchFuncArgList.emplace_back(
       TASArgAttr { false, i++, PointerType::get(NonBatchFunc->getReturnType(), 0),
-                   nullptr, std::string("TAS_ReturnVar") });
+                   nullptr, ReturnVarName });
 
 
   llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
@@ -73,8 +73,8 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
   Builder.SetInsertPoint(&EntryBB->front());
 
   // Create batch index variable, set to 0.
-  IndexVarPtr = Builder.CreateAlloca(Builder.getInt32Ty());
-  Builder.CreateStore(Builder.getInt32(0), IndexVarPtr);
+  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IdxPtr);
 
   // Store Ret parameter in alloca.
   auto RetArg = BatchFuncArgList.back().Val;
@@ -106,9 +106,8 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
     while (NumUses > 0) {
       User * U = OldAlloca->user_back();
       Builder.SetInsertPoint(cast<Instruction>(U));
-      auto IndexVal = Builder.CreateLoad(IndexVarPtr);
-      auto DerefAPtr = Builder.CreateLoad(BatchArgAlloca);
-      auto ElemPtr = Builder.CreateGEP(DerefAPtr, IndexVal);
+      auto ElemPtr = Builder.CreateGEP(Builder.CreateLoad(BatchArgAlloca),
+                                       Builder.CreateLoad(IdxPtr));
       U->replaceUsesOfWith(OldAlloca, ElemPtr);
       NumUses--;
     }
@@ -120,11 +119,45 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
-                                      Builder.CreateLoad(IndexVarPtr)); 
+                                      Builder.CreateLoad(IdxPtr)); 
     Builder.CreateStore(RI->getReturnValue(), BatchPtr);
-    Builder.CreateRetVoid();
+    Return = Builder.CreateRetVoid();
     RI->eraseFromParent();
   }
+}
+
+void BatchMaker::addBatchLoop() {
+  auto * BBM = findBatchBeginMarkerInstruction(BatchFunc);
+  if (BBM == nullptr) return; // Do nothing for now. XXX Try auto detection
+  auto * SI = BBM->getNextNode(); // This instruction belongs to new block
+  auto ParentBB = SI->getParent();
+  auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
+
+  // Split at return instruction
+  auto ReturnBB = Return->getParent()->splitBasicBlock(BasicBlock::iterator(*Return), "exit_block");
+
+  auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
+  auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, ReturnBB, std::string("loop0"), BatchFunc, BatchSizeVal);
+  TL0.setLoopBody(BatchBB);
+
+  // Workaround for existence of two index variable.
+  // XXX We have two index variable. TASForLoop uses its own variable which is SSA value.
+  // Other one is alloca variable. Combine them to have only one.
+  // Using workaround for now. In latch block we increment the alloca variable, so that instructions
+  // which use alloca variable need not be updated.
+  auto Latch = TL0.getLatch();
+  Instruction * NonPhiI = nullptr;
+  for (auto & I : *Latch) {
+    if (!isa<PHINode>(I)) {
+      NonPhiI = &I;
+      break;
+    }
+  }
+  assert (NonPhiI != nullptr && "Latch block is invalid!");
+  Builder.SetInsertPoint(NonPhiI);
+  auto IdxVal = Builder.CreateLoad(IdxPtr);
+  auto NewIdxVal = Builder.CreateAdd(IdxVal, Builder.getInt32(1));
+  Builder.CreateStore(NewIdxVal, IdxPtr);
 }
 
 bool BatchMaker::run() {
@@ -132,6 +165,7 @@ bool BatchMaker::run() {
   createBatchedFormFnPrototype();
   cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
   updateBasicBlocksInBatchFunc();
+  addBatchLoop();
   return true;
 }
 

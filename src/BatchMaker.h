@@ -39,10 +39,18 @@ class BatchMaker {
   llvm::SmallPtrSet<llvm::Value *, 4> ArgsToBatch;
   std::vector<TASArgAttr> BatchFuncArgList;
   llvm::IRBuilder<> Builder;
+  unsigned BatchSize = 4;
+  std::string BatchSizeVarName = std::string("TAS_BatchSize");
+  std::string ReturnVarName = std::string("TAS_ReturnVar");
 
   /// Handles to batch related variables.
-  llvm::AllocaInst * IndexVarPtr;
+  llvm::AllocaInst * IdxPtr;
   llvm::AllocaInst * RetAlloca;
+  llvm::Instruction * Return;
+
+  void createBatchedFormFnPrototype();
+  void updateBasicBlocksInBatchFunc();
+  void addBatchLoop();
 
   public:
   BatchMaker(llvm::Function * F_) :
@@ -50,8 +58,6 @@ class BatchMaker {
     Builder(NonBatchFunc->getContext()) {}
 
   bool run();
-  void createBatchedFormFnPrototype();
-  void updateBasicBlocksInBatchFunc();
 }; // tas namespace
 
 }

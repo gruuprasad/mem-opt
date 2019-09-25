@@ -62,6 +62,29 @@ void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & Ex
   }
 }
 
+Instruction * findBatchBeginMarkerInstruction(Function * F) {
+  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
+  // XXX Checking only entry basic block for annotated variables.
+  for (auto I = inst_begin(*F), E = inst_end(*F); I != E; ++I) {
+    auto * CI = dyn_cast<CallInst>(&*I);
+    if (CI == nullptr) continue;
+
+    // Check whether var.annotation or not
+    auto * Callee = CI->getCalledFunction();
+    if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+
+    // Get annotation string literal
+    auto StringTag = cast<ConstantDataArray>(
+        cast<GlobalVariable>(
+          CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
+
+    if (StringTag.compare("batch_begin") == 0) {
+      return CI;
+    }
+  }
+  return nullptr;
+}
+
 void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
@@ -253,6 +276,17 @@ string writeToBitCodeFile(Module & M) {
   auto OutFile = M.getSourceFileName().substr(0, Idx) + string(".bc");
   raw_fd_ostream OS(OutFile, EC, llvm::sys::fs::F_None);
   WriteBitcodeToFile(M, OS);
+  OS.flush();
+  return OutFile;
+}
+
+string writeToAsmFile(Module & M) {
+  // Write to .ll file.
+  std::error_code EC;
+  auto Idx = M.getSourceFileName().find_last_of(".");
+  auto OutFile = M.getSourceFileName().substr(0, Idx) + string(".ll");
+  raw_fd_ostream OS(OutFile, EC, llvm::sys::fs::F_None);
+  M.print(OS, nullptr);
   OS.flush();
   return OutFile;
 }
