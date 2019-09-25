@@ -22,6 +22,7 @@ target_link_libraries(tests
                       LLVMCore
                       LLVMAnalysis
                       LLVMAsmParser
+                      LLVMBitWriter
                       LLVMSupport
                       LLVMIRReader
                       LLVMTransformUtils

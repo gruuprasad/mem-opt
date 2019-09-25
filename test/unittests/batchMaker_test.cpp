@@ -10,6 +10,7 @@
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SCCIterator.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
@@ -52,29 +53,35 @@ TEST_CASE("create batch function prototype") {
   }
 }
 
-/* Explore graph related tools available in LLVM.
-TEST_CASE("Topological sorting of CFG") {
-  auto M = parseIR(std::string("batchmaker_test2.ll"));
-  REQUIRE( M != nullptr);
-  auto F = M->getFunction("process_packet");
-  errs() << "========Reverse post order=====\n";
-  ReversePostOrderTraversal<Function*> RPOT(F);
-  for (auto I = RPOT.begin(); I != RPOT.end(); ++I) {
-    errs() << **I;
-  }
+TEST_CASE("simple batch case") {
+  auto M = parseIR(generateIR(string("batchmaker_test3.c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
 
-  errs() << "========SCC post order=====\n";
-  for (auto I = scc_begin(F); I != scc_end(F); ++I) {
-    const auto & SCCBBs = *I;
-    errs() << "SCC\n";
-    for (auto & BI : SCCBBs) {
-      errs() << *BI;
-    }
-  }
+  // Function with 2 arguments and int return type.
+  auto F = M->getFunction("simple_fn");
+  REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+  REQUIRE(F->arg_size() == 2);
+  //REQUIRE(M->getFunction("simple_fn_batch") == nullptr);
 
-  errs() << "======Post order========\n";
-  for (auto I = po_begin(F); I != po_end(F); ++I) {
-    errs() << **I;
-  }
+  BatchMaker BM(F);
+  BM.run();
+
+  // Function with 4 arguments and void return type.
+  auto BF = M->getFunction("simple_fn_batch");
+  REQUIRE(BF != nullptr);
+  REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+  REQUIRE(BF->arg_size() == 4);
+
+  // Check the correctness of the transformation.
+  
+  // Write to bitcode file.
+  string bitCodeFile = "BatchMaker_test3.bc";
+  std::error_code EC;
+  llvm::raw_fd_ostream OS(bitCodeFile, EC, llvm::sys::fs::F_None);
+  WriteBitcodeToFile(*M, OS);
+  OS.flush();
+
+  auto TestObject = generateObject(bitCodeFile);
+  auto MainObject = generateObject("batchMaker_main.c", input_dir);
+  auto binary = compileBinary(vector<string>{TestObject, MainObject}, string("batchMaker_test3"));
 }
-*/
