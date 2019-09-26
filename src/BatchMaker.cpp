@@ -11,6 +11,7 @@
 #include <llvm/IR/InstIterator.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/ValueSymbolTable.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/Transforms/Utils/BasicBlockUtils.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
@@ -133,7 +134,7 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
     RI->eraseFromParent();
   }
 
-  if (NewReturns.size() == 1) return NewReturns.front()->getParent();
+  if (NewReturns.size() == 1) return NewReturns[0]->getParent();
   // Have a single return block.
   auto * NewRetBlock = BasicBlock::Create(BatchFunc->getContext(),
       "UnifiedReturnBlock", BatchFunc);
