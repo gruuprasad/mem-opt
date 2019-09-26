@@ -68,6 +68,7 @@ add_subdirectory(src)
 add_subdirectory(tools)
 add_subdirectory(test)
 
+message(STATUS "LLVM_SOURCE_DIR_VAL ${CMAKE_SOURCE_DIR}")
 # Testing related tools
 if(NOT EXISTS ${LLVM_ROOT}/bin/FileCheck)
     message(FATAL_ERROR "LLVM wasn't configured with -DLLVM_INSTALL_UTILS, cannot use FileCheck")

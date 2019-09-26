@@ -73,6 +73,7 @@ TEST_CASE("simple batch case") {
   REQUIRE(BF->arg_size() == 4);
 
   M->setSourceFileName(string("batchMaker_test3_batch.ll"));
+
   writeToAsmFile(*M);
 
   // MainObject contains checks to verify the correctness of transformation.
