@@ -69,22 +69,7 @@ void BatchMaker::createBatchedFormFnPrototype() {
   }
 }
 
-void BatchMaker::updateBasicBlocksInBatchFunc(){
-  // First copy over basic blocks without modifying.
-  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
-
-  auto EntryBB = &BatchFunc->front();
-  Builder.SetInsertPoint(&EntryBB->front());
-
-  // Create batch index variable, set to 0.
-  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
-  Builder.CreateStore(Builder.getInt32(0), IdxPtr);
-
-  // Store Ret parameter in alloca.
-  auto RetArg = BatchFuncArgList.back().Val;
-  RetAlloca = Builder.CreateAlloca(RetArg->getType());
-  Builder.CreateStore(RetArg, RetAlloca);
-
+void BatchMaker::replaceOldArgUsesWithBatchArgs() {
   SmallVector<Value *, 4> BatchArgs;
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
             [&] (TASArgAttr & Attr) {
@@ -117,6 +102,13 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
       NumUses--;
     }
   }
+}
+
+void BatchMaker::storeRetValInPtrArg() {
+  // Store Ret parameter in alloca.
+  auto RetArg = BatchFuncArgList.back().Val;
+  RetAlloca = Builder.CreateAlloca(RetArg->getType());
+  Builder.CreateStore(RetArg, RetAlloca);
 
   // Replace return instruction with storing in return alloca instruction.
   SmallVector<ReturnInst *, 4> Returns;
@@ -129,6 +121,26 @@ void BatchMaker::updateBasicBlocksInBatchFunc(){
     Return = Builder.CreateRetVoid();
     RI->eraseFromParent();
   }
+}
+
+void BatchMaker::doBatchTransform(){
+  createBatchedFormFnPrototype();
+
+  // First copy over basic blocks without modifying.
+  cloneBasicBlocksInto(NonBatchFunc, BatchFunc);
+
+  auto EntryBB = &BatchFunc->front();
+  Builder.SetInsertPoint(&EntryBB->front());
+
+  // Create batch index variable, set to 0.
+  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  Builder.CreateStore(Builder.getInt32(0), IdxPtr);
+
+  replaceOldArgUsesWithBatchArgs();
+
+  storeRetValInPtrArg();
+
+  addBatchLoop();
 }
 
 void BatchMaker::addBatchLoop() {
@@ -169,9 +181,7 @@ void BatchMaker::addBatchLoop() {
 
 bool BatchMaker::run() {
   detectBatchingParameters(NonBatchFunc, ArgsToBatch);
-  createBatchedFormFnPrototype();
-  updateBasicBlocksInBatchFunc();
-  addBatchLoop();
+  doBatchTransform();
   return true;
 }
 

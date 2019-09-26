@@ -47,7 +47,9 @@ class BatchMaker {
   llvm::Instruction * Return;
 
   void createBatchedFormFnPrototype();
-  void updateBasicBlocksInBatchFunc();
+  void doBatchTransform();
+  void replaceOldArgUsesWithBatchArgs();
+  void storeRetValInPtrArg();
   void addBatchLoop();
 
   public:
