@@ -74,8 +74,6 @@ TEST_CASE("simple batch case") {
 
   M->setSourceFileName(string("batchMaker_test3_batch.ll"));
 
-  auto Ok = verifyModule(*M);
-  assert (Ok == true && "Invalid Module!");
   writeToAsmFile(*M);
 
   // MainObject contains checks to verify the correctness of transformation.

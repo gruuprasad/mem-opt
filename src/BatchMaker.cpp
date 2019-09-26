@@ -124,27 +124,19 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
   SmallVector<ReturnInst *, 4> Returns;
   getReturnInstList(BatchFunc, Returns);
 
-  SmallVector<ReturnInst *, 4> NewReturns;
+  ReturnInst * RetI;
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
         Builder.CreateLoad(IdxPtr)); 
     Builder.CreateStore(RI->getReturnValue(), BatchPtr);
-    NewReturns.push_back(Builder.CreateRetVoid());
+    RetI = Builder.CreateRetVoid();
     RI->eraseFromParent();
   }
 
-  if (NewReturns.size() == 1) return NewReturns[0]->getParent();
-  // Have a single return block.
-  auto * NewRetBlock = BasicBlock::Create(BatchFunc->getContext(),
-      "UnifiedReturnBlock", BatchFunc);
-  ReturnInst::Create(BatchFunc->getContext(), nullptr, NewRetBlock);
-  // Since we converted return type to void, no need to add phi nodes.
-  for (auto & RI : NewReturns) {
-    RI->getParent()->getInstList().pop_back();  // Remove the return insn
-    BranchInst::Create(NewRetBlock, RI->getParent());
-  }
-  return NewRetBlock;
+  auto RetBlock = RetI->getParent()->splitBasicBlock(RetI->getIterator(), "exit_block");
+
+  return RetBlock;
 }
 
 void BatchMaker::addBatchLoop(BasicBlock * RetBlock) {
