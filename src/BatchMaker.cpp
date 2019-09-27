@@ -47,9 +47,11 @@ void BatchMaker::createBatchedFormFnPrototype(vector<TASArgAttr> & BatchFuncArgL
       TASArgAttr { false, i++, Type::getInt32Ty(Ctx), nullptr, BatchSizeVarName});
 
   // Return value pointer
-  BatchFuncArgList.emplace_back(
-      TASArgAttr { false, i++, PointerType::get(NonBatchFunc->getReturnType(), 0),
-                   nullptr, ReturnVarName });
+  IsRetTyVoid = NonBatchFunc->getReturnType()->isVoidTy();
+  if (!IsRetTyVoid)
+    BatchFuncArgList.emplace_back(
+        TASArgAttr { false, i++, PointerType::get(NonBatchFunc->getReturnType(), 0),
+                      nullptr, ReturnVarName });
 
 
   llvm::SmallVector<llvm::Type *, 4> BatchArgTypes;
@@ -176,6 +178,28 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
   TL0.setLoopBody(BatchBB, UniqueExitingBlock);
 }
 
+BasicBlock * unifyReturnBlock(Function * F) {
+  SmallVector<ReturnInst *, 4> Returns;
+  getReturnInstList(F, Returns);
+
+  BasicBlock * RetBlock = nullptr;
+  if (Returns.size() == 1) {
+    RetBlock = Returns[0]->getParent()->splitBasicBlock(Returns[0]->getIterator(),
+                                                    "exit_block");
+    return RetBlock;
+  }
+
+  RetBlock = BasicBlock::Create(F->getContext(), "exit_block", F);
+  ReturnInst::Create(F->getContext());
+
+  for (auto & RI : Returns) {
+    BranchInst::Create(RetBlock, RI->getParent());
+    RI->eraseFromParent();
+  }
+
+  return RetBlock;
+}
+
 void BatchMaker::doBatchTransform() {
   vector<TASArgAttr> BatchFuncArgList;
   createBatchedFormFnPrototype(BatchFuncArgList);
@@ -190,7 +214,12 @@ void BatchMaker::doBatchTransform() {
   Builder.CreateStore(Builder.getInt32(0), IdxPtr);
   replaceOldArgUsesWithBatchArgs(BatchFuncArgList, IdxPtr);
 
-  auto RetBlock = storeRetValInPtrArg(BatchFuncArgList.back().Val, IdxPtr);
+  BasicBlock * RetBlock = nullptr;
+  if (IsRetTyVoid) {
+    RetBlock = unifyReturnBlock(BatchFunc);
+  } else {
+    RetBlock = storeRetValInPtrArg(BatchFuncArgList.back().Val, IdxPtr);
+  }
   assert(RetBlock != nullptr);
 
   addBatchLoop(RetBlock, IdxPtr);

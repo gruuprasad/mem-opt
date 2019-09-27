@@ -37,6 +37,7 @@ class BatchMaker {
   llvm::SmallPtrSet<llvm::Value *, 4> ArgsToBatch;
   llvm::IRBuilder<> Builder;
   unsigned BatchSize = 4;
+  bool IsRetTyVoid = false;
   std::string BatchSizeVarName = std::string("TAS_BatchSize");
   std::string ReturnVarName = std::string("TAS_ReturnVar");
 
