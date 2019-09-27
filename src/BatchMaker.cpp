@@ -124,17 +124,27 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
   SmallVector<ReturnInst *, 4> Returns;
   getReturnInstList(BatchFunc, Returns);
 
+  BasicBlock * RetBlock = nullptr;
+  if (Returns.size() > 1) {
+    RetBlock = BasicBlock::Create(BatchFunc->getContext(), "exit_block", BatchFunc);
+    ReturnInst::Create(BatchFunc->getContext());
+  }
+
   ReturnInst * RetI;
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
         Builder.CreateLoad(IdxPtr)); 
     Builder.CreateStore(RI->getReturnValue(), BatchPtr);
-    RetI = Builder.CreateRetVoid();
+    if (RetBlock) {
+      BranchInst::Create(RetBlock, RI->getParent());
+    } else {
+      RetI = Builder.CreateRetVoid();
+      RetBlock = RetI->getParent()->splitBasicBlock(RetI->getIterator(), "exit_block");
+    }
     RI->eraseFromParent();
   }
 
-  auto RetBlock = RetI->getParent()->splitBasicBlock(RetI->getIterator(), "exit_block");
 
   return RetBlock;
 }
