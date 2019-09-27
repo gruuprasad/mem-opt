@@ -149,7 +149,7 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
   return RetBlock;
 }
 
-void BatchMaker::addBatchLoop(BasicBlock * RetBlock) {
+void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
   auto * BBM = findBatchBeginMarkerInstruction(BatchFunc);
   if (BBM == nullptr) return; // Do nothing for now. XXX Try auto detection
   auto * SI = BBM->getNextNode(); // This instruction belongs to new block
@@ -186,14 +186,14 @@ void BatchMaker::doBatchTransform() {
   // Create batch index variable, set to 0.
   auto EntryBB = &BatchFunc->front();
   Builder.SetInsertPoint(&EntryBB->front());
-  IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
+  auto IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
   Builder.CreateStore(Builder.getInt32(0), IdxPtr);
   replaceOldArgUsesWithBatchArgs(BatchFuncArgList, IdxPtr);
 
   auto RetBlock = storeRetValInPtrArg(BatchFuncArgList.back().Val, IdxPtr);
   assert(RetBlock != nullptr);
 
-  addBatchLoop(RetBlock);
+  addBatchLoop(RetBlock, IdxPtr);
 }
 
 bool BatchMaker::run() {

@@ -39,10 +39,9 @@ class BatchMaker {
   unsigned BatchSize = 4;
   std::string BatchSizeVarName = std::string("TAS_BatchSize");
   std::string ReturnVarName = std::string("TAS_ReturnVar");
-  llvm::AllocaInst * IdxPtr;
 
   void createBatchedFormFnPrototype(std::vector<TASArgAttr> & BatchFuncArgList);
-  void addBatchLoop(llvm::BasicBlock * RetBlock);
+  void addBatchLoop(llvm::BasicBlock * RetBlock, llvm::AllocaInst * IdxPtr);
   void replaceOldArgUsesWithBatchArgs(std::vector<TASArgAttr> & BatchFuncArgList,
                                       llvm::AllocaInst * IdxPtr);
   llvm::BasicBlock * storeRetValInPtrArg(llvm::Argument * RetArg,
