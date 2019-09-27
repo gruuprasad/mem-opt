@@ -158,27 +158,8 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock) {
 
   auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
   auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, RetBlock,
-                        std::string("loop0"), BatchFunc, BatchSizeVal);
+                        std::string("loop0"), BatchFunc, BatchSizeVal, IdxPtr);
   TL0.setLoopBody(BatchBB);
-
-  // Workaround for existence of two index variable.
-  // XXX We have two index variable. TASForLoop uses its own variable which is
-  // SSA value. Other one is alloca variable. Combine them to have only one.
-  // Using workaround for now. In latch block we increment the alloca variable,
-  // so that instructions which use alloca variable need not be updated.
-  auto Latch = TL0.getLatch();
-  Instruction * NonPhiI = nullptr;
-  for (auto & I : *Latch) {
-    if (!isa<PHINode>(I)) {
-      NonPhiI = &I;
-      break;
-    }
-  }
-  assert (NonPhiI != nullptr && "Latch block is invalid!");
-  Builder.SetInsertPoint(NonPhiI);
-  auto IdxVal = Builder.CreateLoad(IdxPtr);
-  auto NewIdxVal = Builder.CreateAdd(IdxVal, Builder.getInt32(1));
-  Builder.CreateStore(NewIdxVal, IdxPtr);
 }
 
 void BatchMaker::doBatchTransform() {

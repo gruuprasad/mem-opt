@@ -8,8 +8,8 @@ using namespace llvm;
 namespace tas {
 
 TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
-    BasicBlock * Next, const std::string & Name, Function * F, llvm::Value * TC)
-  : F(F), Name (std::move(Name)), TripCount(TC)
+    BasicBlock * Next, const std::string & Name, Function * F, llvm::Value * TC, AllocaInst * IP)
+  : F(F), Name (std::move(Name)), TripCount(TC), IdxVarPtr(IP)
 {
   addEmptyLoop(Ctx, Prev, Next);
 }
@@ -28,17 +28,15 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Builder.SetInsertPoint(PreHeader);
   Builder.CreateBr(Header);
 
-  Builder.SetInsertPoint(Header);
-  IndexVar = Builder.CreatePHI(Type::getInt32Ty(Ctx), 2, "indV");
-  IndexVar64 = Builder.CreateSExtOrBitCast(IndexVar, Type::getInt64Ty(Ctx), "indV64");
-
   Builder.SetInsertPoint(Latch);
-  auto *IVNext = Builder.CreateAdd(IndexVar, Builder.getInt32(1));
+  assert (IdxVarPtr != nullptr && "Index variable ptr can't be null");
+  IndexVar = Builder.CreateLoad(IdxVarPtr);
+  auto IVNext = Builder.CreateAdd(IndexVar, Builder.getInt32(1));
+  Builder.CreateStore(IVNext, IdxVarPtr);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Header);
-  IndexVar->addIncoming(Builder.getInt32(0), PreHeader);
-  IndexVar->addIncoming(IVNext, Latch);
+  IndexVar = Builder.CreateLoad(IdxVarPtr);
   auto * icmp = Builder.CreateICmpSLT(IndexVar, TripCount, "loop-predicate");
   
   // Stitch entry point in control flow.
@@ -49,8 +47,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
       Prev->getTerminator()->setSuccessor(0, PreHeader);
   }
 
-  /// FIXME If Exit block is not specified, set to latch.
-  /// This would be invalid loop, but works for now.
+  assert (Next != nullptr && "Exit block must be specified");
   ExitInst = Builder.CreateCondBr(icmp, Latch, Next);
 }
 
