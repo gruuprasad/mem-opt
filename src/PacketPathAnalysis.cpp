@@ -40,7 +40,8 @@ void PacketPathAnalysis::computePathTraces() {
   for (auto * BB : predecessors(ReturnBlock))
     ExitingBlockPathIDMap.insert(make_pair(BB, i++));
 
-  LLVM_DEBUG(errs() << "Number of Paths = " << ExitingBlockPathIDMap.size() << "\n");
+  LLVM_DEBUG(errs() << "Number of Paths = " << ExitingBlockPathIDMap.size()
+                    << "\n");
 
   // Mark each predecessor of path exiting block with path id.
   for (auto & KV : ExitingBlockPathIDMap)

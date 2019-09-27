@@ -22,10 +22,29 @@ using namespace std;
 
 namespace tas {
 
-std::string VarAnnotationStr = "llvm.var.annotation";
+// Information to decode annotation fields:
+// Custom annotations added to the source code is stored as global value
+// in LLVM IR under the identifer "llvm.global.annotations".
+// This function adds the annotation identifier to the attribute list of
+// Function object of in-memory IR. This facilitates applying function level
+// transformation to the function of interest to us.
+//
+// Annotation list structure in IR: stored as array of struct
+// ConstantArray : [Size x struct]
+// struct def: [Function  ptr, GlobalVariable ptr, GlobalVariable ptr, i32]
+// @llvm.global.annotations = [N x {i8*, i8*, i8*, i32}]
+// N - number of global annotations in a module
+// Struct members details:
+// i8* - Function pointer
+// i8* - Pointer to annotation string
+// i8* - Pointer to file name string
+// i32 - line number of annotation in source file
 
 /// This function returns a map of Function and annotated string in the module.
-void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnList) {
+
+static std::string VarAnnotationStr = "llvm.var.annotation";
+
+void getAnnotatedFnList(Module * M, DenseMap<Function *, StringRef> & FnList) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
   if (!AnnotationList) return;
 
@@ -40,7 +59,7 @@ void getAnnotatedFunctionList(Module * M, DenseMap<Function *, StringRef> & FnLi
   }
 }
 
-void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
+void detectExpPtrVars(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
@@ -49,7 +68,8 @@ void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & Ex
 
     // Check whether var.annotation or not
     auto * Callee = CI->getCalledFunction();
-    if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+    if (!Callee->isIntrinsic() ||
+        Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
     // Get annotation string literal
     auto StringTag = cast<ConstantDataArray>(
@@ -57,13 +77,14 @@ void detectExpensivePointerVariables(Function * F, SmallVectorImpl<Value *> & Ex
           CI->getOperand(1)->stripPointerCasts())->getOperand(0))->getAsCString();
 
     if (StringTag.compare("expensive") == 0) {
-      ExpensivePointers.push_back(cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
+      ExpensivePointers.push_back(
+                           cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
     }
   }
 }
 
 Instruction * findBatchBeginMarkerInstruction(Function * F) {
-  auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
+  auto varAnnotIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto I = inst_begin(*F), E = inst_end(*F); I != E; ++I) {
     auto * CI = dyn_cast<CallInst>(&*I);
@@ -71,7 +92,8 @@ Instruction * findBatchBeginMarkerInstruction(Function * F) {
 
     // Check whether var.annotation or not
     auto * Callee = CI->getCalledFunction();
-    if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+    if (!Callee->isIntrinsic() ||
+        Callee->getIntrinsicID() != varAnnotIntrinsic) continue;
 
     // Get annotation string literal
     auto StringTag = cast<ConstantDataArray>(
@@ -94,7 +116,8 @@ void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParam
 
     // Check whether var.annotation or not
     auto * Callee = CI->getCalledFunction();
-    if (!Callee->isIntrinsic() || Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
+    if (!Callee->isIntrinsic() ||
+        Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
     // Get annotation string literal
     auto StringTag = cast<ConstantDataArray>(
@@ -181,8 +204,8 @@ void replaceUsesWithinBB(Value * From, Value * To, BasicBlock * BB) {
       ++UI;
       continue;
     }
-    // We should advance iterator first, because changing user modifies use list hence
-    // invalidates the iterator.
+    // We should advance iterator first, because changing user
+    // modifies use list hence invalidates the iterator.
     auto * U = &*UI++;
     U->set(To);
   }
@@ -224,7 +247,8 @@ Instruction * findValueFirstUseInInstruction(Value * V) {
 
 unsigned getGEPIndex(const GetElementPtrInst * GEP) {
   unsigned FieldIdx = 0;
-  if (auto * CI = dyn_cast<ConstantInt>(GEP->getOperand(GEP->getNumIndices()))) {
+  if (auto * CI = dyn_cast<ConstantInt>(
+                   GEP->getOperand(GEP->getNumIndices()))) {
     FieldIdx = CI->getZExtValue();
   } else {
     assert (0 && "Value has to be constant expression!");

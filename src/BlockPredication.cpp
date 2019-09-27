@@ -18,52 +18,6 @@ bool BlockPredication::run() {
   return true;
 }
 
-void BlockPredication::setPathIDCondition(BranchInst * BI, BlockToIntMapType & PathIDMap) {
-  auto TruePathIt = PathIDMap.find(BI->getSuccessor(0));
-  auto FalsePathIt = PathIDMap.find(BI->getSuccessor(1));
-
-  // Sanity check
-  assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
-  assert (TruePathIt != PathIDMap.end() && FalsePathIt != PathIDMap.end());
-
-  Builder.SetInsertPoint(BI);
-  auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
-                                        Builder.getInt32(TruePathIt->getSecond()),
-                                        Builder.getInt32(FalsePathIt->getSecond()));
-  Builder.CreateStore(PathIdVal, PathIdAlloca);
-}
-
-void BlockPredication::setActionBlocksSuccessors() {
-  for (int i = 0; i < ActionBlocks.size() - 1; ++i) {
-    auto BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
-    if (BI->isUnconditional())
-      setSuccessor(ActionBlocks[i], ActionBlocks[i+1]);
-
-    Builder.SetInsertPoint(BI);
-    Builder.CreateBr(ActionBlocks[i+1]);
-    BI->eraseFromParent();
-  }
-}
-
-BasicBlock * BlockPredication::insertPredicateBlock(BasicBlock * ActionBB, unsigned PathID) {
-  auto PB = BasicBlock::Create(F->getContext(),
-            string("predicate_") + std::to_string(PathID), F, ActionBB);
-  ActionBB->replaceAllUsesWith(PB);
-
-  Builder.SetInsertPoint(PB);
-  auto PathIDVal = Builder.CreateLoad(PathIdAlloca);
-  auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal, Builder.getInt32(PathID));
-  Builder.CreateCondBr(Pred, ActionBB, ActionBB);
-  return PB;
-}
-
-void BlockPredication::setPredicateBlocksFalseEdges() {
-  for (auto i = 0; i < PredicateBlocks.size() - 1; ++i) {
-    setSuccessor(PredicateBlocks[i], PredicateBlocks[i+1]);
-  }
-  setSuccessor(PredicateBlocks.back(), PPA.getReturnBlock(), 1);
-}
-
 void BlockPredication::linearizeControlFlow() {
   Builder.SetInsertPoint(&EntryBlock->front());
   PathIdAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
@@ -103,8 +57,56 @@ void BlockPredication::linearizeControlFlow() {
     PredicateBlocks.push_back(PB);
   }
 
-  // Set control flow: PredicateBlock[i]---False--> PredicateBlock[i+1]
+  // Set control flow: PredicateBlock[i]---[False]--> PredicateBlock[i+1]
   setPredicateBlocksFalseEdges();
+}
+
+void BlockPredication::setPathIDCondition(BranchInst * BI, BlockToIntMapType & PathIDMap) {
+  auto TruePathIt = PathIDMap.find(BI->getSuccessor(0));
+  auto FalsePathIt = PathIDMap.find(BI->getSuccessor(1));
+
+  // Sanity check
+  assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
+  assert (TruePathIt != PathIDMap.end() && FalsePathIt != PathIDMap.end());
+
+  Builder.SetInsertPoint(BI);
+  auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
+                                        Builder.getInt32(TruePathIt->getSecond()),
+                                        Builder.getInt32(FalsePathIt->getSecond()));
+  Builder.CreateStore(PathIdVal, PathIdAlloca);
+}
+
+void BlockPredication::setActionBlocksSuccessors() {
+  for (int i = 0; i < ActionBlocks.size() - 1; ++i) {
+    auto BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
+    if (BI->isUnconditional())
+      setSuccessor(ActionBlocks[i], ActionBlocks[i+1]);
+
+    Builder.SetInsertPoint(BI);
+    Builder.CreateBr(ActionBlocks[i+1]);
+    BI->eraseFromParent();
+  }
+}
+
+BasicBlock * BlockPredication::insertPredicateBlock(BasicBlock * ActionBB,
+                                                    unsigned PathID) {
+  auto PB = BasicBlock::Create(F->getContext(),
+            string("predicate_") + std::to_string(PathID), F, ActionBB);
+  ActionBB->replaceAllUsesWith(PB);
+
+  Builder.SetInsertPoint(PB);
+  auto PathIDVal = Builder.CreateLoad(PathIdAlloca);
+  auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal,
+                                 Builder.getInt32(PathID));
+  Builder.CreateCondBr(Pred, ActionBB, ActionBB);
+  return PB;
+}
+
+void BlockPredication::setPredicateBlocksFalseEdges() {
+  for (auto i = 0; i < PredicateBlocks.size() - 1; ++i) {
+    setSuccessor(PredicateBlocks[i], PredicateBlocks[i+1]);
+  }
+  setSuccessor(PredicateBlocks.back(), PPA.getReturnBlock(), 1);
 }
 
 }

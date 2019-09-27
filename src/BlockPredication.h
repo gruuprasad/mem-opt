@@ -11,16 +11,10 @@
 
 namespace tas {
 
-class TasException {
-public:
-  llvm::Function * F_state;
-  TasException(llvm::Function * F_) : F_state(F_) {}
-  void dump() { F_state->print(llvm::errs()); }
-};
-
 // This class transforms the function in place.
 class BlockPredication {
   using BlockToIntMapType = llvm::DenseMap<llvm::BasicBlock *, unsigned>;
+
   llvm::Function * F;
   PacketPathAnalysis PPA;
   llvm::BasicBlock * EntryBlock;
@@ -29,11 +23,11 @@ class BlockPredication {
   std::deque<llvm::BasicBlock *> ActionBlocks;
   std::deque<llvm::BasicBlock *> PredicateBlocks;
 
+  void linearizeControlFlow();
   void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & PathIDMap);
   void setActionBlocksSuccessors();
   llvm::BasicBlock * insertPredicateBlock(llvm::BasicBlock * ActionBB, unsigned PathID);
   void setPredicateBlocksFalseEdges();
-  void linearizeControlFlow();
 
 public:
   BlockPredication(llvm::Function * F_)

@@ -133,6 +133,7 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
     ReturnInst::Create(BatchFunc->getContext());
   }
 
+  // XXX Rewrite this mess.
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
@@ -154,6 +155,7 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
 void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
   auto * BBM = findBatchBeginMarkerInstruction(BatchFunc);
   if (BBM == nullptr) return; // Do nothing for now. XXX Try auto detection
+
   auto * SI = BBM->getNextNode(); // This instruction belongs to new block
   auto ParentBB = SI->getParent();
   auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
@@ -166,12 +168,14 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
   assert (ExitingBlocks.size() >= 1 && " Return block must have atleast one predecessor");
   BasicBlock * UniqueExitingBlock = ExitingBlocks[0];
   if (ExitingBlocks.size() > 1) {
-    UniqueExitingBlock = BasicBlock::Create(BatchFunc->getContext(), "ExitingBlock", BatchFunc, RetBlock);
+    UniqueExitingBlock = BasicBlock::Create(BatchFunc->getContext(), "ExitingBlock",
+                                            BatchFunc, RetBlock);
     for_each(ExitingBlocks.begin(), ExitingBlocks.end(),
              [&] (BasicBlock * BB) { setSuccessor(BB, UniqueExitingBlock); });
   }
 
   auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
+
   auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, RetBlock,
                         std::string("loop0"), BatchFunc, BatchSizeVal, IdxPtr);
 
@@ -212,6 +216,7 @@ void BatchMaker::doBatchTransform() {
   Builder.SetInsertPoint(&EntryBB->front());
   auto IdxPtr = Builder.CreateAlloca(Builder.getInt32Ty());
   Builder.CreateStore(Builder.getInt32(0), IdxPtr);
+
   replaceOldArgUsesWithBatchArgs(BatchFuncArgList, IdxPtr);
 
   BasicBlock * RetBlock = nullptr;

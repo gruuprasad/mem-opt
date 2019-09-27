@@ -1,9 +1,6 @@
 #ifndef TAS_BATCHMAKER_H
 #define TAS_BATCHMAKER_H
 
-#include <deque>
-#include <string>
-
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/Analysis/LoopInfo.h>
@@ -11,6 +8,9 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
+
+#include <deque>
+#include <string>
 
 namespace tas {
 

@@ -11,43 +11,40 @@
 
 namespace tas {
 
+class TasException {
+public:
+  llvm::Function * F_state;
+  TasException(llvm::Function * F_) : F_state(F_) {}
+  void dump() { F_state->print(llvm::errs()); }
+};
+
 enum class AnnotationType {
   UNKNOWN,
   EXPENSIVE_PTR,
   BATCH_ARG
 };
 
-void getAnnotatedFunctionList(llvm::Module * M, llvm::DenseMap<llvm::Function * , llvm::StringRef> & FnList);
+void getAnnotatedFunctionList(llvm::Module * M, llvm::DenseMap<llvm::Function *,
+                              llvm::StringRef> & FnList);
 
-// Custom annotations added to the source code is stored as global value in LLVM IR
-// under the identifer "llvm.global.annotations".
-// This function adds the annotation identifier to the attribute list of Function object
-// of in-memory IR. This facilitates applying function level transformation to the function
-// of interest to us.
-//
-// Annotation list structure in IR: stored as array of struct
-// ConstantArray : [Size x struct]
-// struct definition: [Function  ptr, GlobalVariable ptr, GlobalVariable ptr, i32]
-// @llvm.global.annotations = [N x {i8*, i8*, i8*, i32}]
-// N - number of global annotations in a module
-// Struct members details:
-// i8* - Function pointer
-// i8* - Pointer to annotation string
-// i8* - Pointer to file name string
-// i32 - line number of annotation in source file
 void setAnnotationInFunctionObject(llvm::Module * M);
 
-void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L, llvm::ValueToValueMapTy & VMap);
+void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L,
+                          llvm::ValueToValueMapTy & VMap);
 
-void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I, llvm::Value * PtrVal);
+void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I,
+                                 llvm::Value * PtrVal);
 
-void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To, llvm::BasicBlock * BB);
+void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To,
+                         llvm::BasicBlock * BB);
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
 
-void detectExpensivePointerVariables(llvm::Function * F, llvm::SmallVectorImpl<llvm::Value *> & ExpensivePointers);
+void detectExpPtrVars(llvm::Function * F,
+                      llvm::SmallVectorImpl<llvm::Value *> & ExpensivePointers);
 
-void detectBatchingParameters(llvm::Function * F, llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
+void detectBatchParameters(llvm::Function * F,
+                          llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
 
 llvm::Instruction * findBatchBeginMarkerInstruction(llvm::Function * F);
 
@@ -60,17 +57,20 @@ unsigned getGEPIndex(const llvm::GetElementPtrInst * GEP);
 
 llvm::StoreInst * findFirstUseInStoreInst(llvm::Value * V);
 
-void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB, unsigned Idx = 0);
+void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB,
+                  unsigned Idx = 0);
 
 void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
 
-void getReturnInstList(llvm::Function * F, llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
+void getReturnInstList(llvm::Function * F,
+                       llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
 
 std::string writeToBitCodeFile(llvm::Module & M);
 
 std::string writeToAsmFile(llvm::Module & M);
 
-llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr, llvm::Instruction * InsertBefore);
+llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
+                                  llvm::Instruction * InsertBefore);
 } // namespace tas
 
 #endif

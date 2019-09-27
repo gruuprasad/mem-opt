@@ -7,8 +7,10 @@
 namespace tas {
 
 class PacketPathAnalysis {
-  using IntToBasicBlocksMapType = llvm::DenseMap<unsigned, llvm::SmallVector<llvm::BasicBlock *, 4>>;
-  using BasicBlockToIntegersMapType = llvm::DenseMap<llvm::BasicBlock *, llvm::DenseSet<unsigned>>;
+  using IntToBasicBlocksMapType = llvm::DenseMap<unsigned,
+                                  llvm::SmallVector<llvm::BasicBlock *, 4>>;
+  using BasicBlockToIntegersMapType = llvm::DenseMap<llvm::BasicBlock *,
+                                      llvm::DenseSet<unsigned>>;
 
   llvm::Function * F;
   llvm::BasicBlock * EntryBlock;
@@ -23,7 +25,8 @@ class PacketPathAnalysis {
   void prepareFinalMap();
 
 public:
-  PacketPathAnalysis(llvm::Function * F_) : F(F_), EntryBlock(&F->getEntryBlock()) {
+  PacketPathAnalysis(llvm::Function * F_) :
+    F(F_), EntryBlock(&F->getEntryBlock()) {
     computePathTraces();
   }
 
