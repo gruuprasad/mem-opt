@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int simple_fn(int a, int b);
 void simple_fn_batch(int *, int *, int, int *); // Batch fn declaration.

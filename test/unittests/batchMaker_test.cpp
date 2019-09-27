@@ -88,3 +88,42 @@ TEST_CASE("simple batch case") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+TEST_CASE("batch multiple basic blocks") {
+  std::string filePrefix = "batchmaker_test4";
+  std::string functionName = "multiblock_fn";
+
+  auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+
+  // Function with 2 arguments and int return type.
+  auto F = M->getFunction(functionName);
+  REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+  REQUIRE(F->arg_size() == 2);
+  REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+  BatchMaker BM(F);
+  BM.run();
+
+  // Function with 4 arguments and void return type.
+  auto BF = M->getFunction(functionName + string("_batch"));
+  REQUIRE(BF != nullptr);
+  REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+  REQUIRE(BF->arg_size() == 4);
+
+  M->setSourceFileName(filePrefix + string("_batch.ll"));
+
+  writeToAsmFile(*M);
+
+  // MainObject contains checks to verify the correctness of transformation.
+  auto MainObject = generateObject(filePrefix + string("_main.c"), input_dir);
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject, MainObject}, filePrefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
+}

@@ -126,11 +126,11 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
 
   BasicBlock * RetBlock = nullptr;
   if (Returns.size() > 1) {
-    RetBlock = BasicBlock::Create(BatchFunc->getContext(), "exit_block", BatchFunc);
+    RetBlock = BasicBlock::Create(BatchFunc->getContext(), "exit_block",
+                                  BatchFunc);
     ReturnInst::Create(BatchFunc->getContext());
   }
 
-  ReturnInst * RetI;
   for (auto & RI : Returns) {
     Builder.SetInsertPoint(RI);
     auto BatchPtr = Builder.CreateGEP(Builder.CreateLoad(RetAlloca),
@@ -139,12 +139,12 @@ BasicBlock * BatchMaker::storeRetValInPtrArg(Argument * RetArg,
     if (RetBlock) {
       BranchInst::Create(RetBlock, RI->getParent());
     } else {
-      RetI = Builder.CreateRetVoid();
-      RetBlock = RetI->getParent()->splitBasicBlock(RetI->getIterator(), "exit_block");
+      auto RetI = Builder.CreateRetVoid();
+      RetBlock = RetI->getParent()->splitBasicBlock(RetI->getIterator(),
+                                                    "exit_block");
     }
     RI->eraseFromParent();
   }
-
 
   return RetBlock;
 }
@@ -156,10 +156,24 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock) {
   auto ParentBB = SI->getParent();
   auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
 
+  vector<BasicBlock *> ExitingBlocks;
+  for (auto * BB : predecessors(RetBlock)) {
+    ExitingBlocks.push_back(BB);
+  }
+
+  assert (ExitingBlocks.size() >= 1 && " Return block must have atleast one predecessor");
+  BasicBlock * UniqueExitingBlock = ExitingBlocks[0];
+  if (ExitingBlocks.size() > 1) {
+    UniqueExitingBlock = BasicBlock::Create(BatchFunc->getContext(), "ExitingBlock", BatchFunc, RetBlock);
+    for_each(ExitingBlocks.begin(), ExitingBlocks.end(),
+             [&] (BasicBlock * BB) { setSuccessor(BB, UniqueExitingBlock); });
+  }
+
   auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
   auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, RetBlock,
                         std::string("loop0"), BatchFunc, BatchSizeVal, IdxPtr);
-  TL0.setLoopBody(BatchBB);
+
+  TL0.setLoopBody(BatchBB, UniqueExitingBlock);
 }
 
 void BatchMaker::doBatchTransform() {
