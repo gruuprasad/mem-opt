@@ -1,5 +1,3 @@
-add_subdirectory(PassWrapper)
-
 add_library(tasopt_src
             BatchMaker.cpp
             BatchProcess.cpp
@@ -9,3 +7,5 @@ add_library(tasopt_src
             PacketPathAnalysis.cpp
             ToolUtil.cpp
             Util.cpp)
+
+add_subdirectory(PassWrapper)

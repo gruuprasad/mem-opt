@@ -1,4 +1,5 @@
 #include "ForLoop.h"
+#include "Util.h"
 
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
@@ -26,14 +27,13 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
     PN->addIncoming(Builder.getInt32(0), Header);
 
   Builder.SetInsertPoint(PreHeader);
+  Builder.CreateStore(Builder.getInt32(0), IdxVarPtr);
   Builder.CreateBr(Header);
 
   Builder.SetInsertPoint(Latch);
   assert (IdxVarPtr != nullptr && "Index variable ptr can't be null");
-  IndexVar = Builder.CreateLoad(IdxVarPtr);
-  auto IVNext = Builder.CreateAdd(IndexVar, Builder.getInt32(1));
-  Builder.CreateStore(IVNext, IdxVarPtr);
-  Builder.CreateBr(Header);
+  auto BI = Builder.CreateBr(Header);
+  addIncrementIndexOp(IdxVarPtr, BI);
 
   Builder.SetInsertPoint(Header);
   IndexVar = Builder.CreateLoad(IdxVarPtr);

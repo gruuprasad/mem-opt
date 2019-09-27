@@ -69,6 +69,8 @@ void getReturnInstList(llvm::Function * F, llvm::SmallVectorImpl<llvm::ReturnIns
 std::string writeToBitCodeFile(llvm::Module & M);
 
 std::string writeToAsmFile(llvm::Module & M);
+
+llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr, llvm::Instruction * InsertBefore);
 } // namespace tas
 
 #endif

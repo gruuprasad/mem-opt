@@ -290,4 +290,13 @@ string writeToAsmFile(Module & M) {
   OS.flush();
   return OutFile;
 }
+
+Value * addIncrementIndexOp(AllocaInst * IdxPtr, Instruction * InsertBefore) {
+  IRBuilder<> Builder(InsertBefore);
+  auto LoadVal = Builder.CreateLoad(IdxPtr);
+  auto Incr = Builder.CreateAdd(LoadVal, Builder.getInt32(1));
+  Builder.CreateStore(Incr, IdxPtr);
+  return Incr;
+}
+
 }
