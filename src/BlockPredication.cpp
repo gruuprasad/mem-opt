@@ -61,7 +61,8 @@ void BlockPredication::linearizeControlFlow() {
   setPredicateBlocksFalseEdges();
 }
 
-void BlockPredication::setPathIDCondition(BranchInst * BI, BlockToIntMapType & PathIDMap) {
+void BlockPredication::setPathIDCondition(BranchInst * BI,
+                                          BlockToIntMapType & PathIDMap) {
   auto TruePathIt = PathIDMap.find(BI->getSuccessor(0));
   auto FalsePathIt = PathIDMap.find(BI->getSuccessor(1));
 
