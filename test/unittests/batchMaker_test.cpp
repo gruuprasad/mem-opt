@@ -38,21 +38,6 @@ static unique_ptr<Module> parseIR(string Filename, string FileDir) {
   return M;
 }
 
-TEST_CASE("create batch function prototype") {
-  auto M = parseIR(std::string("batchmaker_test2.ll"), input_dir);
-  REQUIRE( M != nullptr);
-
-  {
-    // Test whether new function prototype exists in the module
-    auto F = M->getFunction("process_packet");
-    BatchMaker BM(F);
-    BM.run();
-
-    auto NewF = M->getFunction("process_packet_batch");
-    REQUIRE(NewF != nullptr);
-  }
-}
-
 TEST_CASE("simple batch case") {
   auto M = parseIR(generateIR(string("batchmaker_test3.c"), input_dir), input_dir);
   REQUIRE(M != nullptr);

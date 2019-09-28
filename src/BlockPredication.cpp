@@ -63,8 +63,9 @@ void BlockPredication::linearizeControlFlow() {
 
 void BlockPredication::setPathIDCondition(BranchInst * BI,
                                           BlockToIntMapType & PathIDMap) {
-  auto TruePathIt = PathIDMap.find(BI->getSuccessor(0));
-  auto FalsePathIt = PathIDMap.find(BI->getSuccessor(1));
+  // Note: False dest index is 0, True Dest index is 1, counter intuitive.
+  auto TruePathIt = PathIDMap.find(BI->getSuccessor(1));
+  auto FalsePathIt = PathIDMap.find(BI->getSuccessor(0));
 
   // Sanity check
   assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
@@ -107,7 +108,7 @@ void BlockPredication::setPredicateBlocksFalseEdges() {
   for (auto i = 0; i < PredicateBlocks.size() - 1; ++i) {
     setSuccessor(PredicateBlocks[i], PredicateBlocks[i+1]);
   }
-  setSuccessor(PredicateBlocks.back(), PPA.getReturnBlock(), 1);
+  setSuccessor(PredicateBlocks.back(), PPA.getReturnBlock(), 0);
 }
 
 }

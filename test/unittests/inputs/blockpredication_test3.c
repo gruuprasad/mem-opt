@@ -1,22 +1,39 @@
-int if_else_fn() {
-  int x = 0;
+#include <stdio.h>
+
+int if_else_fn(int);
+
+int main() {
+  int in1 = 0; //Expected out1 = 0
+  int out1 = if_else_fn(in1);
+
+  int in2 = 1; // Expected out2 = 1
+  int out2 = if_else_fn(in2);
+
+  if (out1 != 0 || out2 != 1) {
+    return -1;
+  }
+  return 0;
+}
+
+int if_else_fn(int in) {
+  int x = in;
   int y = 0;
   if (x == 0) {
-    y = y + 1; //Path ID = 1
+    y = 0; //Path ID = 1
     goto done;
   } else {
-    y = y + 2; // Path ID = 2
+    y = y + 1; // Path ID = 2
   }
 
   x = x + 1; // Path ID = 2
 
 done:
-  return 0;
+  return y;
 }
 
 /*
  * Transformed function:
-int if_else_fn_predicated() {
+int if_else_fn() {
   int x = 0;
   int y = 0;
   int path = 0; // Holds path id

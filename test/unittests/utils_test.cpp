@@ -10,26 +10,25 @@ using namespace tas;
 using namespace std;
 
 TEST_CASE("generate IR") {
-  auto IRFile = generateIR(std::string("hello.c"), input_dir);
-  REQUIRE(IRFile == string("hello.ll"));
+  auto IRFile = generateIR(std::string("util_test1.c"), input_dir);
+  REQUIRE(IRFile == string("util_test1.ll"));
 }
 
 TEST_CASE("generate object") {
-  auto ObjectFile = generateObject(std::string("hello.ll"), input_dir);
-  REQUIRE(ObjectFile == input_dir + string("hello.o"));
+  auto ObjectFile = generateObject(std::string("util_test1.ll"), input_dir);
+  REQUIRE(ObjectFile == input_dir + string("util_test1.o"));
 }
 
 TEST_CASE("compile binary") {
-  auto IRFile = generateIR(std::string("hello.c"), input_dir);
-  auto HelloObject = generateObject(std::string("hello.ll"), input_dir);
-  auto Main = generateObject(std::string("main.c"), input_dir);
-  auto Binary = linkObjects(vector<string>{HelloObject, Main}, string("hello"));
+  auto IRFile = generateIR(std::string("util_test1.c"), input_dir);
+  auto HelloObject = generateObject(std::string("util_test1.ll"), input_dir);
+  auto Binary = linkObjects(vector<string>{HelloObject}, string("util_test1"));
 
-  REQUIRE(Binary == string("hello"));
+  REQUIRE(Binary == string("util_test1"));
 }
 
 TEST_CASE("compile with clang driver") {
-  vector<string> files = { "hello.c", "main.c" };
+  vector<string> files = { "util_test1.c"};
   auto Ret = compileWithClangDriver(files, input_dir);
   REQUIRE( Ret == true);
 }
