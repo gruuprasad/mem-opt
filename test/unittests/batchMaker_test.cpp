@@ -186,3 +186,81 @@ TEST_CASE("return type void") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+TEST_CASE("input parameter struct type") {
+  std::string filePrefix = "batchmaker_test6";
+  auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  M->setSourceFileName(filePrefix + string("_batch.ll"));
+
+  {
+    std::string functionName = "struct_type_fn";
+
+    // Function with 2 arguments and int return type.
+    auto F = M->getFunction(functionName);
+    REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+    REQUIRE(F->arg_size() == 2);
+    REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+    BatchMaker BM(F);
+    BM.run();
+
+    // Function with 4 arguments and void return type.
+    auto BF = M->getFunction(functionName + string("_batch"));
+    REQUIRE(BF != nullptr);
+    REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(BF->arg_size() == 4);
+  }
+
+  {
+    std::string functionName = "struct_type_multi_ret_fn";
+
+    // Function with 2 arguments and int return type.
+    auto F = M->getFunction(functionName);
+    REQUIRE(F->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(F->arg_size() == 2);
+    REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+    BatchMaker BM(F);
+    BM.run();
+
+    // Function with 4 arguments and void return type.
+    auto BF = M->getFunction(functionName + string("_batch"));
+    REQUIRE(BF != nullptr);
+    REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(BF->arg_size() == 3);
+  }
+
+  {
+    std::string functionName = "struct_ptr_type_fn";
+
+    // Function with 2 arguments and int return type.
+    auto F = M->getFunction(functionName);
+    REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+    REQUIRE(F->arg_size() == 2);
+    REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+    BatchMaker BM(F);
+    BM.run();
+
+    // Function with 4 arguments and void return type.
+    auto BF = M->getFunction(functionName + string("_batch"));
+    REQUIRE(BF != nullptr);
+    REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(BF->arg_size() == 4);
+  }
+
+  writeToAsmFile(*M);
+
+  // MainObject contains checks to verify the correctness of transformation.
+  auto MainObject = generateObject(filePrefix + string("_main.c"), input_dir);
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject, MainObject}, filePrefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
+}
