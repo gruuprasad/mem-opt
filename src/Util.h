@@ -24,7 +24,7 @@ enum class AnnotationType {
   BATCH_ARG
 };
 
-void getAnnotatedFunctionList(llvm::Module * M, llvm::DenseMap<llvm::Function *,
+void getAnnotatedFnList(llvm::Module * M, llvm::DenseMap<llvm::Function *,
                               llvm::StringRef> & FnList);
 
 void setAnnotationInFunctionObject(llvm::Module * M);

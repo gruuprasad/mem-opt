@@ -24,7 +24,7 @@ bool TASBatchMaker::runOnModule(Module &M) {
 
   errs() << "BatchMaker pass: " << M.getSourceFileName() << "\n";
   DenseMap<Function *, StringRef> AnnotatedFnList;
-  tas::getAnnotatedFunctionList(&M, AnnotatedFnList);
+  tas::getAnnotatedFnList(&M, AnnotatedFnList);
 
   bool changed = false;
   for (auto & FnStr : AnnotatedFnList) {

@@ -231,7 +231,7 @@ void BatchMaker::doBatchTransform() {
 }
 
 bool BatchMaker::run() {
-  detectBatchingParameters(NonBatchFunc, ArgsToBatch);
+  detectBatchParameters(NonBatchFunc, ArgsToBatch);
   doBatchTransform();
   return true;
 }

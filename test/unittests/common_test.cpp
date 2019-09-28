@@ -30,7 +30,7 @@ TEST_CASE("detect TAS_MAKE_BATCH annotation") {
   REQUIRE( M != nullptr);
 
   DenseMap<Function *, StringRef> AnnotatedFnList;
-  getAnnotatedFunctionList(M.get(), AnnotatedFnList);
+  getAnnotatedFnList(M.get(), AnnotatedFnList);
 
   REQUIRE(AnnotatedFnList.size() == 2);
   auto Fn = AnnotatedFnList.begin();
@@ -49,7 +49,7 @@ TEST_CASE("detect Batching Parameters") {
     // Function with one batch argument
     auto F = M->getFunction("test_fn3");
     llvm::SmallPtrSet<llvm::Value *, 4> BatchArgs;
-    detectBatchingParameters(F, BatchArgs);
+    detectBatchParameters(F, BatchArgs);
     REQUIRE(BatchArgs.size() == 1);
   }
 
@@ -57,7 +57,7 @@ TEST_CASE("detect Batching Parameters") {
     // Function with two batch argument
     auto F = M->getFunction("test_fn4");
     llvm::SmallPtrSet<llvm::Value *, 4> BatchArgs;
-    detectBatchingParameters(F, BatchArgs);
+    detectBatchParameters(F, BatchArgs);
     REQUIRE(BatchArgs.size() == 2);
   }
 
@@ -65,7 +65,7 @@ TEST_CASE("detect Batching Parameters") {
     // Function with two batch argument separated by one non-batch argument
     auto F = M->getFunction("test_fn5");
     llvm::SmallPtrSet<llvm::Value *, 4> BatchArgs;
-    detectBatchingParameters(F, BatchArgs);
+    detectBatchParameters(F, BatchArgs);
     REQUIRE(BatchArgs.size() == 2);
   }
 }
@@ -78,7 +78,7 @@ TEST_CASE("detect expensive variables") {
     // Function with two expensive variables
     auto F = M->getFunction("test_fn6");
     SmallVector<Value *, 4> ExpensiveVars;
-    detectExpensivePointerVariables(F, ExpensiveVars);
+    detectExpPtrVars(F, ExpensiveVars);
     REQUIRE(ExpensiveVars.size() == 2);
   }
 }

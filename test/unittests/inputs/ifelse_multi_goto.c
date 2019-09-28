@@ -6,8 +6,6 @@ struct packet {
   int dest;
 };
 
-int process_packet(struct packet *);
-
 // Function processing single packet
 int process_packet(struct packet * in) {
   struct packet * p = in;

@@ -107,7 +107,7 @@ Instruction * findBatchBeginMarkerInstruction(Function * F) {
   return nullptr;
 }
 
-void detectBatchingParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
+void detectBatchParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParameters) {
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
