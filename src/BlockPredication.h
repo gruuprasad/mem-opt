@@ -22,6 +22,7 @@ class BlockPredication {
   llvm::IRBuilder<> Builder;
   std::deque<llvm::BasicBlock *> ActionBlocks;
   std::deque<llvm::BasicBlock *> PredicateBlocks;
+  llvm::BasicBlock * ReturnBlock;
 
   void linearizeControlFlow();
   void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & PathIDMap);

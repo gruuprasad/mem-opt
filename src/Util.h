@@ -73,6 +73,8 @@ llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
                                   llvm::Instruction * InsertBefore);
 
 void printRegeionInfo(llvm::Function * F);
+
+llvm::BasicBlock * unifyFunctionExitNodes(llvm::Function & F);
 } // namespace tas
 
 #endif

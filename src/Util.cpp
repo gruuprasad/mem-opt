@@ -355,4 +355,51 @@ void printRegeionInfo(Function * F) {
   }
 }
 
+BasicBlock * unifyFunctionExitNodes(Function &F) {
+  vector<BasicBlock*> ReturningBlocks;
+  for (BasicBlock &I : F)
+    if (isa<ReturnInst>(I.getTerminator()))
+      ReturningBlocks.push_back(&I);
+
+  // Now handle return blocks.
+  if (ReturningBlocks.empty()) {
+    return nullptr;                          // No blocks return
+  } else if (ReturningBlocks.size() == 1) {
+    return ReturningBlocks.front();
+  }
+
+  // Otherwise, we need to insert a new basic block into the function, add a PHI
+  // nodes (if the function returns values), and convert all of the return
+  // instructions into unconditional branches.
+  //
+  BasicBlock *NewRetBlock = BasicBlock::Create(F.getContext(),
+                                               "UnifiedReturnBlock", &F);
+
+  PHINode *PN = nullptr;
+  if (F.getReturnType()->isVoidTy()) {
+    ReturnInst::Create(F.getContext(), nullptr, NewRetBlock);
+  } else {
+    // If the function doesn't return void... add a PHI node to the block...
+    PN = PHINode::Create(F.getReturnType(), ReturningBlocks.size(),
+                         "UnifiedRetVal");
+    NewRetBlock->getInstList().push_back(PN);
+    ReturnInst::Create(F.getContext(), PN, NewRetBlock);
+  }
+
+  // Loop over all of the blocks, replacing the return instruction with an
+  // unconditional branch.
+  //
+  for (BasicBlock *BB : ReturningBlocks) {
+    // Add an incoming element to the PHI node for every return instruction that
+    // is merging into this new block...
+    if (PN)
+      PN->addIncoming(BB->getTerminator()->getOperand(0), BB);
+
+    BB->getInstList().pop_back();  // Remove the return insn
+    BranchInst::Create(NewRetBlock, BB);
+  }
+
+  return NewRetBlock;
 }
+
+} // namespace tas

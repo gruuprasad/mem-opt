@@ -19,6 +19,8 @@ bool BlockPredication::run() {
 }
 
 void BlockPredication::linearizeControlFlow() {
+  ReturnBlock = unifyFunctionExitNodes(*F);
+
   Builder.SetInsertPoint(&EntryBlock->front());
   PathIdAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
@@ -26,7 +28,7 @@ void BlockPredication::linearizeControlFlow() {
 
   // Set path state value according to branch target blocks.
   for (auto & BB : *F) {
-    if (PPA.getReturnBlock() == &BB) continue;
+    if (ReturnBlock == &BB) continue;
 
     if (auto * BI = dyn_cast<BranchInst>(BB.getTerminator())) {
       if (BI->isUnconditional()) continue;
@@ -108,7 +110,7 @@ void BlockPredication::setPredicateBlocksFalseEdges() {
   for (auto i = 0; i < PredicateBlocks.size() - 1; ++i) {
     setSuccessor(PredicateBlocks[i], PredicateBlocks[i+1]);
   }
-  setSuccessor(PredicateBlocks.back(), PPA.getReturnBlock(), 0);
+  setSuccessor(PredicateBlocks.back(), ReturnBlock, 0);
 }
 
 }
