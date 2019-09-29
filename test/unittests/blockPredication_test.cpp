@@ -108,31 +108,7 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   REQUIRE(M != nullptr);
   auto F = M->getFunction("multi_conditionals_fn");
 
-  printRegeionInfo(F);
-
-  //PacketPathAnalysis PD(F);
-
-  auto asmFile = writeToAsmFile(*M);
-
-  // Generate object for unit under test.
-  auto TestObject = generateObject(writeToBitCodeFile(*M));
-
-  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
-
-  // Run the binary
-  binary.insert(0, "./");
-  auto ret = system(binary.c_str());
-  REQUIRE(ret == 0);
-}
-/*
-TEST_CASE("predicated block execution, multiple ifelse") {
-  std::string fileprefix = "blockpredication_test5";
-  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
-  REQUIRE(M != nullptr);
-  auto F = M->getFunction("multi_conditionals_fn");
   BlockPredication BP(F);
-  F->print(errs());
-  BP.getPathAnalysis().dumpDebugDataToConsole();
   BP.run();
 
   auto asmFile = writeToAsmFile(*M);
@@ -147,4 +123,3 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
-*/
