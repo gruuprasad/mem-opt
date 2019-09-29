@@ -36,6 +36,7 @@ public:
       Builder(F->getContext()) {}
 
   bool run();
+  PacketPathAnalysis & getPathAnalysis() { return PPA; };
 };
 
 }

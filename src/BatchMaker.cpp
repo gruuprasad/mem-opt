@@ -98,7 +98,8 @@ void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncAr
     }
 
     // Replace old alloca variable uses with new alloca variable.
-    // Old variable contained a single pointer, hence access would be single load op.
+    // Old variable contained a single pointer, hence access would be
+    // single load op.
     // New alloca variable contains double pointer.
     // Hence dereference would be 3 op : load -> getelementptr -> load 
     auto NumUses = OldAlloca->getNumUses();
@@ -158,14 +159,16 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
 
   auto * SI = BBM->getNextNode(); // This instruction belongs to new block
   auto ParentBB = SI->getParent();
-  auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI), "tas_block");
+  auto BatchBB = ParentBB->splitBasicBlock(BasicBlock::iterator(*SI),
+                                           "tas_block");
 
   vector<BasicBlock *> ExitingBlocks;
   for (auto * BB : predecessors(RetBlock)) {
     ExitingBlocks.push_back(BB);
   }
 
-  assert (ExitingBlocks.size() >= 1 && " Return block must have atleast one predecessor");
+  assert (ExitingBlocks.size() >= 1 &&
+          "Return block must have atleast one predecessor");
   BasicBlock * UniqueExitingBlock = ExitingBlocks[0];
   if (ExitingBlocks.size() > 1) {
     UniqueExitingBlock = BasicBlock::Create(BatchFunc->getContext(), "ExitingBlock",

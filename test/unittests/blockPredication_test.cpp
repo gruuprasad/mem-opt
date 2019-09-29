@@ -2,8 +2,12 @@
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/SmallPtrSet.h>
+#include <llvm/Analysis/DominanceFrontier.h>
+#include <llvm/Analysis/PostDominators.h>
+#include <llvm/Analysis/RegionInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
+#include <llvm/IR/CFG.h>
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/Support/SourceMgr.h>
 #include "BlockPredication.h"
@@ -81,6 +85,7 @@ TEST_CASE("predicated block execution, multiple goto") {
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
   auto F = M->getFunction("process_packet");
+
   BlockPredication BP(F);
   BP.run();
 
@@ -96,3 +101,50 @@ TEST_CASE("predicated block execution, multiple goto") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+TEST_CASE("predicated block execution, multiple ifelse") {
+  std::string fileprefix = "blockpredication_test5";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("multi_conditionals_fn");
+
+  printRegeionInfo(F);
+
+  //PacketPathAnalysis PD(F);
+
+  auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
+}
+/*
+TEST_CASE("predicated block execution, multiple ifelse") {
+  std::string fileprefix = "blockpredication_test5";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("multi_conditionals_fn");
+  BlockPredication BP(F);
+  F->print(errs());
+  BP.getPathAnalysis().dumpDebugDataToConsole();
+  BP.run();
+
+  auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
+}
+*/

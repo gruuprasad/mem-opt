@@ -71,6 +71,8 @@ std::string writeToAsmFile(llvm::Module & M);
 
 llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
                                   llvm::Instruction * InsertBefore);
+
+void printRegeionInfo(llvm::Function * F);
 } // namespace tas
 
 #endif

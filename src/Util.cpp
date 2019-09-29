@@ -12,6 +12,11 @@
 #include <llvm/Support/SourceMgr.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 
+#include <llvm/Analysis/DominanceFrontier.h>
+#include <llvm/Analysis/PostDominators.h>
+#include <llvm/Analysis/RegionInfo.h>
+
+
 #include <memory.h>
 #include <string>
 
@@ -321,6 +326,33 @@ Value * addIncrementIndexOp(AllocaInst * IdxPtr, Instruction * InsertBefore) {
   auto Incr = Builder.CreateAdd(LoadVal, Builder.getInt32(1));
   Builder.CreateStore(Incr, IdxPtr);
   return Incr;
+}
+
+void printRegeionInfo(Function * F) {
+  auto DT = DominatorTree(*F);
+  auto PDT = PostDominatorTree(*F);
+  auto DF = DominanceFrontier();
+  DF.analyze(DT);
+  RegionInfo RI;
+  RI.recalculate(*F, &DT, &PDT, &DF);
+
+  errs() << "\n" << F->getName() << "\n";
+  auto * R = RI.getTopLevelRegion();
+  errs() << "=========RegionInfo========\n";
+  int i = 0;
+  for (auto & E : *R) {
+    errs() << "Region " << to_string(i++) << ":\n";
+    // Exiting blocks
+    SmallVector<BasicBlock *, 4> ExitingBlocks;
+    E->getExitingBlocks(ExitingBlocks);
+    errs() << "Exiting blocks: ";
+    for (auto & EB : ExitingBlocks) {
+      EB->printAsOperand(errs());
+      errs() << "  ";
+    }
+    errs() << "\n";
+    ExitingBlocks.clear();
+  }
 }
 
 }
