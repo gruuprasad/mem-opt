@@ -1,6 +1,9 @@
 #ifndef PACKET_PATH_TRACE_ANALYSIS
 #define PACKET_PATH_TRACE_ANALYSIS
 
+#include <llvm/Analysis/DominanceFrontier.h>
+#include <llvm/Analysis/PostDominators.h>
+#include <llvm/Analysis/RegionInfo.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Dominators.h>
 
@@ -13,41 +16,38 @@ class PacketPathAnalysis {
                                       llvm::DenseSet<unsigned>>;
 
   llvm::Function * F;
-  llvm::BasicBlock * EntryBlock;
-  llvm::BasicBlock * ReturnBlock;
+  llvm::DominatorTree DT;
+  llvm::PostDominatorTree PDT;
+  llvm::DominanceFrontier DF;
+  int PathIdCounter = 0;
+
+  llvm::BasicBlock * RegionEntry;
   BasicBlockToIntegersMapType BlockToPathSet;
-  llvm::DenseMap<llvm::BasicBlock *, unsigned> ExitingBlockPathIDMap;
+  llvm::SmallVector<llvm::BasicBlock *, 4> ExitingBlocks;
   IntToBasicBlocksMapType PathIDToBLockList;
   llvm::DenseMap<llvm::BasicBlock *, unsigned> BlockToPathIdMap;
 
-  void computePathTraces();
+  void computePathTraces(llvm::Region * R);
   void visitPredecessor(llvm::BasicBlock * BB, unsigned PathID);
   void prepareFinalMap();
 
 public:
   PacketPathAnalysis(llvm::Function * F_) :
-    F(F_), EntryBlock(&F->getEntryBlock()) {
-    computePathTraces();
+    F(F_), DT(*F), PDT(*F), DF() {
+    calculate();
   }
 
-  void recalculate();
+  void calculate();
   void dumpDebugDataToConsole();
 
   // Accessors
-  unsigned getNumerOfPaths() { return ExitingBlockPathIDMap.size(); }
+  unsigned getNumerOfPaths() { return PathIdCounter; }
 
   IntToBasicBlocksMapType & getPathSetRef() { return PathIDToBLockList; }
-
-  llvm::DenseMap<llvm::BasicBlock *, unsigned> & getPathExitingBlockListRef()
-  {
-    return ExitingBlockPathIDMap;
-  }
 
   llvm::DenseMap<llvm::BasicBlock *, unsigned> getBlockToPathIDMapRef() {
     return BlockToPathIdMap;
   }
-
-  llvm::BasicBlock * getReturnBlock() { return ReturnBlock; }
 };
 
 }

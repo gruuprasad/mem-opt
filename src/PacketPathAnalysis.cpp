@@ -16,36 +16,36 @@ using namespace std;
 
 namespace tas {
 
-void PacketPathAnalysis::recalculate() {
+void PacketPathAnalysis::calculate() {
   BlockToPathSet.clear();
-  ExitingBlockPathIDMap.clear();
   PathIDToBLockList.clear();
-  computePathTraces();
+
+  RegionInfo RI;
+  DF.analyze(DT);
+  RI.recalculate(*F, &DT, &PDT, &DF);
+  auto TR = RI.getTopLevelRegion();
+
+  vector<Region *> RQ;
+  for (auto & E : *TR) {
+    RQ.push_back(E.get());
+  }
+
+  for (auto & R : RQ) {
+    computePathTraces(R);
+  }
 }
 
-void PacketPathAnalysis::computePathTraces() {
-  // Check all the return blocks.
-  SmallVector<BasicBlock *, 4> ReturnBlocks;
-  for (BasicBlock & BB : *F)
-    if (isa<ReturnInst>(BB.getTerminator()))
-      ReturnBlocks.push_back(&BB);
+void PacketPathAnalysis::computePathTraces(Region * R) {
+  RegionEntry = R->getEntry();
 
-  // Assume Function has single exit block.
-  // TODO Else, make function single exit block.
-  // Use unifysingleexitnode pass.
-  assert (ReturnBlocks.size() == 1);
-  ReturnBlock = ReturnBlocks.front();
-
-  int i = 1;
-  for (auto * BB : predecessors(ReturnBlock))
-    ExitingBlockPathIDMap.insert(make_pair(BB, i++));
-
-  LLVM_DEBUG(errs() << "Number of Paths = " << ExitingBlockPathIDMap.size()
-                    << "\n");
+  ExitingBlocks.clear();
+  R->getExitingBlocks(ExitingBlocks);
 
   // Mark each predecessor of path exiting block with path id.
-  for (auto & KV : ExitingBlockPathIDMap)
-    visitPredecessor(KV.getFirst(), KV.getSecond());
+  for (auto & BB : ExitingBlocks) {
+    BlockToPathIdMap.insert(make_pair(BB, ++PathIdCounter));
+    visitPredecessor(BB, PathIdCounter);
+  }
 
   prepareFinalMap();
 }
@@ -58,6 +58,8 @@ void PacketPathAnalysis::visitPredecessor(BasicBlock * BB, unsigned PathID) {
 
     PathIDSet.insert(PathID);
     PathIDToBLockList[PathID].push_back(Pred);
+
+    if (Pred == RegionEntry) return;
     visitPredecessor(Pred, PathID);
   }
 }
@@ -75,22 +77,10 @@ void PacketPathAnalysis::prepareFinalMap() {
       BlockToPathIdMap.insert(make_pair(KV.getFirst(), *V.begin()));
     }
   }
-  for (auto & KV : ExitingBlockPathIDMap) {
-    BlockToPathIdMap.insert(make_pair(KV.getFirst(), KV.getSecond()));
-  }
 }
 
 void PacketPathAnalysis::dumpDebugDataToConsole() {
   errs() << "Basic block path information\n";
-  errs() << "Path Exiting Blocks\n";
-  for (auto & E : ExitingBlockPathIDMap) {
-    auto & BB = E.getFirst();
-    BB->printAsOperand(errs());
-    errs() << " : ";
-    auto & ID = E.getSecond();
-    errs() << to_string(ID) << "  ";
-    errs() << "\n";
-  }
   errs() << "Block to Path memebers map\n";
   for (auto & E : BlockToPathSet) {
     auto & BB = E.getFirst();
