@@ -139,7 +139,6 @@ void detectBatchParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParamete
       }
     }
   }
-
 }
 
 void setAnnotationInFunctionObject(Module * M) {

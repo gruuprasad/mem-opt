@@ -111,6 +111,8 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   BlockPredication BP(F);
   BP.run();
 
+  BP.getPathAnalysis().dumpDebugDataToConsole();
+
   auto asmFile = writeToAsmFile(*M);
 
   // Generate object for unit under test.
