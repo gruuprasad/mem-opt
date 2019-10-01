@@ -32,38 +32,54 @@ static unique_ptr<Module> parseIR(string Filename, string FileDir) {
   return M;
 }
 
-TEST_CASE("detect path traces", "[RUN]") {
-  std::string filename = "blockpredication_test1.c";
-  auto M = parseIR(generateIR(filename, input_dir), input_dir);
+TEST_CASE("simple if else") {
+  std::string fileprefix = "blockpredication_test1";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
-  auto F = M->getFunction("main");
-  PacketPathAnalysis PD(F);
-  REQUIRE(PD.getNumerOfPaths() == 2);
-  auto & PathList = PD.getPathSetRef();
-  // Expected number of intermediate basic blocks in each path.
-  REQUIRE(PathList[1].size() == 2);
-  REQUIRE(PathList[2].size() == 1);
+  auto F = M->getFunction("fn");
+  BlockPredication BP(F);
+  BP.run();
+
+  // For debug purpose
+  auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
 }
 
-TEST_CASE("detect path traces mulltiple goto targets") {
-  std::string filename = "blockpredication_test2.c";
-  auto M = parseIR(generateIR(filename, input_dir), input_dir);
+/*
+TEST_CASE("multiiple if else blocks") {
+  std::string fileprefix = "blockpredication_test2";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
-  auto F = M->getFunction("process_packet");
-  PacketPathAnalysis PD(F);
-  REQUIRE(PD.getNumerOfPaths() == 3);
-  auto & PathList = PD.getPathSetRef();
-  // Expected number of intermediate basic blocks in each path.
-  REQUIRE(PathList[1].size() == 2);
-  REQUIRE(PathList[2].size() == 5);
-  REQUIRE(PathList[3].size() == 6);
+  auto F = M->getFunction("fn");
+  BlockPredication BP(F);
+  BP.run();
+
+  // For debug purpose
+  auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
 }
 
-TEST_CASE("predicated block execution, single goto") {
+TEST_CASE("single goto") {
   std::string fileprefix = "blockpredication_test3";
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
-  auto F = M->getFunction("if_else_fn");
+  auto F = M->getFunction("fn");
   BlockPredication BP(F);
   BP.run();
 
@@ -79,7 +95,9 @@ TEST_CASE("predicated block execution, single goto") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+*/
 
+/*
 TEST_CASE("predicated block execution, multiple goto") {
   std::string fileprefix = "blockpredication_test4";
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
@@ -125,3 +143,4 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+*/

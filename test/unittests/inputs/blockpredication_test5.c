@@ -10,6 +10,7 @@ int multi_conditionals_fn(struct packet *);
 int set_y(int in) {
   int y = in;
   return y;
+
 }
 
 int multi_conditionals_fn_ref(struct packet * in) {
@@ -24,9 +25,9 @@ int multi_conditionals_fn_ref(struct packet * in) {
     x =30; 
   } else {
     x =40; 
+    goto exit_;
   }
 
-  /*
   if (x == 10)
     goto id_1;
 
@@ -52,9 +53,10 @@ int multi_conditionals_fn_ref(struct packet * in) {
 
 id_1:
   x++;
-  */
-
-  return x; // x value tells which set of blocks got executed.
+  return x;
+ 
+exit_:
+  return -1;
 }
 
 int multi_conditionals_fn(struct packet * in) {

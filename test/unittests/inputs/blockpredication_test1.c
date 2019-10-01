@@ -1,33 +1,31 @@
-int main() {
-  int x = 0;
-  if (x == 0)
-    goto exit;
-  else
-    x = 2;
+#include <stdio.h>
 
-  x = 1;
+int fn(int x) {
+  int y = 0;
+  if (x == 0) {
+    y = 1;
+  } else {
+    y = 3;
+  }
 
-exit:
-  x = -1;
-  return 0;
+  return y;
 }
 
-int main_transform() {
-  int x = 0;
-  int path = 0;
-  if (path == 0 && x == 0) {
-    path = 1;
-  } else if (path == 0) {
-    x = 2;
+int fn_ref(int x) {
+  int y = 0;
+  if (x == 0) {
+    y = 1;
+  } else {
+    y = 3;
   }
 
-  if (path == 0) {
-    x = 1;
-  }
+  return y;
+}
 
-exit:
-  if (path == 0 && path == 1) {
-    x = -1;
-  }
-  return 0;
+int main() {
+  int rc = 0;
+  if (fn(0) != fn_ref(0)) rc--;
+  if (fn(1) != fn_ref(1)) rc--;
+  if (fn(2) != fn_ref(2)) rc--;
+  return rc;
 }

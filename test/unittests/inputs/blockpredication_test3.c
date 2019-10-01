@@ -1,21 +1,8 @@
-#include <stdio.h>
+int fn(int);
+int fn_ref(int);
 
-int if_else_fn(int);
 
-int main() {
-  int in1 = 0; //Expected out1 = 0
-  int out1 = if_else_fn(in1);
-
-  int in2 = 1; // Expected out2 = 1
-  int out2 = if_else_fn(in2);
-
-  if (out1 != 0 || out2 != 1) {
-    return -1;
-  }
-  return 0;
-}
-
-int if_else_fn(int in) {
+int fn_ref(int in) {
   int x = in;
   int y = 0;
   if (x == 0) {
@@ -31,32 +18,27 @@ done:
   return y;
 }
 
-/*
- * Transformed function:
-int if_else_fn() {
-  int x = 0;
+int fn(int in) {
+  int x = in;
   int y = 0;
-  int path = 0; // Holds path id
   if (x == 0) {
-    path = 1;
+    y = 0; //Path ID = 1
+    goto done;
   } else {
-    path = 2;
+    y = y + 1; // Path ID = 2
   }
 
-  if (path == 1) {
-    y = y + 1;
-  }
+  x = x + 1; // Path ID = 2
 
-  // If basic blocks doesn't have else condition it can be merged.
-  // I guess LLVM optimization pipeline look for such opportunities.
-  if (path == 2) {
-    y = y +2;
-  }
-
-  if (path == 2) {
-    x = x + 1;
-  }
-  // goto target "done" is not used in the function.
-  return 0;
+done:
+  return y;
 }
-*/
+
+int main() {
+  int rc = 0;
+  if (fn(0) != fn_ref(0)) rc--;
+  if (fn(1) != fn_ref(1)) rc--;
+  if (fn(2) != fn_ref(2)) rc--;
+  if (fn(3) != fn_ref(3)) rc--;
+  return rc;
+}

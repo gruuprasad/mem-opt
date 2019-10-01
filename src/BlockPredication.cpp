@@ -22,9 +22,9 @@ void BlockPredication::linearizeControlFlow() {
   ReturnBlock = unifyFunctionExitNodes(*F);
 
   Builder.SetInsertPoint(&EntryBlock->front());
-  PathIdAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
+  MaskIDAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
-  auto PathIDMap = PPA.getBlockToPathIDMapRef();
+  auto MaskIDMap = PPA.getBlockPathCondition();
 
   // Set path state value according to branch target blocks.
   for (auto & BB : *F) {
@@ -32,7 +32,7 @@ void BlockPredication::linearizeControlFlow() {
 
     if (auto * BI = dyn_cast<BranchInst>(BB.getTerminator())) {
       if (BI->isUnconditional()) continue;
-      setPathIDCondition(BI, PathIDMap);
+      setPathIDCondition(BI, MaskIDMap);
     }
   }
 
@@ -51,11 +51,11 @@ void BlockPredication::linearizeControlFlow() {
   // For each Action block add a Predicate block.
   // control flow: PredicateBlock --True--> ActionBlock.
   for (auto & BB : ActionBlocks) {
-    auto It = PathIDMap.find(BB);
-    if (It == PathIDMap.end()) continue; // Could be Return Block
+    auto It = MaskIDMap.find(BB);
+    if (It == MaskIDMap.end()) continue; // Could be Return Block
 
-    auto PathID = It->getSecond();
-    auto PB = insertPredicateBlock(BB, PathID);
+    auto MaskID = It->getSecond();
+    auto PB = insertPredicateBlock(BB, MaskID);
     PredicateBlocks.push_back(PB);
   }
 
@@ -64,20 +64,20 @@ void BlockPredication::linearizeControlFlow() {
 }
 
 void BlockPredication::setPathIDCondition(BranchInst * BI,
-                                          BlockToIntMapType & PathIDMap) {
+                                          BlockToIntMapType & MaskIDMap) {
   // Note: False dest index is 0, True Dest index is 1, counter intuitive.
-  auto TruePathIt = PathIDMap.find(BI->getSuccessor(1));
-  auto FalsePathIt = PathIDMap.find(BI->getSuccessor(0));
+  auto TruePathIt = MaskIDMap.find(BI->getSuccessor(1));
+  auto FalsePathIt = MaskIDMap.find(BI->getSuccessor(0));
 
   // Sanity check
   assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
-  assert (TruePathIt != PathIDMap.end() && FalsePathIt != PathIDMap.end());
+  assert (TruePathIt != MaskIDMap.end() && FalsePathIt != MaskIDMap.end());
 
   Builder.SetInsertPoint(BI);
   auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
                                         Builder.getInt32(TruePathIt->getSecond()),
                                         Builder.getInt32(FalsePathIt->getSecond()));
-  Builder.CreateStore(PathIdVal, PathIdAlloca);
+  Builder.CreateStore(PathIdVal, MaskIDAlloca);
 }
 
 void BlockPredication::setActionBlocksSuccessors() {
@@ -99,7 +99,7 @@ BasicBlock * BlockPredication::insertPredicateBlock(BasicBlock * ActionBB,
   ActionBB->replaceAllUsesWith(PB);
 
   Builder.SetInsertPoint(PB);
-  auto PathIDVal = Builder.CreateLoad(PathIdAlloca);
+  auto PathIDVal = Builder.CreateLoad(MaskIDAlloca);
   auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal,
                                  Builder.getInt32(PathID));
   Builder.CreateCondBr(Pred, ActionBB, ActionBB);

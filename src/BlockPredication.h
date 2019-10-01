@@ -18,14 +18,14 @@ class BlockPredication {
   llvm::Function * F;
   PacketPathAnalysis PPA;
   llvm::BasicBlock * EntryBlock;
-  llvm::AllocaInst * PathIdAlloca;
+  llvm::AllocaInst * MaskIDAlloca;
   llvm::IRBuilder<> Builder;
   std::deque<llvm::BasicBlock *> ActionBlocks;
   std::deque<llvm::BasicBlock *> PredicateBlocks;
   llvm::BasicBlock * ReturnBlock;
 
   void linearizeControlFlow();
-  void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & PathIDMap);
+  void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & MaskIDMap);
   void setActionBlocksSuccessors();
   llvm::BasicBlock * insertPredicateBlock(llvm::BasicBlock * ActionBB,
                                           unsigned PathID);
