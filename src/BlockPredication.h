@@ -26,10 +26,10 @@ class BlockPredication {
 
   void linearizeControlFlow();
   void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & MaskIDMap);
-  void setActionBlocksSuccessors();
-  llvm::BasicBlock * insertPredicateBlock(llvm::BasicBlock * ActionBB,
-                                          unsigned PathID);
-  void setPredicateBlocksFalseEdges();
+  void setBlocksSuccessors(std::deque<llvm::BasicBlock *> & PredicateBlocks);
+  void insertPredicateBlocks();
+  void setPredBlockSuccessors(std::deque<llvm::BasicBlock *> & PredBlocks,
+                                    std::deque<llvm::BasicBlock *> & ActionBlocks);
 
 public:
   BlockPredication(llvm::Function * F_)

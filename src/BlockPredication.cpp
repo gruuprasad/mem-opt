@@ -31,7 +31,6 @@ void BlockPredication::linearizeControlFlow() {
     if (ReturnBlock == &BB) continue;
 
     if (auto * BI = dyn_cast<BranchInst>(BB.getTerminator())) {
-      if (BI->isUnconditional()) continue;
       setPathIDCondition(BI, MaskIDMap);
     }
   }
@@ -42,75 +41,79 @@ void BlockPredication::linearizeControlFlow() {
     ActionBlocks.push_back(*B);
   }
 
-  // Set control flow to form linear execution.
-  setActionBlocksSuccessors();
-
   // Entry block is executed for all paths.
   ActionBlocks.pop_front();
 
   // For each Action block add a Predicate block.
-  // control flow: PredicateBlock --True--> ActionBlock.
-  for (auto & BB : ActionBlocks) {
-    auto It = MaskIDMap.find(BB);
-    if (It == MaskIDMap.end()) continue; // Could be Return Block
+  insertPredicateBlocks();
+    
+  setBlocksSuccessors(PredicateBlocks);
 
-    auto MaskID = It->getSecond();
-    auto PB = insertPredicateBlock(BB, MaskID);
-    PredicateBlocks.push_back(PB);
-  }
-
-  // Set control flow: PredicateBlock[i]---[False]--> PredicateBlock[i+1]
-  setPredicateBlocksFalseEdges();
+  setPredBlockSuccessors(PredicateBlocks, ActionBlocks);
 }
 
 void BlockPredication::setPathIDCondition(BranchInst * BI,
                                           BlockToIntMapType & MaskIDMap) {
-  // Note: False dest index is 0, True Dest index is 1, counter intuitive.
-  auto TruePathIt = MaskIDMap.find(BI->getSuccessor(1));
-  auto FalsePathIt = MaskIDMap.find(BI->getSuccessor(0));
+  Builder.SetInsertPoint(BI);
+  if (BI->isUnconditional()) {
+    auto TargetIt = MaskIDMap.find(BI->getSuccessor(0));
+    Builder.CreateStore(Builder.getInt32(TargetIt->getSecond()), MaskIDAlloca);
+    return;
+  }
+
+  auto TruePathIt = MaskIDMap.find(BI->getSuccessor(0));
+  auto FalsePathIt = MaskIDMap.find(BI->getSuccessor(1));
 
   // Sanity check
   assert (BI->getSuccessor(0) != nullptr && BI->getSuccessor(1) != nullptr);
   assert (TruePathIt != MaskIDMap.end() && FalsePathIt != MaskIDMap.end());
 
-  Builder.SetInsertPoint(BI);
   auto PathIdVal = Builder.CreateSelect(BI->getCondition(),
                                         Builder.getInt32(TruePathIt->getSecond()),
                                         Builder.getInt32(FalsePathIt->getSecond()));
   Builder.CreateStore(PathIdVal, MaskIDAlloca);
 }
 
-void BlockPredication::setActionBlocksSuccessors() {
+void BlockPredication::setBlocksSuccessors(deque<BasicBlock *> & PredicateBlocks) {
+  BranchInst * BI;
+
+  BI = cast<BranchInst>(F->getEntryBlock().getTerminator());
+  BranchInst::Create(PredicateBlocks.front(), BI);
+  BI->eraseFromParent();
+
   for (int i = 0; i < ActionBlocks.size() - 1; ++i) {
     auto BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
-    if (BI->isUnconditional())
-      setSuccessor(ActionBlocks[i], ActionBlocks[i+1]);
-
-    Builder.SetInsertPoint(BI);
-    Builder.CreateBr(ActionBlocks[i+1]);
+    BranchInst::Create(PredicateBlocks[i+1], BI);
     BI->eraseFromParent();
   }
 }
 
-BasicBlock * BlockPredication::insertPredicateBlock(BasicBlock * ActionBB,
-                                                    unsigned PathID) {
-  auto PB = BasicBlock::Create(F->getContext(),
-            string("predicate_") + std::to_string(PathID), F, ActionBB);
-  ActionBB->replaceAllUsesWith(PB);
-
-  Builder.SetInsertPoint(PB);
-  auto PathIDVal = Builder.CreateLoad(MaskIDAlloca);
-  auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal,
-                                 Builder.getInt32(PathID));
-  Builder.CreateCondBr(Pred, ActionBB, ActionBB);
-  return PB;
+void BlockPredication::insertPredicateBlocks() {
+  for (int i = 0; i < ActionBlocks.size(); ++i) {
+    auto PB = BasicBlock::Create(F->getContext(),
+        string("predicate_") + std::to_string(i), F, ActionBlocks[i]);
+    ActionBlocks[i]->replaceAllUsesWith(PB);
+    PredicateBlocks.push_back(PB);
+  }
 }
 
-void BlockPredication::setPredicateBlocksFalseEdges() {
-  for (auto i = 0; i < PredicateBlocks.size() - 1; ++i) {
-    setSuccessor(PredicateBlocks[i], PredicateBlocks[i+1]);
+// control flow: PredicateBlock --True--> ActionBlock.
+// control flow: PredicateBlock[i]---[False]--> PredicateBlock[i+1]
+void BlockPredication::setPredBlockSuccessors(deque<BasicBlock *> & PredBlocks,
+                                                    deque<BasicBlock *> & ActionBlocks) {
+  auto MaskIDMap = PPA.getBlockPathCondition();
+  for (auto i = 0; i < PredBlocks.size() - 1; ++i) {
+    Builder.SetInsertPoint(PredBlocks[i]);
+    auto It = MaskIDMap.find(ActionBlocks[i]);
+    auto MaskID = It->getSecond();
+    auto PathIDVal = Builder.CreateLoad(MaskIDAlloca);
+    auto Pred = Builder.CreateICmp(CmpInst::ICMP_EQ, PathIDVal,
+                                   Builder.getInt32(MaskID));
+    Builder.CreateCondBr(Pred, ActionBlocks[i], PredBlocks[i+1]);
   }
-  setSuccessor(PredicateBlocks.back(), ReturnBlock, 0);
+
+  Builder.SetInsertPoint(PredBlocks.back());
+  Builder.CreateBr(ReturnBlock);
 }
 
 }

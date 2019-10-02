@@ -113,7 +113,6 @@ int main() {
     int ret1 = multi_conditionals_fn(&p1);
     int ref1 = multi_conditionals_fn_ref(&p1);
     if (ret1 != ref1) {
-      printf("1:ret1 = %d\n", ret1);
       rc--;
     }
   }
@@ -123,7 +122,6 @@ int main() {
     int ret1 = multi_conditionals_fn(&p1);
     int ref1 = multi_conditionals_fn_ref(&p1);
     if (ret1 != ref1) {
-      printf("2:ret1 = %d\n", ret1);
       rc--;
     }
   }
@@ -133,7 +131,6 @@ int main() {
     int ret1 = multi_conditionals_fn(&p1);
     int ref1 = multi_conditionals_fn_ref(&p1);
     if (ret1 != ref1) {
-      printf("3:ret1 = %d\n", ret1);
       rc--;
     }
   }
@@ -143,12 +140,9 @@ int main() {
     int ret1 = multi_conditionals_fn(&p1);
     int ref1 = multi_conditionals_fn_ref(&p1);
     if (ret1 != ref1) {
-      printf("4:ret1 = %d\n", ret1);
       rc--;
     }
   }
-
-  printf("rc = %d\n", rc);
 
 return rc;
 }

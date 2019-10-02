@@ -53,7 +53,6 @@ TEST_CASE("simple if else") {
   REQUIRE(ret == 0);
 }
 
-/*
 TEST_CASE("multiiple if else blocks") {
   std::string fileprefix = "blockpredication_test2";
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
@@ -95,14 +94,12 @@ TEST_CASE("single goto") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
-*/
 
-/*
 TEST_CASE("predicated block execution, multiple goto") {
   std::string fileprefix = "blockpredication_test4";
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
   REQUIRE(M != nullptr);
-  auto F = M->getFunction("process_packet");
+  auto F = M->getFunction("fn");
 
   BlockPredication BP(F);
   BP.run();
@@ -129,8 +126,6 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   BlockPredication BP(F);
   BP.run();
 
-  BP.getPathAnalysis().dumpDebugDataToConsole();
-
   auto asmFile = writeToAsmFile(*M);
 
   // Generate object for unit under test.
@@ -143,4 +138,3 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
-*/
