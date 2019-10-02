@@ -138,3 +138,25 @@ TEST_CASE("predicated block execution, multiple ifelse") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+TEST_CASE("lot of if else") {
+  std::string fileprefix = "blockpredication_test6";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("fn");
+
+  BlockPredication BP(F);
+  BP.run();
+
+  auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
+}
