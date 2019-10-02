@@ -10,6 +10,10 @@
 #include <llvm/Transforms/IPO/PassManagerBuilder.h>
 
 using namespace llvm;
+using namespace std;
+
+#include <map>
+#include <string>
 
 static const std::string fn_mark = "tas_batch_maker";
 
@@ -23,13 +27,13 @@ void TASBatchMaker::getAnalysisUsage(AnalysisUsage &AU) const {
 bool TASBatchMaker::runOnModule(Module &M) {
 
   errs() << "BatchMaker pass: " << M.getSourceFileName() << "\n";
-  DenseMap<Function *, StringRef> AnnotatedFnList;
+  map<Function *, string> AnnotatedFnList;
   tas::getAnnotatedFnList(&M, AnnotatedFnList);
 
   bool changed = false;
   for (auto & FnStr : AnnotatedFnList) {
-    if (FnStr.getSecond().compare("tas_batch_maker") != 0) continue;
-    tas::BatchMaker BM(FnStr.getFirst());
+    if (FnStr.second.compare("tas_batch_maker") != 0) continue;
+    tas::BatchMaker BM(FnStr.first);
     changed |= BM.run();
   }
   return changed;

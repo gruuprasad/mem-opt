@@ -1,5 +1,9 @@
 #include <stdio.h>
 
+#define TAS_MAKE_BATCH __attribute__((annotate("tas_batch_maker")))
+#define BATCH_ARG __attribute__((annotate("batch_arg")))
+#define EXPENSIVE __attribute__((annotate("expensive")))
+
 struct packet {
   int id;
   int ip;

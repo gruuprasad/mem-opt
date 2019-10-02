@@ -49,7 +49,7 @@ namespace tas {
 
 static std::string VarAnnotationStr = "llvm.var.annotation";
 
-void getAnnotatedFnList(Module * M, DenseMap<Function *, StringRef> & FnList) {
+void getAnnotatedFnList(Module * M, map<Function *, string> & FnList) {
   auto AnnotationList = M->getNamedGlobal("llvm.global.annotations");
   if (!AnnotationList) return;
 
@@ -303,6 +303,7 @@ string writeToBitCodeFile(Module & M) {
   auto Idx = M.getSourceFileName().find_last_of(".");
   auto OutFile = M.getSourceFileName().substr(0, Idx) + string(".bc");
   raw_fd_ostream OS(OutFile, EC, llvm::sys::fs::F_None);
+  errs() << OutFile <<"\n";
   WriteBitcodeToFile(M, OS);
   OS.flush();
   return OutFile;

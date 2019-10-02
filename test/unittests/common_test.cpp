@@ -29,16 +29,16 @@ TEST_CASE("detect TAS_MAKE_BATCH annotation") {
   auto M = parseIR(std::string("batchmaker_test1.ll"), input_dir);
   REQUIRE( M != nullptr);
 
-  DenseMap<Function *, StringRef> AnnotatedFnList;
+  map<Function *, string> AnnotatedFnList;
   getAnnotatedFnList(M.get(), AnnotatedFnList);
 
   REQUIRE(AnnotatedFnList.size() == 2);
   auto Fn = AnnotatedFnList.begin();
   //REQUIRE(Fn->getFirst()->getName().compare(std::string("test_fn")) == 0);
-  REQUIRE(Fn->getSecond().compare(std::string("tas_batch_maker")) == 0);
+  REQUIRE(Fn->second.compare(std::string("tas_batch_maker")) == 0);
   Fn++;
   //REQUIRE(Fn->getFirst()->getName().compare(std::string("test_fn2")) == 0);
-  REQUIRE(Fn->getSecond().compare(std::string("tas_batch_maker")) == 0);
+  REQUIRE(Fn->second.compare(std::string("tas_batch_maker")) == 0);
 }
 
 TEST_CASE("detect Batching Parameters") {

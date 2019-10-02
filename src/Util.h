@@ -9,6 +9,9 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Transforms/Utils/ValueMapper.h>
 
+#include <map>
+#include <string>
+
 namespace tas {
 
 class TasException {
@@ -24,8 +27,8 @@ enum class AnnotationType {
   BATCH_ARG
 };
 
-void getAnnotatedFnList(llvm::Module * M, llvm::DenseMap<llvm::Function *,
-                              llvm::StringRef> & FnList);
+void getAnnotatedFnList(llvm::Module * M, std::map<llvm::Function *,
+                              std::string> & FnList);
 
 void setAnnotationInFunctionObject(llvm::Module * M);
 

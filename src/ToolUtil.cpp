@@ -10,7 +10,7 @@ using namespace std;
 
 namespace tas {
 
-string generateIR(string InFile, string Input_dir = "") {
+string generateIR(string InFile, string Input_dir) {
   // Compile source to LLVM IR using clang
   string OutFile;
   if (!InFile.empty()) {
