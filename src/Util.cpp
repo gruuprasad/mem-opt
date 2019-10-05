@@ -303,7 +303,6 @@ string writeToBitCodeFile(Module & M) {
   auto Idx = M.getSourceFileName().find_last_of(".");
   auto OutFile = M.getSourceFileName().substr(0, Idx) + string(".bc");
   raw_fd_ostream OS(OutFile, EC, llvm::sys::fs::F_None);
-  errs() << OutFile <<"\n";
   WriteBitcodeToFile(M, OS);
   OS.flush();
   return OutFile;
@@ -355,17 +354,37 @@ void printRegeionInfo(Function * F) {
   }
 }
 
-BasicBlock * unifyFunctionExitNodes(Function &F) {
+pair<BasicBlock *, BasicBlock *> unifyFunctionExitNodes(Function &F) {
   vector<BasicBlock*> ReturningBlocks;
+  vector<BasicBlock*> UnreachableBlocks;
   for (BasicBlock &I : F)
     if (isa<ReturnInst>(I.getTerminator()))
       ReturningBlocks.push_back(&I);
+    else if (isa<UnreachableInst>(I.getTerminator()))
+      UnreachableBlocks.push_back(&I);
+
+  // Then unreachable blocks.
+  BasicBlock * UnreachableBlock = nullptr;
+  if (UnreachableBlocks.empty()) {
+    UnreachableBlock = nullptr;
+  } else if (UnreachableBlocks.size() == 1) {
+    UnreachableBlock = UnreachableBlocks.front();
+  } else {
+    UnreachableBlock = BasicBlock::Create(F.getContext(),
+                                          "UnifiedUnreachableBlock", &F);
+    new UnreachableInst(F.getContext(), UnreachableBlock);
+
+    for (BasicBlock *BB : UnreachableBlocks) {
+      BB->getInstList().pop_back();  // Remove the unreachable inst.
+      BranchInst::Create(UnreachableBlock, BB);
+    }
+  }
 
   // Now handle return blocks.
   if (ReturningBlocks.empty()) {
-    return nullptr;                          // No blocks return
+    return make_pair(nullptr, UnreachableBlock);                          // No blocks return
   } else if (ReturningBlocks.size() == 1) {
-    return ReturningBlocks.front();
+    return make_pair(ReturningBlocks.front(), UnreachableBlock);
   }
 
   // Otherwise, we need to insert a new basic block into the function, add a PHI
@@ -399,7 +418,7 @@ BasicBlock * unifyFunctionExitNodes(Function &F) {
     BranchInst::Create(NewRetBlock, BB);
   }
 
-  return NewRetBlock;
+  return make_pair(NewRetBlock, UnreachableBlock);
 }
 
 } // namespace tas

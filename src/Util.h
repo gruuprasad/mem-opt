@@ -77,7 +77,7 @@ llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
 
 void printRegeionInfo(llvm::Function * F);
 
-llvm::BasicBlock * unifyFunctionExitNodes(llvm::Function & F);
+std::pair<llvm::BasicBlock *, llvm::BasicBlock *> unifyFunctionExitNodes(llvm::Function & F);
 } // namespace tas
 
 #endif

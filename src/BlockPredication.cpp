@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 using namespace llvm;
 using namespace std;
@@ -19,7 +20,8 @@ bool BlockPredication::run() {
 }
 
 void BlockPredication::linearizeControlFlow() {
-  ReturnBlock = unifyFunctionExitNodes(*F);
+  BasicBlock * UnreachableBlock;
+  tie(ReturnBlock, UnreachableBlock) = unifyFunctionExitNodes(*F);
 
   Builder.SetInsertPoint(&EntryBlock->front());
   MaskIDAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
@@ -38,6 +40,8 @@ void BlockPredication::linearizeControlFlow() {
   // Get the Total execution order.
   ReversePostOrderTraversal<Function*> RPOT(F);
   for (auto B = RPOT.begin(); B != RPOT.end(); ++B) {
+    // Leave unreachable block for now.
+    if (*B == UnreachableBlock) continue;
     ActionBlocks.push_back(*B);
   }
 
