@@ -5,6 +5,7 @@ add_executable(tests
                 blockPredication_test.cpp
                 cacheAnalysis_test.cpp
                 common_test.cpp
+                loopSplitter_test.cpp
                 utils_test.cpp)
 
 set(LLVM_LINK_COMPONENTS

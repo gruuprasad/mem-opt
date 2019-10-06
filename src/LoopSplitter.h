@@ -17,7 +17,6 @@ class TASForLoop;
 class LoopSplitter {
   llvm::Function * F;
   llvm::LoopInfo * LI;
-  llvm::DominatorTree * DT;
   llvm::SmallVector<llvm::Value *, 4> AnnotatedVariables;
   llvm::SmallVector<llvm::Instruction *, 4> AnnotatedVariableDefPoints;
   llvm::SmallVector<llvm::Value *, 4> PrefetchAddresses;
@@ -25,7 +24,7 @@ class LoopSplitter {
 
   public:
   LoopSplitter(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_)
-    : F(F_), LI(LI_), DT(DT_) {}
+    : F(F_), LI(LI_) {}
 
   bool run();
   void addEmptyLoop(llvm::BasicBlock * InsertBefore);
