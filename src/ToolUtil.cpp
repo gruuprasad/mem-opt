@@ -39,6 +39,34 @@ string generateIR(string InFile, string Input_dir, bool isTas = false) {
   return OutFile;
 }
 
+string generateLongString(vector<string> & StrList, string pref = "") {
+  stringstream result;
+  for_each(StrList.begin(), StrList.end(), [&] (string & Str) { Str.insert(0, "-"); });
+
+  copy(StrList.begin(), StrList.end(), ostream_iterator<string>(result, " "));
+
+  return result.str();
+}
+
+string runOpt(string InFile, string Input_dir, vector<string> & OptList) {
+  string OutFile;
+  if (!InFile.empty()) {
+    OutFile = InFile.substr(0, InFile.find_last_of(".")) +  string(".ll");
+    auto Opts = generateLongString(OptList, "-");
+
+    auto OptCmd = string("opt -S ") + Opts + " -o " +
+                  Input_dir + OutFile + " " + Input_dir + InFile;
+
+    cout << OptCmd << "\n";
+    auto ret = system(OptCmd.c_str());
+    if (ret != 0) {
+      cerr << "opt:IR opt failed with error code " << ret << "\n";
+      exit(EXIT_FAILURE);
+    }
+  }
+  return OutFile;
+}
+
 string generateObject(string InFile, string Input_dir = "") {
   if (InFile.empty()) return string();
 

@@ -15,6 +15,7 @@ std::string linkObjects(std::vector<std::string> Files, std::string OutFile = ""
 
 bool compileWithClangDriver(std::vector<std::string> Files, std::string Input_dir = "");
 
+std::string runOpt(std::string InFile, std::string Input_dir, std::vector<std::string> & OptList);
 
 }
 

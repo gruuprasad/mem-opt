@@ -4,6 +4,7 @@
 
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/Statistic.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
@@ -19,23 +20,24 @@ STATISTIC(NumPrefetchInsts, "Number of Prefetch instructions added");
 
 namespace tas {
 
-bool LoopSplitter::run() {
-/* Pre-condition checks:
- * 1. Function has atleast one loop and loop is in canonical form.
- *
- * Step 1: Detect and store all variables marked with prefetch annotation.
- * Step 2: Store trip count for loop. 
- * Step 3: Find store instructions whose operand is prefetch annotated variables and save them.
- *         These instructions act as loop split boundary.
- * Step 4: Identify variables whose values are defined in one loop and used in other loop. We need to store such variables
- *         in an array of size trip count.
- * Step 5: Replace use of variables in step 4 with indexed array variable.
- * Step 5: Split loop into multiple loops with same trip count.
- * Step 6: Add new loop above first loop, which has prefetch instruction as it's body.
- * Step 7: Handle control flow.
- * Step 8: In each loop insert prefetch instruction for memory access of next loop.
- */
+AllocaInst * getLoopIndexVar(Loop * L) {
+  AllocaInst * Index = nullptr;
+  auto LatchBB = L->getLoopLatch();
+  assert(LatchBB && "Latch block can't be null!");
 
+  // Find index increment instruction.
+  // XXX Assume latch block contains only one add instruction, verify it.
+  auto It = find_if(*LatchBB,
+          [&] (const Instruction & I) {
+          return (isa<BinaryOperator>(I) &&
+                  I.getOpcode() == Instruction::Add &&
+                  cast<ConstantInt>(I.getOperand(1))->equalsInt(1)) ? true : false; });
+
+  Index = cast<AllocaInst>(cast<LoadInst>(It->getOperand(0))->getOperand(0));
+  return Index;
+}
+
+bool LoopSplitter::run() {
   detectExpPtrVars(F, AnnotatedVariables);
   NumAnnotatedVariables += AnnotatedVariables.size();
   findVariableUsePoints();
@@ -43,11 +45,9 @@ bool LoopSplitter::run() {
   if (AnnotatedVariables.empty())
     return false;
 
-  auto LIt = LI->begin();
-  // If there is no loop, then do nothing.
-  if (LIt == LI->end())
-    return false;
-  Loop * L0 = *LIt; // XXX Split only first top level loop
+  if (LI->begin() == LI->end()) return false;
+
+  Loop * L0 = *LI->begin(); // XXX Split only first top level loop
   splitLoop(L0);
 
   return true;
@@ -57,7 +57,7 @@ void LoopSplitter::splitLoop(Loop * L0) {
   // Original loop is retained, but it's body is split on each iteration.
   // One part becomes part of the new loop and rest remains with the old loop.
   auto * L0_Head = L0->getHeader(); //Doesn't change.
-  auto * L0_IndexVar = L0->getCanonicalInductionVariable();
+  Value * L0_IndexVar = nullptr;
 
   //TODO Add check for loop-simplified form.
   // Preheader changes on every new loop insertion
@@ -65,8 +65,13 @@ void LoopSplitter::splitLoop(Loop * L0) {
 
   // If there is no phi node, that means loop is not in loop-simplified form.
   // we don't do anything in that case.
-  if (!isa<PHINode>(L0->getHeader()->begin()))
-      return;
+  bool canonVar = true;
+  if (!isa<PHINode>(L0->getHeader()->begin())) {
+    L0_IndexVar = getLoopIndexVar(L0);
+    canonVar = false;
+  }
+  else
+    L0_IndexVar = L0->getCanonicalInductionVariable();
 
   // Convert scalar alloca variable into array form
   auto tripCount = TASForLoop::getLoopTripCount();
@@ -90,30 +95,30 @@ void LoopSplitter::splitLoop(Loop * L0) {
         PrefetchAddresses.push_back(cast<StoreInst>(U)->getOperand(0));
       }
       Builder.SetInsertPoint(cast<Instruction>(U));
-      auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), L0_IndexVar});
+      Value * IdxVal = L0_IndexVar;
+      if (!canonVar)
+        IdxVal = Builder.CreateLoad(L0_IndexVar);
+      auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), IdxVal});
       U->replaceUsesOfWith(AI, ptr);
       NumUses--;
     }
   }
 
   // Remove phi node entries if any
-  auto * PN = &*(L0->getHeader()->phis().begin());
-  PN->removeIncomingValue(L0->getLoopPreheader());
+  PHINode * PN = nullptr;
+  if (canonVar) {
+    PN = &*(L0->getHeader()->phis().begin());
+    PN->removeIncomingValue(L0->getLoopPreheader());
+  }
 
-  // Control flow before loop split op.
-  // L0_PreHeader --> [L0_Head --> L0_body-->L0_Latch] --> Block outside loop
-  // control flow edges between loops: [L0_PreHeader --> L0_Head] [L0_Head --> Block outside loop].
-  // After Loop split op
-  // L0_PreHeader --> [L1_PreHeader --> L1_Head -----L1_Latch] --> [L0_Head ------- L0_Latch] 
-  // control flow edge between loops: [L0_PreHeader --> L1_preheader] [L1_Head --> L0_Head] [L0_Head --> Block outside loop]
-  
   // Split basic block at annotated variable def points.
   unsigned int i = 0;
   auto PA_It= PrefetchAddresses.begin();
   for (auto & DP : AnnotatedVariableDefPoints) {
  
     // Insert new loop
-    auto TL0 = TASForLoop(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F);
+    auto TL0 = TASForLoop(F->getContext(), PreHeader, L0_Head, "tas.loop." + std::to_string(i), F,
+        ConstantInt::get(Type::getInt32Ty(F->getContext()), TASForLoop::getLoopTripCount()), cast<AllocaInst>(L0_IndexVar));
 
     // Split old loop body into two parts. Add one part to newly created loop.
     auto * ParentBody = DP->getParent();
@@ -152,7 +157,8 @@ void LoopSplitter::splitLoop(Loop * L0) {
   }
 
   // Add new phi node edge.
-  PN->addIncoming(ConstantInt::get(PN->getType(), 0), PreHeader);
+  if (canonVar)
+    PN->addIncoming(ConstantInt::get(PN->getType(), 0), PreHeader);
 }
 
 void LoopSplitter::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * OldIndex) {

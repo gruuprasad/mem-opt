@@ -8,8 +8,10 @@
 #include <llvm/ADT/PostOrderIterator.h>
 #include <llvm/ADT/SCCIterator.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/IR/CFG.h>
+#include <llvm/IR/Dominators.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/IRBuilder.h>
@@ -38,11 +40,36 @@ static unique_ptr<Module> parseIR(string Filename, string FileDir) {
 
 TEST_CASE("fn with single loop") {
   std::string filePrefix = "loopsplitter_test1";
-  std::string functionName = "multiblock_fn";
+  std::string functionName = "fn";
 
-  auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir), input_dir);
+  auto IR = generateIR(filePrefix + string(".c"), input_dir);
+
+  /*
+  vector<string> OptList {"indvars", "loop-simplify", "lcssa"};
+  IR= runOpt(IR, input_dir, OptList);
+  */
+
+  auto M = parseIR(IR, input_dir);
   REQUIRE(M != nullptr);
 
   // Function with 2 arguments and int return type.
   auto F = M->getFunction(functionName);
+
+  DominatorTree DT(*F);
+  LoopInfo LI(DT);
+
+  auto * L = *LI.begin();
+  auto PreH = L->getLoopPreheader();
+  assert (L->isLoopSimplifyForm() && "No loop simplify form!");
+  assert (PreH && "No Preheader!");
+  auto Ind = getLoopIndexVar(L);
+
+  errs() << "Loop details\n";
+  LI.print(errs());
+  errs() << *Ind;
+
+  LoopSplitter LS(F, &LI);
+  LS.run();
+
+  REQUIRE(LS.getAnnotatedVarCount() == 1);
 }
