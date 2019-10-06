@@ -1,5 +1,5 @@
 #include "BatchMaker.h"
-#include "BatchProcess.h"
+#include "LoopSplitter.h"
 #include "ForLoop.h"
 #include "Util.h"
 

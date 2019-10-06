@@ -1,9 +1,9 @@
 add_library(tasopt_src
             BatchMaker.cpp
-            BatchProcess.cpp
             BlockPredication.cpp
             CacheUsageInfo.cpp
             ForLoop.cpp
+            LoopSplitter.cpp
             PacketPathAnalysis.cpp
             ToolUtil.cpp
             Util.cpp)

@@ -1,4 +1,4 @@
-#include "BatchProcess.h"
+#include "LoopSplitter.h"
 #include "ForLoop.h"
 #include "Util.h"
 
@@ -19,7 +19,7 @@ STATISTIC(NumPrefetchInsts, "Number of Prefetch instructions added");
 
 namespace tas {
 
-bool BatchProcess::run() {
+bool LoopSplitter::run() {
 /* Pre-condition checks:
  * 1. Function has atleast one loop and loop is in canonical form.
  *
@@ -53,7 +53,7 @@ bool BatchProcess::run() {
   return true;
 }
 
-void BatchProcess::splitLoop(Loop * L0) {
+void LoopSplitter::splitLoop(Loop * L0) {
   // Original loop is retained, but it's body is split on each iteration.
   // One part becomes part of the new loop and rest remains with the old loop.
   auto * L0_Head = L0->getHeader(); //Doesn't change.
@@ -155,7 +155,7 @@ void BatchProcess::splitLoop(Loop * L0) {
   PN->addIncoming(ConstantInt::get(PN->getType(), 0), PreHeader);
 }
 
-void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * OldIndex) {
+void LoopSplitter::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * OldIndex) {
   BasicBlock * Body = NewLoop->getBody();
   assert (Body != nullptr && "Loop must have a body");
   for (Instruction & I : *Body) {
@@ -189,7 +189,7 @@ void BatchProcess::fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, Value * 
   }
 }
 
-void BatchProcess::findVariableUsePoints() {
+void LoopSplitter::findVariableUsePoints() {
   LoadInst * LastLoadI = nullptr;
   for (auto * V : AnnotatedVariables) {
     for (auto * U : V->users()) {

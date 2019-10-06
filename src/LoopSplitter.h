@@ -1,5 +1,5 @@
-#ifndef TAS_BATCHPROCESS_H
-#define TAS_BATCHPROCESS_H
+#ifndef TAS_LOOPSPLITTER_H
+#define TAS_LOOPSPLITTER_H
 
 #include <string>
 
@@ -14,7 +14,7 @@ namespace tas {
 
 class TASForLoop;
 
-class BatchProcess {
+class LoopSplitter {
   llvm::Function * F;
   llvm::LoopInfo * LI;
   llvm::DominatorTree * DT;
@@ -24,7 +24,7 @@ class BatchProcess {
   llvm::Value * InductionVariable;
 
   public:
-  BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_)
+  LoopSplitter(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_)
     : F(F_), LI(LI_), DT(DT_) {}
 
   bool run();

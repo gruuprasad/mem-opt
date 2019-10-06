@@ -1,5 +1,5 @@
-#ifndef TAS_BATCHPROCESSPASS_H
-#define TAS_BATCHPROCESSPASS_H
+#ifndef TAS_LOOPSPLITTERPASS_H
+#define TAS_LOOPSPLITTERPASS_H
 
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Module.h>
@@ -7,9 +7,9 @@
 
 namespace {
 
-struct TASBatchProcess : public llvm::FunctionPass {
+struct TASLoopSplitter : public llvm::FunctionPass {
   static char ID;
-  TASBatchProcess() : FunctionPass(ID) {}
+  TASLoopSplitter() : FunctionPass(ID) {}
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
  
