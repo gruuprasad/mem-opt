@@ -50,9 +50,6 @@ bool BatchProcess::run() {
   Loop * L0 = *LIt; // XXX Split only first top level loop
   splitLoop(L0);
 
-  //insertPrefetchCalls();
- //F->print(errs());
- 
   return true;
 }
 
@@ -205,18 +202,5 @@ void BatchProcess::findVariableUsePoints() {
     }
   }
 }
-
-/*
-void BatchProcess::insertPrefetchCalls() {
-  // Insert Prefetch call.
-  for (auto & V : AnnotatedVariables) {
-    for (auto * U : V->users()) {
-      if (auto * ST = dyn_cast<StoreInst>(U)) {
-        insertLLVMPrefetchIntrinsic(F, ST);
-      }
-    }
-  }
-}
-*/
 
 }

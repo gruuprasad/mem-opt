@@ -24,13 +24,12 @@ class BatchProcess {
   llvm::Value * InductionVariable;
 
   public:
-  BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_) :
-    F(F_), LI(LI_), DT(DT_) {}
+  BatchProcess(llvm::Function * F_, llvm::LoopInfo * LI_, llvm::DominatorTree * DT_)
+    : F(F_), LI(LI_), DT(DT_) {}
 
   bool run();
   void addEmptyLoop(llvm::BasicBlock * InsertBefore);
   void findVariableUsePoints();
-  void insertPrefetchCalls();
   void splitLoop(llvm::Loop * L0);
   void fixValueDependenceBetWeenLoops(TASForLoop * NewLoop, llvm::Value * OldIndex);
 };
