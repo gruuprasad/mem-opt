@@ -10,14 +10,26 @@ using namespace std;
 
 namespace tas {
 
-string generateIR(string InFile, string Input_dir) {
+string generateIR(string InFile, string Input_dir, bool isTas = false) {
   // Compile source to LLVM IR using clang
   string OutFile;
   if (!InFile.empty()) {
     OutFile = InFile.substr(0, InFile.find_last_of(".")) +  string(".ll");
-    string GenerateIRCmd = string("clang -O0 -Xclang -disable-O0-optnone -S -emit-llvm -o ")
-                        + Input_dir + OutFile + " " + Input_dir + InFile;
+    string tags ("-O0 -Xclang -disable-O0-optnone -S -emit-llvm ");
+    if (isTas) {
+      tags += "-std=gnu99 -Wall -Werror -I. -I/home/gp/mpi-sws/tas/include/ -march=native "
+        "-fno-omit-frame-pointer -Wno-unused-variable -Wno-unused-function "
+        "-Wno-address-of-packed-member -Wno-sometimes-uninitialized "
+        "-I/usr/share/dpdk/x86_64-default-linuxapp-gcc/include "
+        "-I/usr/share/dpdk/x86_64-default-linuxapp-gcc/include/dpdk "
+        "-I/home/gp/mpi-sws/tas -I/home/gp/mpi-sws/tas/lib/tas/include "
+        "-I/home/gp/mpi-sws/tas/lib/sockets/include "
+        "-I/home/gp/mpi-sws/tas/tas/include " 
+        "-I/home/gp/mpi-sws/tas/tas/fast "; 
+    }
 
+    string GenerateIRCmd = string("clang ") + tags + string("-o") +
+                           Input_dir + OutFile + " " + Input_dir + InFile;
     auto ret = system(GenerateIRCmd.c_str());
     if (ret != 0) {
       cerr << "clang:IR generation failed with error code " << ret << "\n";

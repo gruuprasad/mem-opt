@@ -160,3 +160,28 @@ TEST_CASE("lot of if else") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+/*
+TEST_CASE("fast_flows_packet") {
+  std::string fileprefix = "fast_flows";
+  auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir, true), input_dir);
+  REQUIRE(M != nullptr);
+  auto F = M->getFunction("fast_flows_packet");
+
+  errs() << "Running block predication\n";
+  BlockPredication BP(F);
+  BP.run();
+
+  //auto asmFile = writeToAsmFile(*M);
+
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+
+  //auto binary = linkObjects(vector<string>{TestObject}, fileprefix);
+
+  // Run the binary
+  //binary.insert(0, "./");
+  //auto ret = system(binary.c_str());
+  //REQUIRE(ret == 0);
+}
+*/

@@ -382,7 +382,7 @@ pair<BasicBlock *, BasicBlock *> unifyFunctionExitNodes(Function &F) {
 
   // Now handle return blocks.
   if (ReturningBlocks.empty()) {
-    return make_pair(nullptr, UnreachableBlock);                          // No blocks return
+    return make_pair(nullptr, UnreachableBlock);            // No blocks return
   } else if (ReturningBlocks.size() == 1) {
     return make_pair(ReturningBlocks.front(), UnreachableBlock);
   }

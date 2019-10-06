@@ -86,6 +86,7 @@ void BlockPredication::setBlocksSuccessors(deque<BasicBlock *> & PredicateBlocks
   BI->eraseFromParent();
 
   for (int i = 0; i < ActionBlocks.size() - 1; ++i) {
+    //errs() << i << "  ";
     auto BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
     BranchInst::Create(PredicateBlocks[i+1], BI);
     BI->eraseFromParent();
