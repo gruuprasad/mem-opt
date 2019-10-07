@@ -421,4 +421,36 @@ pair<BasicBlock *, BasicBlock *> unifyFunctionExitNodes(Function &F) {
   return make_pair(NewRetBlock, UnreachableBlock);
 }
 
+template <typename InstType>
+auto findFirstUseOfValueInInstType(Value * V) {
+  auto FU = find_if(V->users(),
+                    [&] (const auto * U) { return isa<InstType>(U)?true:false; });
+  return cast<InstType>(FU);
+}
+
+template <typename InstType>
+auto findLastUseOfValueInInstType(Value * V) {
+  InstType * LU = nullptr;
+  for_each(V->users(),
+          [&] (const auto * U) { if (isa<InstType>(U)) LU = cast<InstType>(U); });
+  return LU;
+}
+
+AllocaInst * getLoopIndexVar(Loop * L) {
+  AllocaInst * Index = nullptr;
+  auto LatchBB = L->getLoopLatch();
+  assert(LatchBB && "Latch block can't be null!");
+
+  // Find index increment instruction.
+  // XXX Assume latch block contains only one add instruction, verify it.
+  auto It = find_if(*LatchBB,
+          [&] (const Instruction & I) {
+          return (isa<BinaryOperator>(I) &&
+                  I.getOpcode() == Instruction::Add &&
+                  cast<ConstantInt>(I.getOperand(1))->equalsInt(1)) ? true : false; });
+
+  Index = cast<AllocaInst>(cast<LoadInst>(It->getOperand(0))->getOperand(0));
+  return Index;
+}
+
 } // namespace tas

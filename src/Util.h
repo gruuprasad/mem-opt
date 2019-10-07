@@ -78,6 +78,15 @@ llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
 void printRegeionInfo(llvm::Function * F);
 
 std::pair<llvm::BasicBlock *, llvm::BasicBlock *> unifyFunctionExitNodes(llvm::Function & F);
+
+template <typename InstType>
+auto findFirstUseOfValueInInstType(llvm::Value * V);
+
+template <typename InstType>
+auto findLastUseOfValueInInstType(llvm::Value * V);
+
+llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
+
 } // namespace tas
 
 #endif
