@@ -77,13 +77,27 @@ llvm::Value * addIncrementIndexOp(llvm::AllocaInst * IdxPtr,
 
 void printRegeionInfo(llvm::Function * F);
 
-std::pair<llvm::BasicBlock *, llvm::BasicBlock *> unifyFunctionExitNodes(llvm::Function & F);
+std::pair<llvm::BasicBlock *, llvm::BasicBlock *>
+unifyFunctionExitNodes(llvm::Function & F);
 
 template <typename InstType>
-auto findFirstUseOfValueInInstType(llvm::Value * V);
+auto findLastUseOfValueInInstType(llvm::Value * V) {
+  auto FU = find_if(V->users(),
+            [&] (const auto * U) {
+              return llvm::isa<InstType>(U)?true:false;
+            });
+  return llvm::cast<InstType>(*FU);
+}
 
 template <typename InstType>
-auto findLastUseOfValueInInstType(llvm::Value * V);
+auto findFirstUseOfValueInInstType(llvm::Value * V) {
+  const InstType * LU = nullptr;
+  for_each(V->users(),
+          [&] (const auto * U) {
+          if (llvm::isa<InstType>(U)) LU = llvm::cast<InstType>(U);
+        });
+  return LU;
+}
 
 llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
 

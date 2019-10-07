@@ -3,9 +3,7 @@
 #include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
-#include <llvm/ADT/Statistic.h>
 #include <llvm/ADT/STLExtras.h>
-#include <llvm/IR/CFG.h>
 #include <llvm/IR/IRBuilder.h>
 
 #include <iostream>
@@ -18,6 +16,11 @@ using namespace llvm;
 namespace tas {
 
 bool LoopSplitter::run() {
+  SmallVector<Value *, 4> AnnotatedVars;
+  detectExpPtrVars(F, AnnotatedVars);
+  errs() << "No of annotated variables = " << AnnotatedVars.size() << "\n";
+
+  auto FU = findFirstUseOfValueInInstType<LoadInst>(AnnotatedVars.front());
 
   return true;
 }
