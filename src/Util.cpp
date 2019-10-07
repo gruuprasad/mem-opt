@@ -91,6 +91,21 @@ SmallVector<Value *, 4> detectExpPtrVars(Function * F) {
   return ExpensivePointers;
 }
 
+SmallVector<LoadInst *, 4> detectExpPtrUses(SmallVectorImpl<Value *> & AnnotatedVars) {
+  SmallVector<LoadInst *, 4> VarUsePoints;
+  for_each(AnnotatedVars, [&]
+      (const auto & Var) { 
+        auto FU = findFirstUseOfValueInInstType<LoadInst>(Var);
+        if (!FU) return;
+        // TODO Assume Load instruction immeditately follows.
+        if (auto * Ptr = dyn_cast<LoadInst>(FU->getNextNode())) {
+          if (Ptr->getOperand(0) == FU)
+          VarUsePoints.push_back(const_cast<LoadInst *>(FU));
+        }
+      });
+  return VarUsePoints;
+}
+
 Instruction * findBatchBeginMarkerInstruction(Function * F) {
   auto varAnnotIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.

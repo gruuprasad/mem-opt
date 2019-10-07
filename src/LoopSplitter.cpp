@@ -15,30 +15,19 @@ using namespace llvm;
 
 namespace tas {
 
-auto detectExpPtrUses(SmallVectorImpl<Value *> & AnnotatedVars) {
-  SmallVector<LoadInst *, 4> VarUsePoints;
-  for_each(AnnotatedVars, [&]
-      (const auto & Var) { 
-        auto FU = findFirstUseOfValueInInstType<LoadInst>(Var);
-        if (!FU) return;
-        // TODO Assume Load instruction immeditately follows.
-        if (auto * Ptr = dyn_cast<LoadInst>(FU->getNextNode())) {
-          if (Ptr->getOperand(0) == FU)
-          VarUsePoints.push_back(const_cast<LoadInst *>(FU));
-        }
-      });
-  return VarUsePoints;
+void addPrefetchCallForPointers(Function *F, Stats & stat) {
+  auto AnnotatedVars = detectExpPtrVars(F);
+  auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
+  for_each(VarUsePoints,
+      [&] (auto & VarUse) { insertLLVMPrefetchIntrinsic(F, VarUse); });
+
+  stat.AnnotatedVarsSize = AnnotatedVars.size();
+  stat.VarUsePointsSize = VarUsePoints.size();
 }
 
 bool LoopSplitter::run() {
-  auto AnnotatedVars = detectExpPtrVars(F);
-
-  auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
-
-  for_each(VarUsePoints,
-      [&] (auto & VarUse) { insertLLVMPrefetchIntrinsic(F, VarUse); });
-  
-  stat = Stats(AnnotatedVars.size(), VarUsePoints.size());
+  Stats stat;
+  addPrefetchCallForPointers(F, stat);
 
   return true;
 }

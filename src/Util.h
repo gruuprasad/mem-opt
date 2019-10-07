@@ -44,6 +44,10 @@ unsigned getTypeSizeInBits(llvm::Type * Ty);
 
 llvm::SmallVector<llvm::Value *, 4> detectExpPtrVars(llvm::Function * F);
 
+
+llvm::SmallVector<llvm::LoadInst *, 4>
+detectExpPtrUses(llvm::SmallVectorImpl<llvm::Value *> & AnnotatedVars);
+
 void detectBatchParameters(llvm::Function * F,
                           llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);
 
