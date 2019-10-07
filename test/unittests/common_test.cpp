@@ -77,8 +77,7 @@ TEST_CASE("detect expensive variables") {
   {
     // Function with two expensive variables
     auto F = M->getFunction("test_fn6");
-    SmallVector<Value *, 4> ExpensiveVars;
-    detectExpPtrVars(F, ExpensiveVars);
+    auto ExpensiveVars = detectExpPtrVars(F);
     REQUIRE(ExpensiveVars.size() == 2);
   }
 }

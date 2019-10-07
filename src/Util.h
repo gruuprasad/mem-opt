@@ -35,16 +35,14 @@ void setAnnotationInFunctionObject(llvm::Module * M);
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L,
                           llvm::ValueToValueMapTy & VMap);
 
-void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I,
-                                 llvm::Value * PtrVal);
+void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I);
 
 void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To,
                          llvm::BasicBlock * BB);
 
 unsigned getTypeSizeInBits(llvm::Type * Ty);
 
-void detectExpPtrVars(llvm::Function * F,
-                      llvm::SmallVectorImpl<llvm::Value *> & ExpensivePointers);
+llvm::SmallVector<llvm::Value *, 4> detectExpPtrVars(llvm::Function * F);
 
 void detectBatchParameters(llvm::Function * F,
                           llvm::SmallPtrSet<llvm::Value *, 4> & BatchParameters);

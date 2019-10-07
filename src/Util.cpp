@@ -64,7 +64,8 @@ void getAnnotatedFnList(Module * M, map<Function *, string> & FnList) {
   }
 }
 
-void detectExpPtrVars(Function * F, SmallVectorImpl<Value *> & ExpensivePointers) {
+SmallVector<Value *, 4> detectExpPtrVars(Function * F) {
+  SmallVector<Value *, 4> ExpensivePointers;
   auto varAnnotationIntrinsic = Function::lookupIntrinsicID("llvm.var.annotation");
   // XXX Checking only entry basic block for annotated variables.
   for (auto & I : F->front()) {
@@ -86,6 +87,8 @@ void detectExpPtrVars(Function * F, SmallVectorImpl<Value *> & ExpensivePointers
                            cast<BitCastInst>(CI->getArgOperand(0))->getOperand(0));
     }
   }
+
+  return ExpensivePointers;
 }
 
 Instruction * findBatchBeginMarkerInstruction(Function * F) {
@@ -178,14 +181,10 @@ void cloneLoopBasicBlocks(Function * F, Loop * L, ValueToValueMapTy & VMap) {
   LoopTerminator->setSuccessor(1, ClonedBlocks.front());
 }
 
-// Insert Prefetch instruction BEFORE the instruction I.
-void insertLLVMPrefetchIntrinsic(Function * F, Instruction * I, Value * PtrVal) {
-  // Set prefetch instruction insertion point.
-  IRBuilder<> Builder(F->getContext());
-  Builder.SetInsertPoint(I->getPrevNode());
-
-  // Cast pointer value to i8* type
-  auto CastI = Builder.CreateBitCast(PtrVal, Builder.getInt8PtrTy(), "TAS-inst1");
+void insertLLVMPrefetchIntrinsic(Function * F, Instruction * PtrAllocaUse) {
+  IRBuilder<> Builder(PtrAllocaUse);
+  auto Ptr = Builder.CreateLoad(PtrAllocaUse->getOperand(0), "prefetch_load");
+  auto CastI = Builder.CreateBitCast(Ptr, Builder.getInt8PtrTy(), "prefetch1");
 
   // Add llvm prefetch intrinsic call.
   Type *I32 = Type::getInt32Ty(F->getContext());
