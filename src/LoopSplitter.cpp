@@ -18,9 +18,15 @@ namespace tas {
 bool LoopSplitter::run() {
   SmallVector<Value *, 4> AnnotatedVars;
   detectExpPtrVars(F, AnnotatedVars);
-  errs() << "No of annotated variables = " << AnnotatedVars.size() << "\n";
 
-  auto FU = findFirstUseOfValueInInstType<LoadInst>(AnnotatedVars.front());
+  SmallVector<const LoadInst *, 4> VarUsePoints;
+  for_each(AnnotatedVars, [&]
+      (const auto & Var) { 
+        auto FU = findFirstUseOfValueInInstType<LoadInst>(Var);
+        if (FU) VarUsePoints.push_back(FU);
+      });
+
+  stat = Stats(AnnotatedVars.size(), VarUsePoints.size());
 
   return true;
 }

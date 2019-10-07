@@ -63,4 +63,8 @@ TEST_CASE("fn with single loop") {
 
   LoopSplitter LS(F, &LI);
   LS.run();
+  
+  auto Stats = LS.getStats();
+  REQUIRE(Stats.AnnotatedVarsSize == 1);
+  REQUIRE(Stats.VarUsePointsSize == 1);
 }

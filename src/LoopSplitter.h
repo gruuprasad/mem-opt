@@ -19,15 +19,29 @@ namespace tas {
 class TASForLoop;
 llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
 
+struct Stats {
+  unsigned AnnotatedVarsSize;
+  unsigned VarUsePointsSize;
+
+  Stats() = default;
+  Stats(unsigned A, unsigned V) :
+    AnnotatedVarsSize(A), VarUsePointsSize(V) {}
+  Stats(const Stats & o) = default;
+};
+
 class LoopSplitter {
   llvm::Function * F;
   llvm::LoopInfo * LI;
+  Stats stat;
+
+  // Statistics
 
   public:
   LoopSplitter(llvm::Function * F_, llvm::LoopInfo * LI_)
     : F(F_), LI(LI_) {}
 
   bool run();
+  Stats & getStats() { return stat; }
 };
 
 } // tas namespace
