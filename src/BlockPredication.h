@@ -28,6 +28,8 @@ class BlockPredication {
   void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & MaskIDMap);
   void setBlocksSuccessors(std::deque<llvm::BasicBlock *> & PredicateBlocks);
   void insertPredicateBlocks();
+  void movePhiNodeToPredicateBlock(llvm::BasicBlock * PredBB,
+                                   llvm::BasicBlock * ActionBB);
   void setPredBlockSuccessors(std::deque<llvm::BasicBlock *> & PredBlocks,
                                     std::deque<llvm::BasicBlock *> & ActionBlocks);
 

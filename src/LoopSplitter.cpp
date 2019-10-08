@@ -15,7 +15,7 @@ using namespace llvm;
 
 namespace tas {
 
-void addPrefetchCallForPointers(Function *F, Stats & stat) {
+bool addPrefetchCallForPointers(Function *F, Stats & stat) {
   auto AnnotatedVars = detectExpPtrVars(F);
   auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
   for_each(VarUsePoints,

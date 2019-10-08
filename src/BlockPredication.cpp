@@ -54,7 +54,34 @@ void BlockPredication::linearizeControlFlow() {
   setBlocksSuccessors(PredicateBlocks);
 
   setPredBlockSuccessors(PredicateBlocks, ActionBlocks);
+
+  assert (PredicateBlocks.size() == ActionBlocks.size());
+
+  for (int i = 0; i < ActionBlocks.size(); ++i) {
+    movePhiNodeToPredicateBlock(PredicateBlocks[i], ActionBlocks[i]);
+  }
 }
+
+void BlockPredication::movePhiNodeToPredicateBlock(BasicBlock * PredBB,
+                                                   BasicBlock * ActionBB) {
+  for (auto I = ActionBB->begin(); isa<PHINode>(I);) {
+    auto * PN = cast<PHINode>(I);
+    Builder.SetInsertPoint(&PredBB->front());
+    auto PredPhi = Builder.CreatePHI(PN->getType(), 2);
+    auto BB = pred_begin(PredBB);
+    PredPhi->addIncoming(PN->getIncomingValue(0), *BB);
+    ++BB;
+    PredPhi->addIncoming(PN->getIncomingValue(1), *BB);
+
+    ++I;
+    Builder.SetInsertPoint(&ActionBB->front());
+    auto NewPhi = Builder.CreatePHI(PredPhi->getType(), 1);
+    NewPhi->addIncoming(PredPhi, PredBB);
+    PN->replaceAllUsesWith(NewPhi);
+    PN->removeFromParent();
+  }
+}
+
 
 void BlockPredication::setPathIDCondition(BranchInst * BI,
                                           BlockToIntMapType & MaskIDMap) {
@@ -94,7 +121,7 @@ void BlockPredication::insertPredicateBlocks() {
   for (int i = 0; i < ActionBlocks.size(); ++i) {
     auto PB = BasicBlock::Create(F->getContext(),
         string("predicate_") + std::to_string(i), F, ActionBlocks[i]);
-    ActionBlocks[i]->replaceAllUsesWith(PB);
+    //ActionBlocks[i]->replaceAllUsesWith(PB);
     PredicateBlocks.push_back(PB);
   }
 }
