@@ -79,15 +79,12 @@ void BlockPredication::setPathIDCondition(BranchInst * BI,
 }
 
 void BlockPredication::setBlocksSuccessors(deque<BasicBlock *> & PredicateBlocks) {
-  BranchInst * BI;
-
-  BI = cast<BranchInst>(F->getEntryBlock().getTerminator());
+  BranchInst * BI = cast<BranchInst>(F->getEntryBlock().getTerminator());
   BranchInst::Create(PredicateBlocks.front(), BI);
   BI->eraseFromParent();
 
   for (int i = 0; i < ActionBlocks.size() - 1; ++i) {
-    //errs() << i << "  ";
-    auto BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
+    BI = cast<BranchInst>(ActionBlocks[i]->getTerminator());
     BranchInst::Create(PredicateBlocks[i+1], BI);
     BI->eraseFromParent();
   }
@@ -105,7 +102,7 @@ void BlockPredication::insertPredicateBlocks() {
 // control flow: PredicateBlock --True--> ActionBlock.
 // control flow: PredicateBlock[i]---[False]--> PredicateBlock[i+1]
 void BlockPredication::setPredBlockSuccessors(deque<BasicBlock *> & PredBlocks,
-                                                    deque<BasicBlock *> & ActionBlocks) {
+                                              deque<BasicBlock *> & ActionBlocks) {
   auto MaskIDMap = PPA.getBlockPathCondition();
   for (auto i = 0; i < PredBlocks.size() - 1; ++i) {
     Builder.SetInsertPoint(PredBlocks[i]);
