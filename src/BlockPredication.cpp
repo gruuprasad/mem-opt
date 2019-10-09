@@ -69,8 +69,7 @@ void BlockPredication::movePhiNodeToPredicateBlock(BasicBlock * PredBB,
     Builder.SetInsertPoint(&PredBB->front());
     auto PredPhi = Builder.CreatePHI(PN->getType(), 2);
     auto BB = pred_begin(PredBB);
-    PredPhi->addIncoming(PN->getIncomingValue(0), *BB);
-    ++BB;
+    PredPhi->addIncoming(PN->getIncomingValue(0), *BB++);
     PredPhi->addIncoming(PN->getIncomingValue(1), *BB);
 
     ++I;
