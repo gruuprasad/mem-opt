@@ -1,0 +1,781 @@
+host ip: a00000a MAC: 19807f9b0398
+TAS ready
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =2617961  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21242148  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21243246  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21206736  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21239999  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21239971  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =22089406  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21241932  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21249086  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21237573  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21240472  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21237464  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21232671  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21236863  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21236989  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21239015  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21240098  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21237278  kdrops=0
+stats: drops=0 k_rexmit=0 ecn=0 acks=0
+flexnic_loadmon: status cores = 1   busy = 0  cycles =21236660  kdrops=0
+stats: drops=368 k_rexmit=368 ecn=0 acks=259998
+flexnic_loadmon: status cores = 1   busy = 20928323  cycles =20946687  kdrops=0
+stats: drops=1311 k_rexmit=1311 ecn=0 acks=1048392
+flexnic_loadmon: status cores = 1   busy = 20941627  cycles =20946187  kdrops=0
+stats: drops=2302 k_rexmit=2302 ecn=0 acks=1899644
+flexnic_loadmon: status cores = 1   busy = 20945042  cycles =20946811  kdrops=0
+stats: drops=3269 k_rexmit=3271 ecn=0 acks=2747781
+flexnic_loadmon: status cores = 1   busy = 20947850  cycles =20947489  kdrops=0
+stats: drops=4246 k_rexmit=4246 ecn=0 acks=3582377
+flexnic_loadmon: status cores = 1   busy = 20946041  cycles =20947772  kdrops=0
+stats: drops=5328 k_rexmit=5328 ecn=0 acks=4411228
+flexnic_loadmon: status cores = 1   busy = 20847197  cycles =20945050  kdrops=0
+stats: drops=6244 k_rexmit=6244 ecn=0 acks=5227733
+flexnic_loadmon: status cores = 1   busy = 20947308  cycles =20945582  kdrops=0
+stats: drops=7129 k_rexmit=7129 ecn=0 acks=6058565
+flexnic_loadmon: status cores = 1   busy = 20946051  cycles =20947095  kdrops=0
+stats: drops=8055 k_rexmit=8055 ecn=0 acks=6907801
+flexnic_loadmon: status cores = 1   busy = 20944033  cycles =20945493  kdrops=0
+stats: drops=9071 k_rexmit=9071 ecn=0 acks=7746739
+flexnic_loadmon: status cores = 1   busy = 20945900  cycles =20946129  kdrops=0
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+dma_krx_pkt_fastpath: slow path because of flags (14)
+dma_krx_pkt_fastpath: slow path because of flags (14)
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
+tcp_packet: unexpected connection state 4
