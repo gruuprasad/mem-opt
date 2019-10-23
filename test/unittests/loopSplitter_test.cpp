@@ -64,4 +64,15 @@ TEST_CASE("fn with single loop") {
   auto Stats = LS.getStats();
   REQUIRE(Stats.AnnotatedVarsSize == 1);
   REQUIRE(Stats.VarUsePointsSize == 1);
+
+  //F->print(errs());
+  auto asmFile = writeToAsmFile(*M);
+  auto TestObject = generateObject(asmFile);
+
+  auto binary = linkObjects(vector<string>{TestObject}, string("loopSplitter_test11"));
+
+  // Run the binary
+  binary.insert(0, "./");
+  auto ret = system(binary.c_str());
+  REQUIRE(ret == 0);
 }

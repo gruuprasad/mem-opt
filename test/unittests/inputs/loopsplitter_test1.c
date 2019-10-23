@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #define EXPENSIVE __attribute__((annotate("expensive")))
 
@@ -32,7 +33,8 @@ int main() {
     int * in = (int *) malloc(sizeof(int) * N);
     int * ref_in = (int *) malloc(sizeof(int) * N);
     int ret = fn(in, N);
-    if (ret != fn_ref(ref_in, N))
+    int ret_ref = fn_ref(ref_in, N);
+    if (ret != ret_ref)
       rc--;
 
     free(in);

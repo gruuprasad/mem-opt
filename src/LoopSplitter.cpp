@@ -19,7 +19,7 @@ namespace tas {
 
 void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   auto TopHalf = SP->getParent();
-  auto BottomHalf = TopHalf->splitBasicBlock(SP->getNextNode());
+  auto BottomHalf = TopHalf->splitBasicBlock(SP);
 
   auto CollectBB = BasicBlock::Create(F->getContext(), "collector", F, BottomHalf);
   auto DistBB = BasicBlock::Create(F->getContext(), "distributor", F, BottomHalf);
@@ -37,7 +37,7 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
 
   Builder.SetInsertPoint(DistBB);
   auto IdxVal = Builder.CreateLoad(Idx);
-  auto IdxVal64 = Builder.CreateBitCast(IdxVal, Builder.getInt64Ty());
+  auto IdxVal64 = Builder.CreateSExtOrBitCast(IdxVal, Builder.getInt64Ty());
   auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
   auto BrVal = Builder.CreateLoad(BrValPtr);
   auto SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
@@ -53,18 +53,23 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
     auto Cond = TermI->getCondition();
 
     Builder.SetInsertPoint(TermI);
-    auto TgtBB = TermI->getSuccessor(1);
-    auto TgtBBVal = BBToId[TgtBB];
 
-    auto IdxVal64 = Builder.CreateBitCast(IdxVal, Builder.getInt64Ty());
+    auto FalseBB = TermI->getSuccessor(1);
+    auto TgtBBVal = Builder.CreateSelect(Cond,
+                                        BBToId[TermI->getSuccessor(0)],
+                                        BBToId[FalseBB]);
+
+    auto IdxVal = Builder.CreateLoad(Idx);
+    auto IdxVal64 = Builder.CreateSExtOrBitCast(IdxVal, Builder.getInt64Ty());
     auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
     Builder.CreateStore(TgtBBVal, BrValPtr);
     TermI->setSuccessor(1, CollectBB);
-    SwitchI->addCase(TgtBBVal, TgtBB);
+    SwitchI->addCase(BBToId[FalseBB], FalseBB);
   }
 }
 
-bool LoopSplitter::prepareForLoopSplit(Function *F, Stats & stat, Value * Idx) {
+bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
+  auto Idx = getLoopIndexVar(L0);
   auto AnnotatedVars = detectExpPtrVars(F);
   auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
 
@@ -77,11 +82,11 @@ bool LoopSplitter::prepareForLoopSplit(Function *F, Stats & stat, Value * Idx) {
     });
 
   for_each(VarUsePoints,
-      [&] (auto & VarUse) { addAdapterBasicBlocks(VarUse, Idx); });
-
-  for_each(VarUsePoints,
       [&] (auto & VarUse) { insertLLVMPrefetchIntrinsic(F, VarUse); });
 
+  for_each(VarUsePoints,
+      [&] (auto & VarUse) { addAdapterBasicBlocks(VarUse, Idx); });
+  
   stat.AnnotatedVarsSize = AnnotatedVars.size();
   stat.VarUsePointsSize = VarUsePoints.size();
   return VarUsePoints.size() != 0;
@@ -93,9 +98,8 @@ Value * getLoopTripCount(Loop * L0) {
   return cast<LoadInst>(cast<ICmpInst>(Cond)->getOperand(1))->getOperand(0);
 }
 
-void doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
+void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
   auto OldHeader = L0->getHeader();
-  auto ExitBlock = OldHeader->getTerminator()->getSuccessor(1);
   auto DistBB = SplitBlock->getUniqueSuccessor();
 
   BasicBlock * EntryBlock = nullptr;
@@ -104,13 +108,13 @@ void doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
       EntryBlock = BB;
   }
 
+  auto OldPreHeader = BasicBlock::Create(F->getContext(), "oldpreheader", F);
   auto NewPreHeader = BasicBlock::Create(F->getContext(), "preheader", F);
   auto NewHeader = BasicBlock::Create(F->getContext(), "header", F);
   auto NewLatch = BasicBlock::Create(F->getContext(), "latch", F);
 
   auto IndexVar = getLoopIndexVar(L0);
   auto TripCount = cast<AllocaInst>(getLoopTripCount(L0));
-  errs() << *IndexVar << "  " << *TripCount << "\n";
 
   IRBuilder<> Builder(NewPreHeader);
   Builder.CreateStore(Builder.getInt32(0), IndexVar);
@@ -126,12 +130,17 @@ void doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
   auto * icmp = Builder.CreateICmpSLT(IndexVarVal, TripCountVal,
                                       "loop-predicate");
   auto NewEntryBB = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
-  Builder.CreateCondBr(icmp, NewEntryBB, L0->getHeader());
+  Builder.CreateCondBr(icmp, NewEntryBB, OldPreHeader);
 
   SplitBlock->getTerminator()->setSuccessor(0, NewLatch);
   OldHeader->getTerminator()->setSuccessor(0, DistBB);
   OldHeader->getTerminator()->setSuccessor(1, ExitBlock);
   setSuccessor(EntryBlock, NewPreHeader);
+
+  Builder.SetInsertPoint(OldPreHeader);
+  errs() << *IndexVar << "\n";
+  Builder.CreateStore(Builder.getInt32(0), IndexVar);
+  Builder.CreateBr(OldHeader);
 }
 
 bool LoopSplitter::run() {
@@ -140,15 +149,15 @@ bool LoopSplitter::run() {
 
   // XXX Assume only one loop for now.
   auto L0 = *LI->begin();
-  auto IndexVar = getLoopIndexVar(L0);
 
-  bool changed = prepareForLoopSplit(F, stat, IndexVar);
+  ExitBlock = L0->getExitBlock();
+  assert (ExitBlock && "Loop must have a single exit block!");
+
+  bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
   auto & SplitBB = LoopSplitEdgeBlocks.front();
-  //doLoopSplit(F, L0, SplitBB);
-
-  F->print(errs());
+  doLoopSplit(F, L0, SplitBB);
 
   return true;
 }

@@ -32,7 +32,6 @@ string generateIR(string InFile, string Input_dir, bool isTas = false) {
 
     string GenerateIRCmd = string("clang ") + tags + string("-o") +
                            Input_dir + OutFile + " " + Input_dir + InFile;
-    cout << GenerateIRCmd << "\n";
     auto ret = system(GenerateIRCmd.c_str());
     if (ret != 0) {
       cerr << "clang:IR generation failed with error code " << ret << "\n";
