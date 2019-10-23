@@ -249,3 +249,32 @@ TEST_CASE("input parameter struct type") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+
+TEST_CASE("make fast_flows_packet fn as batched form") {
+  std::string filePrefix = "fast_flows";
+  auto M = parseIR(filePrefix + string(".ll"), input_dir);
+  REQUIRE(M != nullptr);
+  M->setSourceFileName(filePrefix + string("_batch.ll"));
+  {
+    std::string functionName = "fast_flows_packet";
+
+    // Function with 2 arguments and int return type.
+    auto F = M->getFunction(functionName);
+    REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+    REQUIRE(F->arg_size() == 5);
+    REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+    BatchMaker BM(F);
+    BM.run();
+
+    // Function with 4 arguments and void return type.
+    auto BF = M->getFunction(functionName + string("_batch"));
+    REQUIRE(BF != nullptr);
+    REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(BF->arg_size() == 7);
+  }
+
+  auto asmFile = writeToAsmFile(*M);
+  // Generate object for unit under test.
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
+}

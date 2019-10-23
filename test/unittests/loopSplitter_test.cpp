@@ -58,12 +58,9 @@ TEST_CASE("fn with single loop") {
   DominatorTree DT(*F);
   LoopInfo LI(DT);
 
-  errs() << "Loop details\n";
-  LI.print(errs());
-
   LoopSplitter LS(F, &LI);
   LS.run();
-  
+
   auto Stats = LS.getStats();
   REQUIRE(Stats.AnnotatedVarsSize == 1);
   REQUIRE(Stats.VarUsePointsSize == 1);

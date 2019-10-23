@@ -37,8 +37,6 @@
 #define TCP_MSS 1448
 #define TCP_MAX_RTT 100000
 
-#define HWXSUM_EN 1
-
 //#define SKIP_ACK 1
 
 struct flow_key {
@@ -707,6 +705,18 @@ int fast_flows_bump(struct dataplane_context *ctx, uint32_t flow_id,
 
   tx_avail = fs->tx_avail + tx_bump;
 
+  /* validate tx bump */
+  if (tx_bump > fs->tx_len || tx_avail > fs->tx_len ||
+      tx_avail + fs->tx_sent > fs->tx_len)
+  {
+    fprintf(stderr, "fast_flows_bump: tx bump too large\n");
+    goto unlock;
+  }
+  /* validate rx bump */
+  if (rx_bump > fs->rx_len || rx_bump + fs->rx_avail > fs->tx_len) {
+    fprintf(stderr, "fast_flows_bump: rx bump too large\n");
+    goto unlock;
+  }
   /* calculate how many bytes can be sent before and after this bump */
   old_avail = tcp_txavail(fs, NULL);
   new_avail = tcp_txavail(fs, &tx_avail);
@@ -1010,6 +1020,8 @@ static void flow_reset_retransmit(struct flextcp_pl_flowst *fs)
     x = fs->tx_sent - fs->tx_next_pos;
     fs->tx_next_pos = fs->tx_len - x;
   }
+  fs->tx_avail += fs->tx_sent;
+  fs->rx_remote_avail += fs->tx_sent;
   fs->tx_sent = 0;
 
   /* cut rate by half if first drop in control interval */
@@ -1024,13 +1036,13 @@ static inline void tcp_checksums(struct network_buf_handle *nbh,
     struct pkt_tcp *p, beui32_t ip_s, beui32_t ip_d, uint16_t l3_paylen)
 {
   p->ip.chksum = 0;
-#ifdef HWXSUM_EN
-  p->tcp.chksum = tx_xsum_enable(nbh, &p->ip, ip_s, ip_d, l3_paylen);
-#else
-  p->tcp.chksum = 0;
-  p->ip.chksum = rte_ipv4_cksum((void *) &p->ip);
-  p->tcp.chksum = rte_ipv4_udptcp_cksum((void *) &p->ip, (void *) &p->tcp);
-#endif
+  if (config.fp_xsumoffload) {
+    p->tcp.chksum = tx_xsum_enable(nbh, &p->ip, ip_s, ip_d, l3_paylen);
+  } else {
+    p->tcp.chksum = 0;
+    p->ip.chksum = rte_ipv4_cksum((void *) &p->ip);
+    p->tcp.chksum = rte_ipv4_udptcp_cksum((void *) &p->ip, (void *) &p->tcp);
+  }
 }
 
 void fast_flows_kernelxsums(struct network_buf_handle *nbh,

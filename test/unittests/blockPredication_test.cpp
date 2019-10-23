@@ -171,7 +171,7 @@ TEST_CASE("fast_flows_packet") {
   BlockPredication BP(F);
   BP.run();
 
-  //auto asmFile = writeToAsmFile(*M);
+  auto asmFile = writeToAsmFile(*M);
 
   // Generate object for unit under test.
   auto TestObject = generateObject(writeToBitCodeFile(*M));
