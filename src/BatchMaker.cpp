@@ -27,6 +27,8 @@ using namespace llvm;
 
 namespace tas {
 
+// TODO Use return val array
+
 /// Old Function Prototype:
 ///    Ret Fn(Type1 A, Type2 B BATCH_ARG, Type3 C BATCH_ARG);
 /// BatchForm Fn Prototype:

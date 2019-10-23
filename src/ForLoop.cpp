@@ -9,24 +9,21 @@ using namespace llvm;
 namespace tas {
 
 TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
-    BasicBlock * Next, const std::string & Name, Function * F, llvm::Value * TC, AllocaInst * IP)
+    BasicBlock * Next, const std::string & Name, Function * F,
+    llvm::Value * TC, AllocaInst * IP)
   : F(F), Name (std::move(Name)), TripCount(TC), IdxVarPtr(IP)
 {
   addEmptyLoop(Ctx, Prev, Next);
 }
 
-void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock * Next) {
+void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev,
+                              BasicBlock * Next) {
   PreHeader = BasicBlock::Create(Ctx, Name + ".preheader", F, Next);
   Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
   Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
 
   // Update phi node edge if any
-  IRBuilder<> Builder(Next);
-  auto * PN = &*(Next->phis().begin());
-  if (PN)
-    PN->addIncoming(Builder.getInt32(0), Header);
-
-  Builder.SetInsertPoint(PreHeader);
+  IRBuilder<> Builder(PreHeader);
   Builder.CreateStore(Builder.getInt32(0), IdxVarPtr);
   Builder.CreateBr(Header);
 
@@ -38,7 +35,7 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev, BasicBlock *
   Builder.SetInsertPoint(Header);
   IndexVar = Builder.CreateLoad(IdxVarPtr);
   auto * icmp = Builder.CreateICmpSLT(IndexVar, TripCount, "loop-predicate");
-  
+
   // Stitch entry point in control flow.
   if (Prev) {
     if (Prev->getTerminator()->getNumOperands() == 3) 
@@ -57,7 +54,8 @@ void TASForLoop::setLoopBody(BasicBlock * BodyBB) {
   BodyBB->getTerminator()->setSuccessor(0, Latch);
 }
 
-void TASForLoop::setLoopBody(BasicBlock * EntryBB, BasicBlock * ExitingBB) {
+void TASForLoop::setLoopBody(BasicBlock * EntryBB,
+                             BasicBlock * ExitingBB) {
   EntryBody = EntryBB;
   ExitingBody = ExitingBB;
   Header->getTerminator()->setSuccessor(0, EntryBody);
