@@ -36,7 +36,9 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   //auto BrTargetAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
   Builder.SetInsertPoint(DistBB);
-  auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), Idx});
+  auto IdxVal = Builder.CreateLoad(Idx);
+  auto IdxVal64 = Builder.CreateBitCast(IdxVal, Builder.getInt64Ty());
+  auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
   auto BrVal = Builder.CreateLoad(BrValPtr);
   auto SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
 
@@ -54,7 +56,8 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
     auto TgtBB = TermI->getSuccessor(1);
     auto TgtBBVal = BBToId[TgtBB];
 
-    auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), Idx});
+    auto IdxVal64 = Builder.CreateBitCast(IdxVal, Builder.getInt64Ty());
+    auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
     Builder.CreateStore(TgtBBVal, BrValPtr);
     TermI->setSuccessor(1, CollectBB);
     SwitchI->addCase(TgtBBVal, TgtBB);
@@ -132,10 +135,8 @@ void doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
 }
 
 bool LoopSplitter::run() {
-
   // If no loops, we are done.
   if (LI->begin() == LI->end()) return false;
-
 
   // XXX Assume only one loop for now.
   auto L0 = *LI->begin();
@@ -145,7 +146,7 @@ bool LoopSplitter::run() {
   if (!changed) return false;
 
   auto & SplitBB = LoopSplitEdgeBlocks.front();
-  doLoopSplit(F, L0, SplitBB);
+  //doLoopSplit(F, L0, SplitBB);
 
   F->print(errs());
 
