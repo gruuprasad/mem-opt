@@ -33,19 +33,17 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   // and connect it to CollectBB, use switch Inst
   IRBuilder<> Builder(&F->getEntryBlock().front());
   auto BrTgtArray = createArray(F, Builder.getInt32Ty(), 32 /*XXX Max Batch size*/);
-  //auto BrTargetAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
   Builder.SetInsertPoint(DistBB);
   auto IdxVal = Builder.CreateLoad(Idx);
   auto IdxVal64 = Builder.CreateSExtOrBitCast(IdxVal, Builder.getInt64Ty());
   auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
   auto BrVal = Builder.CreateLoad(BrValPtr);
-  auto SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
+  SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
 
   // XXX We assume now CFG we have is the one after block
   // predication transformation.
   SmallVector<BasicBlock *, 4> DivergeBlocks;
-  SmallVector<std::pair<Value *, BasicBlock *>, 4> TargetBlocks;
   DivergeBlocks.push_back(TopHalf->getUniquePredecessor());
 
   for (auto & DivergeBB : DivergeBlocks) {
@@ -64,6 +62,9 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
     auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
     Builder.CreateStore(TgtBBVal, BrValPtr);
     TermI->setSuccessor(1, CollectBB);
+
+    
+    
     SwitchI->addCase(BBToId[FalseBB], FalseBB);
   }
 }
@@ -141,6 +142,15 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
   errs() << *IndexVar << "\n";
   Builder.CreateStore(Builder.getInt32(0), IndexVar);
   Builder.CreateBr(OldHeader);
+
+  // If FalseBB is terminating instruction, use latch block as target instead.
+  SmallVector<BasicBlock *, 4> Returns;
+  getReturnBlocks(F, Returns);
+  for (auto & Case : SwitchI->cases()) {
+    if (find(Returns, Case.getCaseSuccessor()) != Returns.end()) {
+      Case.setSuccessor(L0->getLoopLatch());
+    }
+  }
 }
 
 bool LoopSplitter::run() {

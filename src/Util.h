@@ -67,6 +67,10 @@ void setSuccessor(llvm::BasicBlock * BB, llvm::BasicBlock * SuccBB,
 
 void cloneBasicBlocksInto(llvm::Function * From, llvm::Function * To);
 
+
+void getReturnBlocks(llvm::Function * F,
+                     llvm::SmallVectorImpl<llvm::BasicBlock *> & Returns);
+
 void getReturnInstList(llvm::Function * F,
                        llvm::SmallVectorImpl<llvm::ReturnInst *> & Result);
 

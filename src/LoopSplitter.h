@@ -6,6 +6,7 @@
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
@@ -34,6 +35,7 @@ class LoopSplitter {
   llvm::Function * F;
   llvm::LoopInfo * LI;
   Stats stat;
+  llvm::SwitchInst * SwitchI;
 
   llvm::BasicBlock * ExitBlock;
   llvm::DenseMap<const llvm::BasicBlock *, llvm::ConstantInt *> BBToId;
