@@ -281,7 +281,7 @@ void fast_flows_packet_pfbufs(struct dataplane_context *ctx,
 
 /* Received packet */
 int fast_flows_packet(struct dataplane_context *ctx,
-    struct network_buf_handle *nbh BATCH_ARG, void *fsp BATCH_ARG, struct tcp_opts opts BATCH_ARG,
+    struct network_buf_handle *nbh BATCH_ARG, struct flextcp_pl_flowst *fsp BATCH_ARG, struct tcp_opts opts BATCH_ARG,
     uint32_t ts) TAS_BLOCK_PREDICATION
 {
   struct pkt_tcp *p;

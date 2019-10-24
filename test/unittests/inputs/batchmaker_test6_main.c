@@ -6,6 +6,18 @@ struct packet {
   int field2;
 };
 
+struct flow_group {
+  int p;
+  int q;
+};
+
+struct flow_state {
+  int a;
+  int b;
+  int c;
+  int d;
+  struct flow_group fg;
+};
 
 int struct_type_fn(struct packet a, int b);
 void struct_type_fn_batch(struct packet *, int *, int, int *);
@@ -13,6 +25,8 @@ void struct_type_multi_ret_fn(struct packet a, int b);
 void struct_type_multi_ret_fn_batch(struct packet *, int *, int);
 int struct_ptr_type_fn(struct packet *, int);
 void struct_ptr_type_fn_batch(struct packet **, int *, int, int *);
+int struct_ptr_flow_state(struct flow_state *);
+void struct_ptr_flow_state_batch(struct flow_state **, int, int *);
 
 int main() {
   int rc = 0;
@@ -70,6 +84,40 @@ int main() {
 
     for (int i = 0; i < batch_size; ++i) {
       if (aptr[i]->field1 != 1 && aptr[i]->field2 != 2) {
+        rc--; break;
+      }
+    }
+    for (int i = 0; i < batch_size; ++i) {
+      if (ret[i] != ret_batch[i]) {
+        rc--; break;
+      }
+    }
+  }
+
+  {
+    // struct_ptr_type_fn
+    // Check the flow state value set
+    const int batch_size = 4;
+    struct flow_state * aptr[batch_size];
+    for (int i = 0; i < batch_size; ++i) {
+      aptr[i] = (struct flow_state *) malloc(sizeof(struct flow_state));
+      aptr[i]->a = 0;
+      aptr[i]->b = 1;
+      aptr[i]->c = 2;
+      aptr[i]->d = 3;
+      aptr[i]->fg.p = 4;
+      aptr[i]->fg.q = 5;
+    }
+    int ret[batch_size] = { 0 };
+    int ret_batch[batch_size] = { 0 };
+
+    for (int i = 0; i < batch_size; ++i)
+      ret[i] = struct_ptr_flow_state(aptr[i]);
+
+    struct_ptr_flow_state_batch(aptr, batch_size, ret_batch);
+
+    for (int i = 0; i < batch_size; ++i) {
+      if (aptr[i]->a != 0 && aptr[i]->b != 1) {
         rc--; break;
       }
     }

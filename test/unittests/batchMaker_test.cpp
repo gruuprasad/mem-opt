@@ -235,6 +235,25 @@ TEST_CASE("input parameter struct type") {
     REQUIRE(BF->arg_size() == 4);
   }
 
+  {
+    std::string functionName = "struct_ptr_flow_state";
+
+    // Function with 1 argument and int return type.
+    auto F = M->getFunction(functionName);
+    REQUIRE(F->getReturnType() == Type::getInt32Ty(C));
+    REQUIRE(F->arg_size() == 1);
+    REQUIRE(M->getFunction(functionName + string("_batch")) == nullptr);
+
+    BatchMaker BM(F);
+    BM.run();
+
+    // Function with 4 arguments and void return type.
+    auto BF = M->getFunction(functionName + string("_batch"));
+    REQUIRE(BF != nullptr);
+    REQUIRE(BF->getReturnType() == Type::getVoidTy(C));
+    REQUIRE(BF->arg_size() == 3);
+  }
+
   writeToAsmFile(*M);
 
   // MainObject contains checks to verify the correctness of transformation.
