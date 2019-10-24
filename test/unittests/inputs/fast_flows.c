@@ -281,7 +281,7 @@ void fast_flows_packet_pfbufs(struct dataplane_context *ctx,
 
 /* Received packet */
 int fast_flows_packet(struct dataplane_context *ctx,
-    struct network_buf_handle *nbh BATCH_ARG, void *fsp BATCH_ARG, struct tcp_opts *opts BATCH_ARG,
+    struct network_buf_handle *nbh BATCH_ARG, void *fsp BATCH_ARG, struct tcp_opts opts BATCH_ARG,
     uint32_t ts) TAS_BLOCK_PREDICATION
 {
   struct pkt_tcp *p;
@@ -493,11 +493,11 @@ int fast_flows_packet(struct dataplane_context *ctx,
 #endif
 
   /* update rtt estimate */
-  fs->tx_next_ts = f_beui32(opts->ts->ts_val);
+  fs->tx_next_ts = f_beui32(opts.ts->ts_val);
   if (LIKELY((TCPH_FLAGS(&p->tcp) & TCP_ACK) == TCP_ACK &&
-      f_beui32(opts->ts->ts_ecr) != 0))
+      f_beui32(opts.ts->ts_ecr) != 0))
   {
-    rtt = ts - f_beui32(opts->ts->ts_ecr);
+    rtt = ts - f_beui32(opts.ts->ts_ecr);
     if (rtt < TCP_MAX_RTT) {
       if (LIKELY(fs->rtt_est != 0)) {
         fs->rtt_est = (fs->rtt_est * 7 + rtt) / 8;
@@ -635,7 +635,7 @@ unlock:
   /* if we need to send an ack, also send packet to TX pipeline to do so */
   if (trigger_ack) {
     flow_tx_ack(ctx, fs->tx_next_seq, fs->rx_next_seq, fs->rx_avail,
-        fs->tx_next_ts, ts, nbh, opts->ts);
+        fs->tx_next_ts, ts, nbh, opts.ts);
   }
 
   fs_unlock(fs);

@@ -70,7 +70,7 @@ int main() {
 
     for (int i = 0; i < batch_size; ++i) {
       if (aptr[i]->field1 != 1 && aptr[i]->field2 != 2) {
-        rc--; return rc;
+        rc--; break;
       }
     }
     for (int i = 0; i < batch_size; ++i) {

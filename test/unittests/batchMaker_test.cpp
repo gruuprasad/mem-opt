@@ -252,7 +252,7 @@ TEST_CASE("input parameter struct type") {
 
 TEST_CASE("make fast_flows_packet fn as batched form") {
   std::string filePrefix = "fast_flows";
-  auto M = parseIR(filePrefix + string(".ll"), input_dir);
+  auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir, true), input_dir);
   REQUIRE(M != nullptr);
   M->setSourceFileName(filePrefix + string("_batch.ll"));
   {
