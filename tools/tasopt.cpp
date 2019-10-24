@@ -1,4 +1,4 @@
-//#include <llvm/Analysis/LoopInfo.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/AsmParser/Parser.h>
 #include <llvm/IR/Dominators.h>
 #include <llvm/IR/Function.h>
@@ -12,7 +12,9 @@
 #include <llvm/Support/Debug.h>
 #include <llvm/Support/SourceMgr.h>
 
+#include "BatchMaker.h"
 #include "BlockPredication.h"
+#include "LoopSplitter.h"
 #include "ToolUtil.h"
 #include "Util.h"
 
@@ -38,35 +40,44 @@ cl::opt<unsigned> CacheLineSize ("cacheline-size",
 LLVMContext Ctx;
 SMDiagnostic Err;
 
+static unique_ptr<Module> parseIR(string Filename, string FileDir) {
+  std::unique_ptr<Module> M (parseIRFile(FileDir + Filename,  Err, Ctx));
+  if (!M)
+    Err.print("Error parsing IR: ", errs());
+  return M;
+}
+
 int main(int argc, char * argv[]) {
   cl::ParseCommandLineOptions(argc, argv);
 
-  Module * M = nullptr;
-  if (!SrcFile.empty()) {
-    auto OutFile = tas::generateIR(SrcFile);
-    if (OutFile.empty()) {
-      errs() << "Error reading source file.\n";
-      Err.print(argv[0], errs());
-      return -1;
-    }
-    M = parseIRFile(OutFile, Err, Ctx).get();
-
-    if (!M) {
-      errs() << "Error reading IR file.\n";
-      Err.print(argv[0], errs());
-      return -1;
-    }
-  } else {
+  if (SrcFile.empty()) {
     errs() << "Source file is not given\n";
+    Err.print(argv[0], errs());
+    return -1;
+  }
+  auto OutFile = tas::generateIR(SrcFile, "", true);
+  if (OutFile.empty()) {
+    errs() << "Error reading source file.\n";
+    Err.print(argv[0], errs());
+    return -1;
+  }
+  auto M = parseIR(OutFile, "");
+
+  if (!M) {
+    errs() << "Error reading IR file.\n";
     Err.print(argv[0], errs());
     return -1;
   }
 
   map<Function *, string> FnLists;
-  tas::getAnnotatedFnList(M, FnLists);
+  tas::getAnnotatedFnList(M.get(), FnLists);
+
+  errs() << "number of annotated functions = " << FnLists.size() << "\n";
 
   for (auto & FnStr : FnLists) {
-    if (FnStr.second.compare("tas_batch_maker") != 0) continue;
+    if (FnStr.second.compare("tas_block_predicate") != 0) continue;
+    // Block Predication
+    errs() << "Running block predication on " << FnStr.second << "\n";
     tas::BlockPredication BP(FnStr.first);
     auto res = BP.run();
     if (!res) {
@@ -74,7 +85,20 @@ int main(int argc, char * argv[]) {
       Err.print(argv[0], errs());
       return -1;
     }
+
+    // Make Batch version
+    tas::BatchMaker BM(FnStr.first);
+    auto BatchFunc = BM.run();
+
+    // Loop Splitting
+    DominatorTree DT(*BatchFunc);
+    LoopInfo LI(DT);
+    tas::LoopSplitter LS(BatchFunc, &LI);
+    res = LS.run();
+    errs() << res << "\n";
   }
 
+  writeToAsmFile(*M);
+  auto TestObject = generateObject(writeToBitCodeFile(*M));
   return 0;
 }

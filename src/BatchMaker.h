@@ -54,7 +54,7 @@ class BatchMaker {
     NonBatchFunc(F_), BatchFunc(nullptr),
     Builder(NonBatchFunc->getContext()) {}
 
-  bool run();
+  llvm::Function * run();
 }; // tas namespace
 
 }

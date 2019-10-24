@@ -34,7 +34,9 @@ bool TASBatchMaker::runOnModule(Module &M) {
   for (auto & FnStr : AnnotatedFnList) {
     if (FnStr.second.compare("tas_batch_maker") != 0) continue;
     tas::BatchMaker BM(FnStr.first);
-    changed |= BM.run();
+    auto BatchF = BM.run();
+    if (!BatchF)
+      changed = true;
   }
   return changed;
 }

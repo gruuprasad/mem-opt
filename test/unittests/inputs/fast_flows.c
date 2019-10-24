@@ -37,6 +37,9 @@
 #define TCP_MSS 1448
 #define TCP_MAX_RTT 100000
 
+#define TAS_BLOCK_PREDICATION __attribute__((annotate("tas_block_predicate")))
+#define BATCH_ARG __attribute__((annotate("batch_arg")))
+#define EXPENSIVE __attribute__((annotate("expensive")))
 //#define SKIP_ACK 1
 
 struct flow_key {
@@ -274,21 +277,31 @@ void fast_flows_packet_pfbufs(struct dataplane_context *ctx,
   }
 }
 
+#define TAS_BATCH_START int TAS_batch_start __attribute__((annotate("batch_begin")));
+
 /* Received packet */
 int fast_flows_packet(struct dataplane_context *ctx,
-    struct network_buf_handle *nbh, void *fsp, struct tcp_opts *opts,
-    uint32_t ts)
+    struct network_buf_handle *nbh BATCH_ARG, void *fsp BATCH_ARG, struct tcp_opts *opts BATCH_ARG,
+    uint32_t ts) TAS_BLOCK_PREDICATION
 {
-  struct pkt_tcp *p = network_buf_bufoff(nbh);
-  struct flextcp_pl_flowst *fs = fsp;
+  struct pkt_tcp *p;
+  struct flextcp_pl_flowst *fs EXPENSIVE;
   uint32_t payload_bytes, payload_off, seq, ack, old_avail, new_avail,
            orig_payload;
   uint8_t *payload;
-  uint32_t rx_bump = 0, tx_bump = 0, rx_pos, rtt;
-  int no_permanent_sp = 0;
+  uint32_t rx_bump, tx_bump, rx_pos, rtt;
+  int no_permanent_sp;
   uint16_t tcp_extra_hlen, trim_start, trim_end;
-  uint16_t flow_id = fs - fp_state->flowst;
-  int trigger_ack = 0, fin_bump = 0;
+  uint16_t flow_id;
+  int trigger_ack, fin_bump;
+
+  TAS_BATCH_START
+  p = network_buf_bufoff(nbh);
+  fs = fsp;
+  rx_bump = 0, tx_bump = 0;
+  no_permanent_sp = 0;
+  flow_id = fs - fp_state->flowst;
+  trigger_ack = 0, fin_bump = 0;
 
   tcp_extra_hlen = (TCPH_HDRLEN(&p->tcp) - 5) * 4;
   payload_off = sizeof(*p) + tcp_extra_hlen;

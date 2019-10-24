@@ -235,10 +235,10 @@ void BatchMaker::doBatchTransform() {
   addBatchLoop(RetBlock, IdxPtr);
 }
 
-bool BatchMaker::run() {
+Function * BatchMaker::run() {
   detectBatchParameters(NonBatchFunc, ArgsToBatch);
   doBatchTransform();
-  return true;
+  return BatchFunc;
 }
 
 } // tas namespace

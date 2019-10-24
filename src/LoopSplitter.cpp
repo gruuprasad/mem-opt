@@ -62,9 +62,6 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
     auto BrValPtr = Builder.CreateGEP(BrTgtArray, {Builder.getInt64(0), IdxVal64});
     Builder.CreateStore(TgtBBVal, BrValPtr);
     TermI->setSuccessor(1, CollectBB);
-
-    
-    
     SwitchI->addCase(BBToId[FalseBB], FalseBB);
   }
 }
@@ -72,6 +69,7 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
 bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
   auto Idx = getLoopIndexVar(L0);
   auto AnnotatedVars = detectExpPtrVars(F);
+  errs() << "AnnotatedVars = " << AnnotatedVars.size() << "  " << *AnnotatedVars.front() << "\n";
   auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
 
   // Add unique id to each basic block
@@ -163,10 +161,12 @@ bool LoopSplitter::run() {
   ExitBlock = L0->getExitBlock();
   assert (ExitBlock && "Loop must have a single exit block!");
 
+  errs() << "Running prepareForLoopSplit\n";
   bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
   auto & SplitBB = LoopSplitEdgeBlocks.front();
+  errs() << "running  doLoopSplit\n";
   doLoopSplit(F, L0, SplitBB);
 
   return true;
