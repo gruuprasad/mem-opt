@@ -166,8 +166,8 @@ bool LoopSplitter::run() {
   bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
-  auto & SplitBB = LoopSplitEdgeBlocks.front();
-  errs() << "running  doLoopSplit\n";
+  //auto & SplitBB = LoopSplitEdgeBlocks.front();
+  //errs() << "running  doLoopSplit\n";
   //doLoopSplit(F, L0, SplitBB);
 
   return true;
