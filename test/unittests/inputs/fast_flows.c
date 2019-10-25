@@ -303,6 +303,9 @@ int fast_flows_packet(struct dataplane_context *ctx,
   flow_id = fs - fp_state->flowst;
   trigger_ack = 0, fin_bump = 0;
 
+  if (fs == NULL)
+    return -1;
+
   tcp_extra_hlen = (TCPH_HDRLEN(&p->tcp) - 5) * 4;
   payload_off = sizeof(*p) + tcp_extra_hlen;
   payload_bytes =

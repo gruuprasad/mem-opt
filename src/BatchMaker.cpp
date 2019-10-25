@@ -79,7 +79,6 @@ void BatchMaker::createBatchedFormFnPrototype(vector<TASArgAttr> & BatchFuncArgL
 void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncArgList,
                                                 AllocaInst * IdxPtr) {
   auto EntryBB = &BatchFunc->front();
-  Builder.SetInsertPoint(&EntryBB->front());
 
   SmallVector<Value *, 4> BatchArgs;
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
@@ -87,6 +86,7 @@ void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncAr
       if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
 
   for (auto & BatchArg : BatchArgs) {
+    Builder.SetInsertPoint(&EntryBB->front());
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
     auto StoreI = findFirstUseInStoreInst(BatchArg);
 
