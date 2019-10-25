@@ -96,7 +96,7 @@ bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
 Value * getLoopTripCount(Loop * L0) {
   auto Header = L0->getHeader();
   auto Cond = cast<BranchInst>(Header->getTerminator())->getCondition();
-  return cast<LoadInst>(cast<ICmpInst>(Cond)->getOperand(1))->getOperand(0);
+  return cast<ICmpInst>(Cond)->getOperand(1);
 }
 
 void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
@@ -115,7 +115,7 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
   auto NewLatch = BasicBlock::Create(F->getContext(), "latch", F);
 
   auto IndexVar = getLoopIndexVar(L0);
-  auto TripCount = cast<AllocaInst>(getLoopTripCount(L0));
+  auto TripCount = getLoopTripCount(L0);
 
   IRBuilder<> Builder(NewPreHeader);
   Builder.CreateStore(Builder.getInt32(0), IndexVar);
@@ -127,8 +127,7 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
 
   Builder.SetInsertPoint(NewHeader);
   auto IndexVarVal = Builder.CreateLoad(IndexVar);
-  auto TripCountVal = Builder.CreateLoad(TripCount);
-  auto * icmp = Builder.CreateICmpSLT(IndexVarVal, TripCountVal,
+  auto * icmp = Builder.CreateICmpSLT(IndexVarVal, TripCount,
                                       "loop-predicate");
   auto NewEntryBB = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
   Builder.CreateCondBr(icmp, NewEntryBB, OldPreHeader);
@@ -169,7 +168,7 @@ bool LoopSplitter::run() {
 
   auto & SplitBB = LoopSplitEdgeBlocks.front();
   errs() << "running  doLoopSplit\n";
-  doLoopSplit(F, L0, SplitBB);
+  //doLoopSplit(F, L0, SplitBB);
 
   return true;
 }
