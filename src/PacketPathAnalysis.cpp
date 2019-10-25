@@ -32,15 +32,6 @@ void PacketPathAnalysis::calculate() {
       BlockToMaskID[*B] = ++MaskIDCounter;
     }
 
-    // Create new mask id for each successor block.
-    // Paths diverge from BB
-    if (SuccSize > 1) {
-      for (auto * SuccBB : successors(*B)) {
-        BlockToMaskID[SuccBB] = ++MaskIDCounter;
-      }
-      continue;
-    }
-
     if (SuccSize == 1) {
       if (PredSize == 1) {
         BlockToMaskID[*succ_begin(*B)] = MaskIDCounter;
@@ -48,6 +39,15 @@ void PacketPathAnalysis::calculate() {
         // Paths converge hence successor gets new mask id.  
         BlockToMaskID[*succ_begin(*B)] = ++MaskIDCounter;
       }
+    }
+
+    // Create new mask id for each successor block.
+    // Paths diverge from BB
+    if (SuccSize > 1) {
+      for (auto * SuccBB : successors(*B)) {
+        BlockToMaskID[SuccBB] = ++MaskIDCounter;
+      }
+      continue;
     }
   }
 }
