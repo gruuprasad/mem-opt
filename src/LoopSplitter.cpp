@@ -66,6 +66,8 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   }
 }
 
+
+
 bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
   auto Idx = getLoopIndexVar(L0);
   auto AnnotatedVars = detectExpPtrVars(F);

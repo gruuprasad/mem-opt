@@ -91,17 +91,33 @@ SmallVector<Value *, 4> detectExpPtrVars(Function * F) {
   return ExpensivePointers;
 }
 
+const LoadInst * findEarliestPointerDerefInstruction(Value * V) {
+  const LoadInst * LU = nullptr;
+  auto matchLoadPattern = [&] (const auto * U)
+  {
+    if (llvm::isa<LoadInst>(U)) {
+      auto NextI = cast<LoadInst>(U)->getNextNode();
+      if (isa<llvm::GetElementPtrInst>(NextI) && NextI->getOperand(0) == U) {
+        LU = cast<LoadInst>(U);
+      } else if (isa<LoadInst>(NextI) && NextI->getOperand(0) == U) {
+        LU = cast<LoadInst>(U);
+      }
+    }
+  };
+
+  for_each(V->users(), matchLoadPattern);
+  return LU;
+}
+
 SmallVector<LoadInst *, 4> detectExpPtrUses(SmallVectorImpl<Value *> & AnnotatedVars) {
   SmallVector<LoadInst *, 4> VarUsePoints;
+  
   for_each(AnnotatedVars, [&]
       (const auto & Var) { 
-        auto FU = findFirstUseOfValueInInstType<LoadInst>(Var);
+        auto FU = findEarliestPointerDerefInstruction(Var);
+        errs() << *FU << "\n";
         if (!FU) return;
-        // TODO Assume Load instruction immeditately follows.
-        if (auto * Ptr = dyn_cast<LoadInst>(FU->getNextNode())) {
-          if (Ptr->getOperand(0) == FU)
-          VarUsePoints.push_back(const_cast<LoadInst *>(FU));
-        }
+        VarUsePoints.push_back(const_cast<LoadInst *>(FU));
       });
   return VarUsePoints;
 }

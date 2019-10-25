@@ -105,7 +105,12 @@ auto findFirstUseOfValueInInstType(llvm::Value * V) {
   return LU;
 }
 
+
+
 llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
+
+
+const llvm::LoadInst * findEarliestPointerDerefInstruction(llvm::Value * V);
 
 } // namespace tas
 
