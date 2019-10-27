@@ -41,6 +41,7 @@ class LoopSplitter {
   llvm::DenseMap<const llvm::BasicBlock *, llvm::ConstantInt *> BBToId;
   llvm::SmallVector<llvm::BasicBlock *, 4> LoopSplitEdgeBlocks;
   bool prepareForLoopSplit(llvm::Function * F, llvm::Loop * L0, Stats & stat);
+  void fixValueDependenceBetWeenLoops();
 public:
   LoopSplitter(llvm::Function * F_, llvm::LoopInfo * LI_)
     : F(F_), LI(LI_) {}

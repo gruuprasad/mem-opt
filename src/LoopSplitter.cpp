@@ -66,8 +66,6 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   }
 }
 
-
-
 bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
   auto Idx = getLoopIndexVar(L0);
   auto AnnotatedVars = detectExpPtrVars(F);
@@ -97,6 +95,15 @@ Value * getLoopTripCount(Loop * L0) {
   auto Header = L0->getHeader();
   auto Cond = cast<BranchInst>(Header->getTerminator())->getCondition();
   return cast<ICmpInst>(Cond)->getOperand(1);
+}
+
+void visitSuccessor(DenseSet<BasicBlock *> & Blocks, BasicBlock * CurBlock,
+                    BasicBlock * EndBlock) {
+  for (auto * BB : successors(CurBlock)){
+    if (BB == EndBlock) return;
+    Blocks.insert(BB);
+    visitSuccessor(Blocks, BB, EndBlock);
+  }
 }
 
 void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
@@ -150,6 +157,37 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
       Case.setSuccessor(L0->getLoopLatch());
     }
   }
+
+  DenseSet<BasicBlock *> Blocks;
+  auto TruePathBB = NewHeader->getTerminator()->getSuccessor(0);
+  visitSuccessor(Blocks, TruePathBB, NewLatch);
+
+  auto BB = Blocks.begin();
+  auto BE = Blocks.end();
+  auto IB = (*BB)->begin();
+  auto IE = (*BB)->end();
+  while (BB != BE) {
+    while (IB != IE) {
+      auto UB = (*IB).user_begin();
+      auto UE = (*IB).user_end();
+      while (UB != UE) {
+        auto * U = *UB++;
+        if (auto * Inst = dyn_cast<Instruction>(U)) {
+          if (Blocks.find(Inst->getParent()) == Blocks.end()) {
+            auto arrayPtr = createArray(F, (*IB).getType(), 32);
+
+            Builder.SetInsertPoint((*IB).getNextNode());
+            IndexVarVal = Builder.CreateLoad(IndexVar);
+            auto ptr = Builder.CreateGEP(arrayPtr, {Builder.getInt64(0), IndexVarVal});
+            auto str = Builder.CreateStore(&*IB, ptr);
+            errs() << *ptr << "\n" << *str << "\n"; 
+          }
+        }
+      }
+      ++IB;
+    }
+    ++BB;
+  }
 }
 
 bool LoopSplitter::run() {
@@ -166,9 +204,8 @@ bool LoopSplitter::run() {
   bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
-  //auto & SplitBB = LoopSplitEdgeBlocks.front();
-  //errs() << "running  doLoopSplit\n";
-  //doLoopSplit(F, L0, SplitBB);
+  auto & SplitBB = LoopSplitEdgeBlocks.front();
+  doLoopSplit(F, L0, SplitBB);
 
   return true;
 }
