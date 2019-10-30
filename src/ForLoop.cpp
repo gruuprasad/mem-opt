@@ -22,7 +22,6 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev,
   Header = BasicBlock::Create(Ctx, Name + ".header", F, Next);
   Latch = BasicBlock::Create(Ctx, Name + ".latch", F, Next);
 
-  // Update phi node edge if any
   IRBuilder<> Builder(PreHeader);
   Builder.CreateStore(Builder.getInt32(0), IdxVarPtr);
   Builder.CreateBr(Header);

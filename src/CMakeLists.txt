@@ -3,6 +3,7 @@ add_library(tasopt_src
             BlockPredication.cpp
             CacheUsageInfo.cpp
             ForLoop.cpp
+            ForLoopV2.cpp
             LoopSplitter.cpp
             PacketPathAnalysis.cpp
             ToolUtil.cpp

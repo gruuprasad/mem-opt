@@ -44,7 +44,6 @@ unsigned getTypeSizeInBits(llvm::Type * Ty);
 
 llvm::SmallVector<llvm::Value *, 4> detectExpPtrVars(llvm::Function * F);
 
-
 llvm::SmallVector<llvm::LoadInst *, 4>
 detectExpPtrUses(llvm::SmallVectorImpl<llvm::Value *> & AnnotatedVars);
 
@@ -105,12 +104,17 @@ auto findFirstUseOfValueInInstType(llvm::Value * V) {
   return LU;
 }
 
-
-
 llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
 
-
 const llvm::LoadInst * findEarliestPointerDerefInstruction(llvm::Value * V);
+
+void visitSuccessor(llvm::SmallVectorImpl<llvm::BasicBlock *> & Blocks,
+                    llvm::BasicBlock * CurBlock,
+                    llvm::BasicBlock * EndBlock);
+
+llvm::Value * getLoopTripCount(llvm::Loop * L0);
+
+llvm::BasicBlock * getPreLoopBlock(llvm::Loop * L);
 
 } // namespace tas
 

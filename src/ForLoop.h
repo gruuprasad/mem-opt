@@ -35,10 +35,6 @@ public:
   void setLoopBody(llvm::BasicBlock * BodyBB);
   void setLoopBody(llvm::BasicBlock * EntryBB, llvm::BasicBlock * ExitingBB);
 
-  llvm::BasicBlock * getLatchBlock() {
-    return Latch;
-  }
-
   llvm::BasicBlock * getLatch() {
     return Latch;
   }
@@ -51,10 +47,6 @@ public:
     return IndexVar;
   }
 
-  llvm::Value * getIndexVariable64Bit() {
-    return IndexVar;
-  }
-
   llvm::BasicBlock * getBody() {
     if (EntryBody != ExitingBody)
       return nullptr;
@@ -63,6 +55,10 @@ public:
 
   static unsigned getLoopTripCount() {
     return BATCH_SIZE;
+  }
+
+  llvm::Value * getLoopTripCountValue() {
+    return TripCount;
   }
 };
 

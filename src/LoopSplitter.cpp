@@ -1,5 +1,6 @@
 #include "LoopSplitter.h"
 #include "ForLoop.h"
+#include "ForLoopV2.h"
 #include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
@@ -17,7 +18,7 @@ using namespace llvm;
 
 namespace tas {
 
-void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
+void LoopSplitter::addAdapterBasicBlocks(Loop * L, Instruction * SP, Value * Idx) {
   auto TopHalf = SP->getParent();
   auto BottomHalf = TopHalf->splitBasicBlock(SP);
 
@@ -41,10 +42,24 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
   auto BrVal = Builder.CreateLoad(BrValPtr);
   SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
 
-  // XXX We assume now CFG we have is the one after block
-  // predication transformation.
+  // Handle diverge blocks
+  auto OldHeader = L->getHeader();
+  auto OldEntry = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
+
+  SmallVector<BasicBlock *, 4> TopBlocks;
+  SmallVector<BasicBlock *, 4> BottomBlocks;
+  LoopBodyTraverser LBT (L);
+  LBT.traverse(TopBlocks, OldEntry, DistBB);
+  LBT.traverse(BottomBlocks, DistBB, L->getLoopLatch());
+
   SmallVector<BasicBlock *, 4> DivergeBlocks;
-  DivergeBlocks.push_back(TopHalf->getUniquePredecessor());
+  for (auto & BB : TopBlocks) {
+    for (auto * Succ : successors(BB)) {
+      Succ->printAsOperand(errs());
+      if (std::find(BottomBlocks.begin(), BottomBlocks.end(), Succ) != BottomBlocks.end())
+        DivergeBlocks.push_back(BB);
+    }
+  }
 
   for (auto & DivergeBB : DivergeBlocks) {
     auto TermI = cast<BranchInst>(DivergeBB->getTerminator());
@@ -69,86 +84,58 @@ void LoopSplitter::addAdapterBasicBlocks(Instruction * SP, Value * Idx) {
 bool LoopSplitter::prepareForLoopSplit(Function *F, Loop * L0, Stats & stat) {
   auto Idx = getLoopIndexVar(L0);
   auto AnnotatedVars = detectExpPtrVars(F);
-  errs() << "AnnotatedVars = " << AnnotatedVars.size() << "  " << *AnnotatedVars.front() << "\n";
   auto VarUsePoints = detectExpPtrUses(AnnotatedVars);
 
   // Add unique id to each basic block
   unsigned i = 0;
   IRBuilder<> Builder(F->getContext());
-  for_each(*F,
-      [&] (const auto & BB) {
-      BBToId.insert(std::make_pair(&BB, Builder.getInt32(++i)));
-    });
+  auto SetIntValForBB = [&] (const auto & BB) {
+                        BBToId.insert(std::make_pair(&BB, Builder.getInt32(++i)));
+  };
+  for_each(*F, SetIntValForBB);
 
   for_each(VarUsePoints,
       [&] (auto & VarUse) { insertLLVMPrefetchIntrinsic(F, VarUse); });
 
   for_each(VarUsePoints,
-      [&] (auto & VarUse) { addAdapterBasicBlocks(VarUse, Idx); });
+      [&] (auto & VarUse) { addAdapterBasicBlocks(L0, VarUse, Idx); });
   
   stat.AnnotatedVarsSize = AnnotatedVars.size();
   stat.VarUsePointsSize = VarUsePoints.size();
   return VarUsePoints.size() != 0;
 }
 
-Value * getLoopTripCount(Loop * L0) {
-  auto Header = L0->getHeader();
-  auto Cond = cast<BranchInst>(Header->getTerminator())->getCondition();
-  return cast<ICmpInst>(Cond)->getOperand(1);
-}
-
-void visitSuccessor(DenseSet<BasicBlock *> & Blocks, BasicBlock * CurBlock,
-                    BasicBlock * EndBlock) {
-  for (auto * BB : successors(CurBlock)){
-    if (BB == EndBlock) return;
-    Blocks.insert(BB);
-    visitSuccessor(Blocks, BB, EndBlock);
-  }
-}
-
 void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock) {
   auto OldHeader = L0->getHeader();
-  auto DistBB = SplitBlock->getUniqueSuccessor();
+  auto OldEntry = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
+  auto PreLoopBB = getPreLoopBlock(L0);
+  auto PostLoopBB = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(1);
+  auto MidBlock = SplitBlock->getUniqueSuccessor();
 
-  BasicBlock * EntryBlock = nullptr;
-  for (auto BB : predecessors(OldHeader)) {
-    if (BB != L0->getLoopLatch())
-      EntryBlock = BB;
-  }
+  auto LBT = LoopBodyTraverser(L0);
 
-  auto OldPreHeader = BasicBlock::Create(F->getContext(), "oldpreheader", F);
-  auto NewPreHeader = BasicBlock::Create(F->getContext(), "preheader", F);
-  auto NewHeader = BasicBlock::Create(F->getContext(), "header", F);
-  auto NewLatch = BasicBlock::Create(F->getContext(), "latch", F);
+  // Collect Blocks in range [OldEntry, MidBlock)
+  SmallVector<BasicBlock *, 4> TopLoopBlocks;
+  LBT.traverse(TopLoopBlocks, OldEntry, MidBlock);
 
-  auto IndexVar = getLoopIndexVar(L0);
-  auto TripCount = getLoopTripCount(L0);
+  // Collect Blocks in range [MidBlock, Latch)
+  SmallVector<BasicBlock *, 4> BottomLoopBlocks;
+  LBT.traverse(BottomLoopBlocks, MidBlock, L0->getLoopLatch());
 
-  IRBuilder<> Builder(NewPreHeader);
-  Builder.CreateStore(Builder.getInt32(0), IndexVar);
-  Builder.CreateBr(NewHeader);
+  auto BottomLoop = IRLoop();
+  BottomLoop.extractLoopSkeleton(L0);
 
-  Builder.SetInsertPoint(NewLatch);
-  auto BI = Builder.CreateBr(NewHeader);
-  addIncrementIndexOp(IndexVar, BI);
+  auto TopLoop = IRLoop();
+  TopLoop.constructEmptyLoop(getLoopTripCount(L0), BottomLoop.getHeader());
 
-  Builder.SetInsertPoint(NewHeader);
-  auto IndexVarVal = Builder.CreateLoad(IndexVar);
-  auto * icmp = Builder.CreateICmpSLT(IndexVarVal, TripCount,
-                                      "loop-predicate");
-  auto NewEntryBB = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
-  Builder.CreateCondBr(icmp, NewEntryBB, OldPreHeader);
+  TopLoop.setLoopBlocks(TopLoopBlocks);
+  BottomLoop.setLoopBlocks(BottomLoopBlocks);
 
-  SplitBlock->getTerminator()->setSuccessor(0, NewLatch);
-  OldHeader->getTerminator()->setSuccessor(0, DistBB);
-  OldHeader->getTerminator()->setSuccessor(1, ExitBlock);
-  setSuccessor(EntryBlock, NewPreHeader);
+  setSuccessor(PreLoopBB, TopLoop.getPreHeader());
+  setSuccessor(TopLoop.getHeader(), BottomLoop.getHeader(), 1); 
+  setSuccessor(BottomLoop.getHeader(), PostLoopBB, 1);
 
-  Builder.SetInsertPoint(OldPreHeader);
-  errs() << *IndexVar << "\n";
-  Builder.CreateStore(Builder.getInt32(0), IndexVar);
-  Builder.CreateBr(OldHeader);
-
+  /*
   // If FalseBB is terminating instruction, use latch block as target instead.
   SmallVector<BasicBlock *, 4> Returns;
   getReturnBlocks(F, Returns);
@@ -157,7 +144,10 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
       Case.setSuccessor(L0->getLoopLatch());
     }
   }
+  */
+}
 
+/*
   DenseSet<BasicBlock *> Blocks;
   auto TruePathBB = NewHeader->getTerminator()->getSuccessor(0);
   visitSuccessor(Blocks, TruePathBB, NewLatch);
@@ -189,6 +179,7 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
     ++BB;
   }
 }
+*/
 
 bool LoopSplitter::run() {
   // If no loops, we are done.
@@ -200,12 +191,23 @@ bool LoopSplitter::run() {
   ExitBlock = L0->getExitBlock();
   assert (ExitBlock && "Loop must have a single exit block!");
 
-  errs() << "Running prepareForLoopSplit\n";
+  auto ParentLoop = IRLoop();
+  ParentLoop.analyze(L0);
+
   bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
+//  F->print(errs());
+
+  DominatorTree DT (*F);
+  LoopInfo NewLI (DT);
+  L0 = *NewLI.begin();
+  if (NewLI.begin() == NewLI.end()) {
+    errs() << "Loop info lost, something wrong with preparation\n";
+    return false;
+  }
   auto & SplitBB = LoopSplitEdgeBlocks.front();
-  doLoopSplit(F, L0, SplitBB);
+//  doLoopSplit(F, L0, SplitBB);
 
   return true;
 }

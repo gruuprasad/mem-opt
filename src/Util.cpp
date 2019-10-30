@@ -37,7 +37,7 @@ namespace tas {
 // Annotation list structure in IR: stored as array of struct
 // ConstantArray : [Size x struct]
 // struct def: [Function  ptr, GlobalVariable ptr, GlobalVariable ptr, i32]
-// @llvm.global.annotations = [N x {i8*, i8*, i8*, i32}]
+// @llvm.global.annotations = [N x {i8*, i8*, *, i32}]
 // N - number of global annotations in a module
 // Struct members details:
 // i8* - Function pointer
@@ -257,8 +257,6 @@ unsigned getTypeSizeInBits(Type * Ty) {
   return Total;
 }
 
-
-
 Value * createArray(Function * F, Type * Ty, unsigned size) {
   // Allocate temporary array
   IRBuilder<> Builder (F->getContext());
@@ -289,7 +287,6 @@ unsigned getGEPIndex(const GetElementPtrInst * GEP) {
   }
   return FieldIdx;
 }
-
 
 StoreInst * findFirstUseInStoreInst(Value * V) {
   // User list is inverted, first user is at the end of the list.
@@ -472,6 +469,33 @@ AllocaInst * getLoopIndexVar(Loop * L) {
 
   Index = cast<AllocaInst>(cast<LoadInst>(It->getOperand(0))->getOperand(0));
   return Index;
+}
+
+void visitSuccessor(SmallVectorImpl<BasicBlock *> & Blocks, BasicBlock * StartBlock,
+                    BasicBlock * EndBlock) {
+  for (auto * BB : successors(StartBlock)){
+    if (BB == EndBlock) return;
+    Blocks.push_back(BB);
+    visitSuccessor(Blocks, BB, EndBlock);
+  }
+}
+
+Value * getLoopTripCount(Loop * L0) {
+  auto Header = L0->getHeader();
+  auto Cond = cast<BranchInst>(Header->getTerminator())->getCondition();
+  return cast<ICmpInst>(Cond)->getOperand(1);
+}
+
+BasicBlock * getPreLoopBlock(Loop * L) {
+  BasicBlock * PreLoopBB = L->getLoopPreheader();
+  if (!PreLoopBB) {
+    for (auto * BB : predecessors(L->getHeader())) {
+      if (BB == L->getLoopLatch()) continue;
+      if (L->contains(BB)) continue;
+      PreLoopBB = BB;
+    }
+  }
+  return PreLoopBB;
 }
 
 } // namespace tas
