@@ -23,10 +23,10 @@ public:
   IRLoop() = default;
 
   void analyze(llvm::Loop * L);
-  void constructEmptyLoop(llvm::Value * TripCount,
+  void constructEmptyLoop(llvm::AllocaInst * TripCount,
                           llvm::BasicBlock * InsertAfter);
   void extractLoopSkeleton(llvm::Loop * L);
-  void setLoopBlocks(llvm::SmallVectorImpl<llvm::BasicBlock *> & Blocks);
+  void setLoopBlocks(std::vector<llvm::BasicBlock *> & Blocks);
 
   llvm::BasicBlock * getPreHeader() {
     return PreHeader;
@@ -34,6 +34,16 @@ public:
 
   llvm::BasicBlock * getHeader() {
     return Header;
+  }
+
+  void printLooopInfo() {
+    llvm::errs() << "LoopInfo:";
+    Header->printAsOperand(llvm::errs());
+    llvm::errs() << "  ";
+    Latch->printAsOperand(llvm::errs());
+    llvm::errs() << "  ";
+    llvm::errs() << *IdxAlloca << "\n";
+    llvm::errs() << " No of Blocks = " << Blocks.size() << "\n";
   }
 };
 
@@ -45,7 +55,10 @@ public:
     L->getExitBlocks(ExitBlocks);
   }
 
-  void traverse(llvm::SmallVectorImpl<llvm::BasicBlock *> & Blocks,
+  void traverse(std::vector<llvm::BasicBlock *> & Blocks,
+                llvm::BasicBlock * Start, llvm::BasicBlock * End);
+
+  void traverseReverse(std::vector<llvm::BasicBlock *> & Blocks,
                 llvm::BasicBlock * Start, llvm::BasicBlock * End);
 
   void printExitBlocks() {

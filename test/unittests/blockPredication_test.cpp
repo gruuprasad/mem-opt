@@ -167,7 +167,6 @@ TEST_CASE("fast_flows_packet") {
   REQUIRE(M != nullptr);
   auto F = M->getFunction("fast_flows_packet");
 
-  errs() << "Running block predication\n";
   BlockPredication BP(F);
   BP.run();
 

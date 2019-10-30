@@ -112,7 +112,7 @@ void visitSuccessor(llvm::SmallVectorImpl<llvm::BasicBlock *> & Blocks,
                     llvm::BasicBlock * CurBlock,
                     llvm::BasicBlock * EndBlock);
 
-llvm::Value * getLoopTripCount(llvm::Loop * L0);
+llvm::AllocaInst * getLoopTripCount(llvm::Loop * L0);
 
 llvm::BasicBlock * getPreLoopBlock(llvm::Loop * L);
 

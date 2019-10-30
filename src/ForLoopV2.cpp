@@ -23,7 +23,7 @@ void IRLoop::analyze(Loop * L) {
   }
 }
 
-void IRLoop::constructEmptyLoop(Value * TripCount, BasicBlock * ExitBlock) {
+void IRLoop::constructEmptyLoop(AllocaInst * TripCount, BasicBlock * ExitBlock) {
   auto & Ctx = ExitBlock->getContext();
   const auto & F = ExitBlock->getParent();
 
@@ -54,25 +54,37 @@ void IRLoop::constructEmptyLoop(Value * TripCount, BasicBlock * ExitBlock) {
   // Populate header block
   Builder.SetInsertPoint(Header);
   auto IdxVal = Builder.CreateLoad(IdxAlloca);
-  auto * Icmp = Builder.CreateICmpSLT(IdxVal, TripCount, "loop-predicate");
+  auto TC = Builder.CreateLoad(TripCount);
+  auto * Icmp = Builder.CreateICmpSLT(IdxVal, TC, "loop-predicate");
   Builder.CreateCondBr(Icmp, EmptyBody, ExitBlock);
 }
 
-void IRLoop::setLoopBlocks(SmallVectorImpl<BasicBlock *> & Blocks) {
-  for_each(Blocks, [&] (auto & BB) { Blocks.push_back(BB); });
+void IRLoop::setLoopBlocks(std::vector<BasicBlock *> & BlockList) {
+  for_each(BlockList, [&] (auto & BB) { Blocks.push_back(BB); });
   assert (!Blocks.empty() && "Blocks can't be empty");
   setSuccessor(Header, Blocks.front()); // True Path
   assert (Latch && "Latch is NULL");
   setSuccessor(Blocks.back(), Latch);
 }
 
-void LoopBodyTraverser::traverse(SmallVectorImpl<BasicBlock *> & Blocks,
+void LoopBodyTraverser::traverse(std::vector<BasicBlock *> & Blocks,
                                  BasicBlock * Start, BasicBlock * End) {
+  if (std::find(Blocks.begin(), Blocks.end(), Start) != Blocks.end()) return;
   if (Start == End) return;
   Blocks.push_back(Start);
   for (auto * BB : successors(Start)){
     // Don't travel out of loop
-    //if (std::find(ExitBlocks.begin(), ExitBlocks.end(), BB) != Blocks.end()) continue;
+    if (std::find(ExitBlocks.begin(), ExitBlocks.end(), BB) != ExitBlocks.end()) continue;
+    traverse(Blocks, BB, End);
+  }
+}
+
+void LoopBodyTraverser::traverseReverse(std::vector<BasicBlock *> & Blocks,
+                                 BasicBlock * Start, BasicBlock * End) {
+  if (std::find(Blocks.begin(), Blocks.end(), Start) != Blocks.end()) return;
+  if (Start == End) return;
+  Blocks.push_back(Start);
+  for (auto * BB : predecessors(Start)){
     traverse(Blocks, BB, End);
   }
 }

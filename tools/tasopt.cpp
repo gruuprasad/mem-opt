@@ -77,7 +77,6 @@ int main(int argc, char * argv[]) {
   for (auto & FnStr : FnLists) {
     if (FnStr.second.compare("tas_block_predicate") != 0) continue;
     // Block Predication
-    errs() << "Running block predication on " << FnStr.second << "\n";
     tas::BlockPredication BP(FnStr.first);
     auto res = BP.run();
     if (!res) {
@@ -90,6 +89,7 @@ int main(int argc, char * argv[]) {
     tas::BatchMaker BM(FnStr.first);
     auto BatchFunc = BM.run();
 
+    writeToAsmFile(*M);
     // Loop Splitting
     DominatorTree DT(*BatchFunc);
     LoopInfo LI(DT);

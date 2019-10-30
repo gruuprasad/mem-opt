@@ -40,6 +40,8 @@ class BatchMaker {
   bool IsRetTyVoid = false;
   std::string BatchSizeVarName = std::string("TAS_BatchSize");
   std::string ReturnVarName = std::string("TAS_ReturnVar");
+  unsigned BatchSizeArgPos;
+  llvm::AllocaInst * BatchSizeAlloca;
 
   void createBatchedFormFnPrototype(std::vector<TASArgAttr> & BatchFuncArgList);
   void addBatchLoop(llvm::BasicBlock * RetBlock, llvm::AllocaInst * IdxPtr);

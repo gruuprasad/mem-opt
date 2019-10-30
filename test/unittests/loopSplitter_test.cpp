@@ -61,9 +61,8 @@ TEST_CASE("fn with single loop") {
   LoopSplitter LS(F, &LI);
   LS.run();
 
-  auto Stats = LS.getStats();
-  REQUIRE(Stats.AnnotatedVarsSize == 1);
-  REQUIRE(Stats.VarUsePointsSize == 1);
+  REQUIRE(LS.getStats().AnnotatedVarsSize == 1);
+  REQUIRE(LS.getStats().VarUsePointsSize == 1);
 
   //F->print(errs());
   auto asmFile = writeToAsmFile(*M);
@@ -75,4 +74,25 @@ TEST_CASE("fn with single loop") {
   binary.insert(0, "./");
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
+}
+
+TEST_CASE("fast_flows_packet loop split") {
+  std::string filePrefix = "fast_flows";
+  auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir, true), input_dir);
+  REQUIRE(M != nullptr);
+  M->setSourceFileName(filePrefix + string("_batch.ll"));
+  {
+    std::string functionName = "fast_flows_packet";
+
+    auto F = M->getFunction(functionName);
+    DominatorTree DT(*F);
+    LoopInfo LI(DT);
+
+    LoopSplitter LS(F, &LI);
+    LS.run();
+
+    //F->print(errs());
+    auto asmFile = writeToAsmFile(*M);
+    auto TestObject = generateObject(asmFile);
+  }
 }

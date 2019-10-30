@@ -10,7 +10,7 @@ namespace tas {
 
 TASForLoop::TASForLoop(LLVMContext & Ctx, BasicBlock * Prev,
     BasicBlock * Next, const std::string & Name, Function * F,
-    llvm::Value * TC, AllocaInst * IP)
+    llvm::AllocaInst * TC, AllocaInst * IP)
   : F(F), Name (std::move(Name)), TripCount(TC), IdxVarPtr(IP)
 {
   addEmptyLoop(Ctx, Prev, Next);
@@ -32,8 +32,9 @@ void TASForLoop::addEmptyLoop(LLVMContext & Ctx, BasicBlock * Prev,
   addIncrementIndexOp(IdxVarPtr, BI);
 
   Builder.SetInsertPoint(Header);
+  auto TCVal = Builder.CreateLoad(TripCount);
   IndexVar = Builder.CreateLoad(IdxVarPtr);
-  auto * icmp = Builder.CreateICmpSLT(IndexVar, TripCount, "loop-predicate");
+  auto * icmp = Builder.CreateICmpSLT(IndexVar, TCVal, "loop-predicate");
 
   // Stitch entry point in control flow.
   if (Prev) {

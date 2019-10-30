@@ -115,7 +115,6 @@ SmallVector<LoadInst *, 4> detectExpPtrUses(SmallVectorImpl<Value *> & Annotated
   for_each(AnnotatedVars, [&]
       (const auto & Var) { 
         auto FU = findEarliestPointerDerefInstruction(Var);
-        errs() << *FU << "\n";
         if (!FU) return;
         VarUsePoints.push_back(const_cast<LoadInst *>(FU));
       });
@@ -480,10 +479,11 @@ void visitSuccessor(SmallVectorImpl<BasicBlock *> & Blocks, BasicBlock * StartBl
   }
 }
 
-Value * getLoopTripCount(Loop * L0) {
+AllocaInst * getLoopTripCount(Loop * L0) {
   auto Header = L0->getHeader();
   auto Cond = cast<BranchInst>(Header->getTerminator())->getCondition();
-  return cast<ICmpInst>(Cond)->getOperand(1);
+  auto TCVal = cast<ICmpInst>(Cond)->getOperand(1);
+  return cast<AllocaInst>(cast<LoadInst>(TCVal)->getOperand(0));
 }
 
 BasicBlock * getPreLoopBlock(Loop * L) {

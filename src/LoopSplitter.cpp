@@ -10,8 +10,10 @@
 #include <llvm/IR/IRBuilder.h>
 
 #include <iostream>
+#include <vector>
 #include <string>
 
+using namespace std;
 using namespace llvm;
 
 #define DEBUG_TYPE "tas-batch-process"
@@ -30,8 +32,6 @@ void LoopSplitter::addAdapterBasicBlocks(Loop * L, Instruction * SP, Value * Idx
   setSuccessor(CollectBB, DistBB);
   LoopSplitEdgeBlocks.push_back(CollectBB);
 
-  // General case: Find all edges from basic blocks above tophalf
-  // and connect it to CollectBB, use switch Inst
   IRBuilder<> Builder(&F->getEntryBlock().front());
   auto BrTgtArray = createArray(F, Builder.getInt32Ty(), 32 /*XXX Max Batch size*/);
 
@@ -42,23 +42,12 @@ void LoopSplitter::addAdapterBasicBlocks(Loop * L, Instruction * SP, Value * Idx
   auto BrVal = Builder.CreateLoad(BrValPtr);
   SwitchI = Builder.CreateSwitch(BrVal, BottomHalf);
 
-  // Handle diverge blocks
-  auto OldHeader = L->getHeader();
-  auto OldEntry = cast<BranchInst>(OldHeader->getTerminator())->getSuccessor(0);
-
-  SmallVector<BasicBlock *, 4> TopBlocks;
-  SmallVector<BasicBlock *, 4> BottomBlocks;
-  LoopBodyTraverser LBT (L);
-  LBT.traverse(TopBlocks, OldEntry, DistBB);
-  LBT.traverse(BottomBlocks, DistBB, L->getLoopLatch());
+  writeToAsmFile(*F->getParent());
 
   SmallVector<BasicBlock *, 4> DivergeBlocks;
-  for (auto & BB : TopBlocks) {
-    for (auto * Succ : successors(BB)) {
-      Succ->printAsOperand(errs());
-      if (std::find(BottomBlocks.begin(), BottomBlocks.end(), Succ) != BottomBlocks.end())
-        DivergeBlocks.push_back(BB);
-    }
+  auto DivergeBlock = TopHalf->getUniquePredecessor();
+  if (DivergeBlock != L->getHeader()) {
+    DivergeBlocks.push_back(DivergeBlock);
   }
 
   for (auto & DivergeBB : DivergeBlocks) {
@@ -115,24 +104,27 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
   auto LBT = LoopBodyTraverser(L0);
 
   // Collect Blocks in range [OldEntry, MidBlock)
-  SmallVector<BasicBlock *, 4> TopLoopBlocks;
+  vector<BasicBlock *> TopLoopBlocks;
   LBT.traverse(TopLoopBlocks, OldEntry, MidBlock);
 
   // Collect Blocks in range [MidBlock, Latch)
-  SmallVector<BasicBlock *, 4> BottomLoopBlocks;
+  vector<BasicBlock *> BottomLoopBlocks;
   LBT.traverse(BottomLoopBlocks, MidBlock, L0->getLoopLatch());
 
   auto BottomLoop = IRLoop();
   BottomLoop.extractLoopSkeleton(L0);
 
   auto TopLoop = IRLoop();
-  TopLoop.constructEmptyLoop(getLoopTripCount(L0), BottomLoop.getHeader());
+  TopLoop.constructEmptyLoop(getLoopTripCount(L0), PreLoopBB ? PreLoopBB : BottomLoop.getHeader());
 
   TopLoop.setLoopBlocks(TopLoopBlocks);
   BottomLoop.setLoopBlocks(BottomLoopBlocks);
 
   setSuccessor(PreLoopBB, TopLoop.getPreHeader());
-  setSuccessor(TopLoop.getHeader(), BottomLoop.getHeader(), 1); 
+  // TODO Setting index value to 0 when entering new loop.
+  BasicBlock * BLoopEntry = BottomLoop.getPreHeader() == &F->getEntryBlock() ?
+                            BottomLoop.getHeader() : BottomLoop.getPreHeader();
+  setSuccessor(TopLoop.getHeader(), BLoopEntry, 1); 
   setSuccessor(BottomLoop.getHeader(), PostLoopBB, 1);
 
   /*
@@ -197,8 +189,6 @@ bool LoopSplitter::run() {
   bool changed = prepareForLoopSplit(F, L0, stat);
   if (!changed) return false;
 
-//  F->print(errs());
-
   DominatorTree DT (*F);
   LoopInfo NewLI (DT);
   L0 = *NewLI.begin();
@@ -207,7 +197,10 @@ bool LoopSplitter::run() {
     return false;
   }
   auto & SplitBB = LoopSplitEdgeBlocks.front();
-//  doLoopSplit(F, L0, SplitBB);
+
+  doLoopSplit(F, L0, SplitBB);
+
+  assert(stat.AnnotatedVarsSize == 1 && "Atleast one annotation must be there!");
 
   return true;
 }

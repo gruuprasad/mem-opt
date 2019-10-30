@@ -45,6 +45,7 @@ void BatchMaker::createBatchedFormFnPrototype(vector<TASArgAttr> & BatchFuncArgL
   }
 
   // Batch size parameter
+  BatchSizeArgPos = i;
   BatchFuncArgList.emplace_back(
       TASArgAttr { false, i++, Type::getInt32Ty(Ctx), nullptr, BatchSizeVarName});
 
@@ -84,6 +85,10 @@ void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncAr
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
       [&] (TASArgAttr & Attr) {
       if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
+
+  Builder.SetInsertPoint(&EntryBB->front());
+  BatchSizeAlloca = Builder.CreateAlloca(BatchFuncArgList[BatchSizeArgPos].Ty);
+  Builder.CreateStore(BatchFuncArgList[BatchSizeArgPos].Val, BatchSizeAlloca);
 
   for (auto & BatchArg : BatchArgs) {
     Builder.SetInsertPoint(&EntryBB->front());
@@ -179,10 +184,8 @@ void BatchMaker::addBatchLoop(BasicBlock * RetBlock, AllocaInst * IdxPtr) {
              [&] (BasicBlock * BB) { setSuccessor(BB, UniqueExitingBlock); });
   }
 
-  auto BatchSizeVal = BatchFunc->getValueSymbolTable()->lookup(BatchSizeVarName);
-
   auto TL0 = TASForLoop(BatchFunc->getContext(), ParentBB, RetBlock,
-                        std::string("loop0"), BatchFunc, BatchSizeVal, IdxPtr);
+                        std::string("loop0"), BatchFunc, BatchSizeAlloca, IdxPtr);
 
   TL0.setLoopBody(BatchBB, UniqueExitingBlock);
 }

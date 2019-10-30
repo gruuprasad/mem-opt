@@ -29,7 +29,7 @@ public:
   explicit TASForLoop(llvm::LLVMContext & Ctx,
       llvm::BasicBlock * Prev, llvm::BasicBlock * Next,
       const std::string & Name, llvm::Function * F = nullptr,
-      llvm::Value * TC = nullptr, llvm::AllocaInst * IP = nullptr);
+      llvm::AllocaInst * TC = nullptr, llvm::AllocaInst * IP = nullptr);
 
   void addEmptyLoop(llvm::LLVMContext & Ctx, llvm::BasicBlock * Prev, llvm::BasicBlock * Next);
   void setLoopBody(llvm::BasicBlock * BodyBB);
