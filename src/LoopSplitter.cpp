@@ -126,18 +126,18 @@ void LoopSplitter::doLoopSplit(Function * F, Loop * L0, BasicBlock * SplitBlock)
                             BottomLoop.getHeader() : BottomLoop.getPreHeader();
   setSuccessor(TopLoop.getHeader(), BLoopEntry, 1); 
   setSuccessor(BottomLoop.getHeader(), PostLoopBB, 1);
-
-  /*
-  // If FalseBB is terminating instruction, use latch block as target instead.
-  SmallVector<BasicBlock *, 4> Returns;
-  getReturnBlocks(F, Returns);
-  for (auto & Case : SwitchI->cases()) {
-    if (find(Returns, Case.getCaseSuccessor()) != Returns.end()) {
-      Case.setSuccessor(L0->getLoopLatch());
-    }
-  }
-  */
 }
+
+/*
+// If FalseBB is terminating instruction, use latch block as target instead.
+SmallVector<BasicBlock *, 4> Returns;
+getReturnBlocks(F, Returns);
+for (auto & Case : SwitchI->cases()) {
+if (find(Returns, Case.getCaseSuccessor()) != Returns.end()) {
+Case.setSuccessor(L0->getLoopLatch());
+}
+}
+*/
 
 /*
   DenseSet<BasicBlock *> Blocks;

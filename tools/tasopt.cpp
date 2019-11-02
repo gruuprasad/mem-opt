@@ -28,6 +28,13 @@ using namespace std;
 using namespace llvm;
 using namespace tas;
 
+enum {
+  DoAll,
+  LinearizeCFG,
+  DoBatchProcess,
+  DoCacheOpt
+};
+
 cl::opt<string> SrcFile("c", cl::desc("c/c++ source file to analyze"),
                        cl::value_desc("filename"));
 
@@ -47,27 +54,31 @@ static unique_ptr<Module> parseIR(string Filename, string FileDir) {
   return M;
 }
 
-int main(int argc, char * argv[]) {
-  cl::ParseCommandLineOptions(argc, argv);
-
+unique_ptr<Module> parseInputFile(char * argv[]) {
   if (SrcFile.empty()) {
     errs() << "Source file is not given\n";
     Err.print(argv[0], errs());
-    return -1;
+    exit(EXIT_FAILURE);
   }
   auto OutFile = tas::generateIR(SrcFile, "", true);
   if (OutFile.empty()) {
     errs() << "Error reading source file.\n";
     Err.print(argv[0], errs());
-    return -1;
+    exit(EXIT_FAILURE);
   }
   auto M = parseIR(OutFile, "");
 
   if (!M) {
     errs() << "Error reading IR file.\n";
     Err.print(argv[0], errs());
-    return -1;
+    exit(EXIT_FAILURE);
   }
+  return M;
+}
+
+int main(int argc, char * argv[]) {
+  cl::ParseCommandLineOptions(argc, argv);
+  auto M = parseInputFile(argv);
 
   map<Function *, string> FnLists;
   tas::getAnnotatedFnList(M.get(), FnLists);
@@ -85,6 +96,7 @@ int main(int argc, char * argv[]) {
       return -1;
     }
 
+    /*
     // Make Batch version
     tas::BatchMaker BM(FnStr.first);
     auto BatchFunc = BM.run();
@@ -96,6 +108,7 @@ int main(int argc, char * argv[]) {
     tas::LoopSplitter LS(BatchFunc, &LI);
     res = LS.run();
     errs() << res << "\n";
+    */
   }
 
   writeToAsmFile(*M);

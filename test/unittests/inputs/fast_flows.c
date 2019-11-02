@@ -37,9 +37,6 @@
 #define TCP_MSS 1448
 #define TCP_MAX_RTT 100000
 
-#define TAS_BLOCK_PREDICATION __attribute__((annotate("tas_block_predicate")))
-#define BATCH_ARG __attribute__((annotate("batch_arg")))
-#define EXPENSIVE __attribute__((annotate("expensive")))
 //#define SKIP_ACK 1
 
 struct flow_key {
@@ -229,33 +226,30 @@ int fast_flows_qman_fwd(struct dataplane_context *ctx,
 }
 
 void fast_flows_packet_parse(struct dataplane_context *ctx,
-    struct network_buf_handle **nbhs, void **fss, struct tcp_opts *tos,
-    uint16_t n)
+    struct network_buf_handle **nbhs, void **fss, struct tcp_opts * tos)
 {
   struct pkt_tcp *p;
-  uint16_t i, len;
+  uint16_t len;
 
-  for (i = 0; i < n; i++) {
-    if (fss[i] == NULL)
-      continue;
+  if (fss[0] == NULL)
+    return;
 
-    p = network_buf_bufoff(nbhs[i]);
-    len = network_buf_len(nbhs[i]);
+  p = network_buf_bufoff(nbhs[0]);
+  len = network_buf_len(nbhs[0]);
 
-    int cond =
-        (len < sizeof(*p)) |
-        (f_beui16(p->eth.type) != ETH_TYPE_IP) |
-        (p->ip.proto != IP_PROTO_TCP) |
-        (IPH_V(&p->ip) != 4) |
-        (IPH_HL(&p->ip) != 5) |
-        (TCPH_HDRLEN(&p->tcp) < 5) |
-        (len < f_beui16(p->ip.len) + sizeof(p->eth)) |
-        (tcp_parse_options(p, len, &tos[i]) != 0) |
-        (tos[i].ts == NULL);
+  int cond =
+    (len < sizeof(*p)) |
+    (f_beui16(p->eth.type) != ETH_TYPE_IP) |
+    (p->ip.proto != IP_PROTO_TCP) |
+    (IPH_V(&p->ip) != 4) |
+    (IPH_HL(&p->ip) != 5) |
+    (TCPH_HDRLEN(&p->tcp) < 5) |
+    (len < f_beui16(p->ip.len) + sizeof(p->eth)) |
+    (tcp_parse_options(p, len, &tos[0]) != 0) |
+    (tos[0].ts == NULL);
 
-    if (cond)
-      fss[i] = NULL;
-  }
+  if (cond)
+    fss[0] = NULL;
 }
 
 void fast_flows_packet_pfbufs(struct dataplane_context *ctx,
@@ -277,34 +271,21 @@ void fast_flows_packet_pfbufs(struct dataplane_context *ctx,
   }
 }
 
-#define TAS_BATCH_START int TAS_batch_start __attribute__((annotate("batch_begin")));
-
 /* Received packet */
 int fast_flows_packet(struct dataplane_context *ctx,
-    struct network_buf_handle *nbh BATCH_ARG, struct flextcp_pl_flowst *fsp BATCH_ARG, struct tcp_opts opts BATCH_ARG,
-    uint32_t ts) TAS_BLOCK_PREDICATION
+    struct network_buf_handle *nbh, struct flextcp_pl_flowst *fsp, struct tcp_opts * opts,
+    uint32_t ts)
 {
-  struct pkt_tcp *p;
-  struct flextcp_pl_flowst *fs EXPENSIVE;
+  struct pkt_tcp *p = network_buf_bufoff(nbh);
+  struct flextcp_pl_flowst *fs = fsp;
   uint32_t payload_bytes, payload_off, seq, ack, old_avail, new_avail,
            orig_payload;
   uint8_t *payload;
-  uint32_t rx_bump, tx_bump, rx_pos, rtt;
-  int no_permanent_sp;
+  uint32_t rx_bump = 0, tx_bump = 0, rx_pos, rtt;
+  int no_permanent_sp = 0;
   uint16_t tcp_extra_hlen, trim_start, trim_end;
-  uint16_t flow_id;
-  int trigger_ack, fin_bump;
-
-  TAS_BATCH_START
-  p = network_buf_bufoff(nbh);
-  fs = fsp;
-  rx_bump = 0, tx_bump = 0;
-  no_permanent_sp = 0;
-  flow_id = fs - fp_state->flowst;
-  trigger_ack = 0, fin_bump = 0;
-
-  if (fs == NULL)
-    return -1;
+  uint16_t flow_id = fs - fp_state->flowst;
+  int trigger_ack = 0, fin_bump = 0;
 
   tcp_extra_hlen = (TCPH_HDRLEN(&p->tcp) - 5) * 4;
   payload_off = sizeof(*p) + tcp_extra_hlen;
@@ -496,11 +477,11 @@ int fast_flows_packet(struct dataplane_context *ctx,
 #endif
 
   /* update rtt estimate */
-  fs->tx_next_ts = f_beui32(opts.ts->ts_val);
+  fs->tx_next_ts = f_beui32(opts->ts->ts_val);
   if (LIKELY((TCPH_FLAGS(&p->tcp) & TCP_ACK) == TCP_ACK &&
-      f_beui32(opts.ts->ts_ecr) != 0))
+      f_beui32(opts->ts->ts_ecr) != 0))
   {
-    rtt = ts - f_beui32(opts.ts->ts_ecr);
+    rtt = ts - f_beui32(opts->ts->ts_ecr);
     if (rtt < TCP_MAX_RTT) {
       if (LIKELY(fs->rtt_est != 0)) {
         fs->rtt_est = (fs->rtt_est * 7 + rtt) / 8;
@@ -638,7 +619,7 @@ unlock:
   /* if we need to send an ack, also send packet to TX pipeline to do so */
   if (trigger_ack) {
     flow_tx_ack(ctx, fs->tx_next_seq, fs->rx_next_seq, fs->rx_avail,
-        fs->tx_next_ts, ts, nbh, opts.ts);
+        fs->tx_next_ts, ts, nbh, opts->ts);
   }
 
   fs_unlock(fs);
@@ -1075,9 +1056,8 @@ static inline uint32_t flow_hash(struct flow_key *k)
 }
 
 void fast_flows_packet_fss(struct dataplane_context *ctx,
-    struct network_buf_handle **nbhs, void **fss, uint16_t n)
+    struct network_buf_handle **nbhs, void **fss)
 {
-  uint32_t hashes[n];
   uint32_t h, k, j, eh, fid, ffid;
   uint16_t i;
   struct pkt_tcp *p;
@@ -1086,71 +1066,41 @@ void fast_flows_packet_fss(struct dataplane_context *ctx,
   struct flextcp_pl_flowst *fs;
 
   /* calculate hashes and prefetch hash table buckets */
-  for (i = 0; i < n; i++) {
-    p = network_buf_bufoff(nbhs[i]);
+  p = network_buf_bufoff(*nbhs);
 
-    key.local_ip = p->ip.dest;
-    key.remote_ip = p->ip.src;
-    key.local_port = p->tcp.dest;
-    key.remote_port = p->tcp.src;
-    h = flow_hash(&key);
-
-    rte_prefetch0(&fp_state->flowht[h % FLEXNIC_PL_FLOWHT_ENTRIES]);
-    rte_prefetch0(&fp_state->flowht[(h + 3) % FLEXNIC_PL_FLOWHT_ENTRIES]);
-    hashes[i] = h;
-  }
+  key.local_ip = p->ip.dest;
+  key.remote_ip = p->ip.src;
+  key.local_port = p->tcp.dest;
+  key.remote_port = p->tcp.src;
+  h = flow_hash(&key);
 
   /* prefetch flow state for buckets with matching hashes
    * (usually 1 per packet, except in case of collisions) */
-  for (i = 0; i < n; i++) {
-    h = hashes[i];
-    for (j = 0; j < FLEXNIC_PL_FLOWHT_NBSZ; j++) {
-      k = (h + j) % FLEXNIC_PL_FLOWHT_ENTRIES;
-      e = &fp_state->flowht[k];
+  for (j = 0; j < FLEXNIC_PL_FLOWHT_NBSZ; j++) {
+    k = (h + j) % FLEXNIC_PL_FLOWHT_ENTRIES;
+    e = &fp_state->flowht[k];
 
-      ffid = e->flow_id;
-      MEM_BARRIER();
-      eh = e->flow_hash;
+    ffid = e->flow_id;
+    MEM_BARRIER();
+    eh = e->flow_hash;
 
-      fid = ffid & ((1 << FLEXNIC_PL_FLOWHTE_POSSHIFT) - 1);
-      if ((ffid & FLEXNIC_PL_FLOWHTE_VALID) == 0 || eh != h) {
-        continue;
-      }
-
-      rte_prefetch0(&fp_state->flowst[fid]);
+    fid = ffid & ((1 << FLEXNIC_PL_FLOWHTE_POSSHIFT) - 1);
+    if ((ffid & FLEXNIC_PL_FLOWHTE_VALID) == 0 || eh != h) {
+      continue;
     }
   }
 
   /* finish hash table lookup by checking 5-tuple in flow state */
-  for (i = 0; i < n; i++) {
-    p = network_buf_bufoff(nbhs[i]);
-    fss[i] = NULL;
-    h = hashes[i];
+  *fss = NULL;
 
-    for (j = 0; j < FLEXNIC_PL_FLOWHT_NBSZ; j++) {
-      k = (h + j) % FLEXNIC_PL_FLOWHT_ENTRIES;
-      e = &fp_state->flowht[k];
-
-      ffid = e->flow_id;
-      MEM_BARRIER();
-      eh = e->flow_hash;
-
-      fid = ffid & ((1 << FLEXNIC_PL_FLOWHTE_POSSHIFT) - 1);
-      if ((ffid & FLEXNIC_PL_FLOWHTE_VALID) == 0 || eh != h) {
-        continue;
-      }
-
-      MEM_BARRIER();
-      fs = &fp_state->flowst[fid];
-      if ((fs->local_ip.x == p->ip.dest.x) &
-          (fs->remote_ip.x == p->ip.src.x) &
-          (fs->local_port.x == p->tcp.dest.x) &
-          (fs->remote_port.x == p->tcp.src.x))
-      {
-        rte_prefetch0((uint8_t *) fs + 64);
-        fss[i] = &fp_state->flowst[fid];
-        break;
-      }
-    }
+  MEM_BARRIER();
+  fs = &fp_state->flowst[fid];
+  if ((fs->local_ip.x == p->ip.dest.x) &
+      (fs->remote_ip.x == p->ip.src.x) &
+      (fs->local_port.x == p->tcp.dest.x) &
+      (fs->remote_port.x == p->tcp.src.x))
+  {
+    *fss = &fp_state->flowst[fid];
+    return;
   }
 }
