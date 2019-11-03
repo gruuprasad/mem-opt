@@ -154,7 +154,7 @@ void detectBatchParameters(Function * F, SmallPtrSet<Value *, 4> & BatchParamete
 
     // Check whether var.annotation or not
     auto * Callee = CI->getCalledFunction();
-    if (!Callee->isIntrinsic() ||
+    if (!Callee || !Callee->isIntrinsic() ||
         Callee->getIntrinsicID() != varAnnotationIntrinsic) continue;
 
     // Get annotation string literal
