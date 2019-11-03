@@ -2,7 +2,9 @@
 #include "Util.h"
 
 #include <llvm/ADT/PostOrderIterator.h>
+#include <llvm/IR/Dominators.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/Analysis/LoopInfo.h>
 
 #include <algorithm>
 #include <sstream>

@@ -21,10 +21,23 @@ struct TASArgAttr {
   llvm::Type * Ty;
   llvm::Argument * Val;
   std::string Name;
+  bool IsDoublePtr; // Only true when batched double pointer.
 
+private:
+  llvm::Type * setArgType(bool isBatch, llvm::Type * In) {
+    if (isBatch) {
+      IsDoublePtr = In->isPointerTy() && In->getContainedType(0)->isPointerTy();
+      if (IsDoublePtr) return In;
+      return llvm::PointerType::get(In, 0);
+    }
+    IsDoublePtr = false;
+    return In;
+  }
+
+public:
   TASArgAttr(bool b, int p, llvm::Type * t, llvm::Argument * v, std::string n) :
     Prefix("batch_"), IsBatch(b), PosIdx(p),
-    Ty(IsBatch ? llvm::PointerType::get(t, 0) : t),
+    Ty(setArgType(IsBatch, t)),
     Val(v),
     Name(IsBatch ? Prefix + std::to_string(p) : n) {}
 };

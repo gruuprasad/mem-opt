@@ -86,7 +86,7 @@ int main(int argc, char * argv[]) {
   errs() << "number of annotated functions = " << FnLists.size() << "\n";
 
   for (auto & FnStr : FnLists) {
-    if (FnStr.second.compare("tas_block_predicate") != 0) continue;
+    if (FnStr.second.compare("tas_block_predicate") == 0) {
     // Block Predication
     tas::BlockPredication BP(FnStr.first);
     auto res = BP.run();
@@ -95,11 +95,16 @@ int main(int argc, char * argv[]) {
       Err.print(argv[0], errs());
       return -1;
     }
+    }
+
+    if (FnStr.second.compare("tas_batch_maker") == 0) {
+      // Make Batch version
+      tas::BatchMaker BM(FnStr.first);
+      auto BatchFunc = BM.run();
+      errs() << BatchFunc->getName() << "\n";
+    }
 
     /*
-    // Make Batch version
-    tas::BatchMaker BM(FnStr.first);
-    auto BatchFunc = BM.run();
 
     writeToAsmFile(*M);
     // Loop Splitting

@@ -81,17 +81,19 @@ void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncAr
                                                 AllocaInst * IdxPtr) {
   auto EntryBB = &BatchFunc->front();
 
-  SmallVector<Value *, 4> BatchArgs;
+  SmallVector<std::pair<Value *, bool>, 4> BatchArgs;
   for_each(BatchFuncArgList.begin(), BatchFuncArgList.end(),
       [&] (TASArgAttr & Attr) {
-      if (Attr.IsBatch) BatchArgs.push_back(Attr.Val); });
+      if (Attr.IsBatch) BatchArgs.push_back(make_pair(Attr.Val, Attr.IsDoublePtr)); });
 
   Builder.SetInsertPoint(&EntryBB->front());
   BatchSizeAlloca = Builder.CreateAlloca(BatchFuncArgList[BatchSizeArgPos].Ty);
   Builder.CreateStore(BatchFuncArgList[BatchSizeArgPos].Val, BatchSizeAlloca);
 
-  for (auto & BatchArg : BatchArgs) {
+  for (auto & BatchArgPair : BatchArgs) {
     Builder.SetInsertPoint(&EntryBB->front());
+    auto & BatchArg = BatchArgPair.first;
+    auto IsDoublePtr = BatchArgPair.second;
     auto BatchArgAlloca = Builder.CreateAlloca(BatchArg->getType());
     auto StoreI = findFirstUseInStoreInst(BatchArg);
 
@@ -112,10 +114,22 @@ void BatchMaker::replaceOldArgUsesWithBatchArgs(vector<TASArgAttr> & BatchFuncAr
     auto NumUses = OldAlloca->getNumUses();
     while (NumUses > 0) {
       User * U = OldAlloca->user_back();
-      Builder.SetInsertPoint(cast<Instruction>(U));
-      auto ElemPtr = Builder.CreateGEP(Builder.CreateLoad(BatchArgAlloca),
-          Builder.CreateLoad(IdxPtr));
-      U->replaceUsesOfWith(OldAlloca, ElemPtr);
+      if (IsDoublePtr) {
+        U->replaceUsesOfWith(OldAlloca, BatchArgAlloca);
+        auto Next = cast<Instruction>(U)->getNextNode();
+        if (isa<GetElementPtrInst>(Next)) {
+          Builder.SetInsertPoint(Next);
+          auto NewGEP = Builder.CreateGEP(cast<GetElementPtrInst>(Next)->getPointerOperand(),
+                                        Builder.CreateLoad(IdxPtr));
+          Next->replaceAllUsesWith(NewGEP);
+          Next->eraseFromParent();
+        }
+      } else {
+        Builder.SetInsertPoint(cast<Instruction>(U));
+        auto ElemPtr = Builder.CreateGEP(Builder.CreateLoad(BatchArgAlloca),
+            Builder.CreateLoad(IdxPtr));
+        U->replaceUsesOfWith(OldAlloca, ElemPtr);
+      }
       NumUses--;
     }
   }
