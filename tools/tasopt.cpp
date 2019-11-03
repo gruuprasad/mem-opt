@@ -99,27 +99,17 @@ int main(int argc, char * argv[]) {
     }
 
     if (FnStr.second.compare("tas_batch_maker") == 0) {
-      errs() << "Non batch function " << FnStr.first->getName() << "\n";
-      errs() << "Running block predication\n";
       tas::BlockPredication BP (FnStr.first);
       auto res = BP.run();
       // Make Batch version
-      errs() << "Running batching\n";
       tas::BatchMaker BM(FnStr.first);
       auto BatchFunc = BM.run();
-      errs() << BatchFunc->getName() << "\n";
+      // Loop Splitting
+      DominatorTree DT(*BatchFunc);
+      LoopInfo LI(DT);
+      tas::LoopSplitter LS(BatchFunc, &LI);
+      res = LS.run();
     }
-
-    /*
-
-    writeToAsmFile(*M);
-    // Loop Splitting
-    DominatorTree DT(*BatchFunc);
-    LoopInfo LI(DT);
-    tas::LoopSplitter LS(BatchFunc, &LI);
-    res = LS.run();
-    errs() << res << "\n";
-    */
   }
 
   writeToAsmFile(*M);
