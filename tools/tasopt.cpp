@@ -87,17 +87,20 @@ int main(int argc, char * argv[]) {
 
   for (auto & FnStr : FnLists) {
     if (FnStr.second.compare("tas_block_predicate") == 0) {
-    // Block Predication
-    tas::BlockPredication BP(FnStr.first);
-    auto res = BP.run();
-    if (!res) {
-      errs() << "CFG linearization failed for fn: " << FnStr.second << "\n";
-      Err.print(argv[0], errs());
-      return -1;
-    }
+      // Block Predication
+      tas::BlockPredication BP(FnStr.first);
+      auto res = BP.run();
+      if (!res) {
+        errs() << "CFG linearization failed for fn: " << FnStr.second << "\n";
+        Err.print(argv[0], errs());
+        return -1;
+      }
+      continue;
     }
 
     if (FnStr.second.compare("tas_batch_maker") == 0) {
+      tas::BlockPredication BP (FnStr.first);
+      auto res = BP.run();
       // Make Batch version
       tas::BatchMaker BM(FnStr.first);
       auto BatchFunc = BM.run();
