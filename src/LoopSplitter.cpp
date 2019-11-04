@@ -93,7 +93,6 @@ bool LoopSplitter::run() {
   auto ParentLoop = IRLoop(F->getContext());
   ParentLoop.extractLoopSkeleton(L0);
   auto Index = getLoopIndexVar(L0);
-  errs() << *Index;
 
   std::vector<IRLoop> Loops;
   for (int i = 0; i < AnnotatedVars.size(); ++i) {
@@ -114,16 +113,6 @@ bool LoopSplitter::run() {
 
   // FIXME One extra set in the end
   LoopBlocks.pop_back();
-
-  /*
-  for (auto & Blocks : LoopBlocks) {
-    for (auto & BB : Blocks) {
-      BB->printAsOperand(errs());
-      errs() << "  ";
-    }
-    errs() << "\n";
-  }
-  */
 
   for (int i = 0; i < Loops.size(); ++i) {
     Loops[i].setLoopBlocks(LoopBlocks[i]);
