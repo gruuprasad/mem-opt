@@ -211,21 +211,22 @@ void cloneLoopBasicBlocks(Function * F, Loop * L, ValueToValueMapTy & VMap) {
   LoopTerminator->setSuccessor(1, ClonedBlocks.front());
 }
 
-void insertLLVMPrefetchIntrinsic(Function * F, Instruction * PtrAllocaUse) {
-  IRBuilder<> Builder(PtrAllocaUse);
+CallInst * insertLLVMPrefetchIntrinsic(Function * F, Instruction * PtrAllocaUse, Instruction * InsertBefore = nullptr) {
+  IRBuilder<> Builder(InsertBefore?InsertBefore:PtrAllocaUse);
   auto Ptr = Builder.CreateLoad(PtrAllocaUse->getOperand(0), "prefetch_load");
   auto CastI = Builder.CreateBitCast(Ptr, Builder.getInt8PtrTy(), "prefetch1");
 
   // Add llvm prefetch intrinsic call.
   Type *I32 = Type::getInt32Ty(F->getContext());
   Value *PrefetchFunc = Intrinsic::getDeclaration(F->getParent(), Intrinsic::prefetch);
-  Builder.CreateCall(
+  auto Prefetch = Builder.CreateCall(
       PrefetchFunc,
       {CastI, // Pointer Value
       ConstantInt::get(I32, 0), // read (0) or write (1)
       ConstantInt::get(I32, 3), // no_locality (0) to extreme temporal locality (3)
       ConstantInt::get(I32, 1)} // data (1) or instruction (0)
       );
+  return Prefetch;
 }
 
 /// Replace old value with new value within basic block.

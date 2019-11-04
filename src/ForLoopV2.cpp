@@ -12,6 +12,7 @@ void IRLoop::extractLoopSkeleton(Loop * L) {
   Latch = L->getLoopLatch();
   IdxAlloca = getLoopIndexVar(L);
   PreHeader = L->getLoopPreheader();
+  ExitBlock = Header->getTerminator()->getSuccessor(1);
 }
 
 void IRLoop::analyze(Loop * L) {
@@ -23,10 +24,7 @@ void IRLoop::analyze(Loop * L) {
   }
 }
 
-void IRLoop::constructEmptyLoop(AllocaInst * TripCount, BasicBlock * ExitBlock) {
-  auto & Ctx = ExitBlock->getContext();
-  const auto & F = ExitBlock->getParent();
-
+void IRLoop::constructEmptyLoop(AllocaInst * TripCount, Function * F) {
   Latch = BasicBlock::Create(Ctx, "latch", F);
   Header = BasicBlock::Create(Ctx, "header", F, Latch);
   PreHeader = BasicBlock::Create(Ctx, "preheader", F, Header);
@@ -56,7 +54,7 @@ void IRLoop::constructEmptyLoop(AllocaInst * TripCount, BasicBlock * ExitBlock) 
   auto IdxVal = Builder.CreateLoad(IdxAlloca);
   auto TC = Builder.CreateLoad(TripCount);
   auto * Icmp = Builder.CreateICmpSLT(IdxVal, TC, "loop-predicate");
-  Builder.CreateCondBr(Icmp, EmptyBody, ExitBlock);
+  Builder.CreateCondBr(Icmp, EmptyBody, EmptyBody);
 }
 
 void IRLoop::setLoopBlocks(std::vector<BasicBlock *> & BlockList) {

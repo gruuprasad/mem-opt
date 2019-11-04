@@ -35,7 +35,7 @@ void setAnnotationInFunctionObject(llvm::Module * M);
 void cloneLoopBasicBlocks(llvm::Function * F, llvm::Loop * L,
                           llvm::ValueToValueMapTy & VMap);
 
-void insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I);
+llvm::CallInst * insertLLVMPrefetchIntrinsic(llvm::Function * F, llvm::Instruction * I, llvm::Instruction * InsertBefore);
 
 void replaceUsesWithinBB(llvm::Value * From, llvm::Value * To,
                          llvm::BasicBlock * BB);

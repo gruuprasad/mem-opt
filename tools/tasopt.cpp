@@ -99,8 +99,6 @@ int main(int argc, char * argv[]) {
     }
 
     if (FnStr.second.compare("tas_batch_maker") == 0) {
-      tas::BlockPredication BP (FnStr.first);
-      auto res = BP.run();
       // Make Batch version
       tas::BatchMaker BM(FnStr.first);
       auto BatchFunc = BM.run();
@@ -108,7 +106,7 @@ int main(int argc, char * argv[]) {
       DominatorTree DT(*BatchFunc);
       LoopInfo LI(DT);
       tas::LoopSplitter LS(BatchFunc, &LI);
-      res = LS.run();
+      auto res = LS.run();
     }
   }
 

@@ -7,24 +7,28 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
+#include "Util.h"
+
 namespace tas {
 
 // This is similar to Loop object available in LoopInfo object
 // but simple.
 class IRLoop {
+  llvm::LLVMContext & Ctx;
   llvm::BasicBlock * PreHeader;
   llvm::BasicBlock * Header;
   llvm::BasicBlock * Latch;
   llvm::BasicBlock * EmptyBody; // Useful for creating empty loop.
   llvm::AllocaInst * IdxAlloca;
   llvm::SmallVector<llvm::BasicBlock *, 4> Blocks;
+  llvm::BasicBlock * ExitBlock;
 
 public:
-  IRLoop() = default;
+  IRLoop(llvm::LLVMContext & C) : Ctx(C) {}
 
   void analyze(llvm::Loop * L);
   void constructEmptyLoop(llvm::AllocaInst * TripCount,
-                          llvm::BasicBlock * InsertAfter);
+                          llvm::Function * F);
   void extractLoopSkeleton(llvm::Loop * L);
   void setLoopBlocks(std::vector<llvm::BasicBlock *> & Blocks);
 
@@ -34,6 +38,22 @@ public:
 
   llvm::BasicBlock * getHeader() {
     return Header;
+  }
+
+  llvm::BasicBlock * getLatch() {
+    return Latch;
+  }
+
+  llvm::BasicBlock * getExitBlock() {
+    return ExitBlock;
+  }
+
+  void setExitBlock(llvm::BasicBlock * ExitBB) {
+    setSuccessor(Header, ExitBB, 1);
+  }
+
+  bool contains(llvm::BasicBlock * BB) {
+    return std::find(Blocks.begin(), Blocks.end(), BB) != Blocks.end();
   }
 
   void printLooopInfo() {

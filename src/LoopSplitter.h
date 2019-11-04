@@ -32,16 +32,26 @@ struct Stats {
 };
 
 class LoopSplitter {
+  using ListOfBlocksType = std::vector<std::vector<llvm::BasicBlock *>>; 
   llvm::Function * F;
   llvm::LoopInfo * LI;
   Stats stat;
   llvm::SwitchInst * SwitchI;
 
+  llvm::SmallVector<llvm::Value *, 4> AnnotatedVars;
+  llvm::SmallVector<llvm::LoadInst *, 4> VarUsePoints;
+  llvm::SmallVector<llvm::Instruction *, 4> SplitPoints;
+  llvm::SmallVector<llvm::BasicBlock *, 4> EndBlocks;
+  llvm::BasicBlock * BodyEnd;
+  llvm::SmallVector<std::pair<llvm::BasicBlock *, llvm::BasicBlock *>, 4> LoopBodyRange;
   llvm::BasicBlock * ExitBlock;
   llvm::DenseMap<const llvm::BasicBlock *, llvm::ConstantInt *> BBToId;
   llvm::SmallVector<llvm::BasicBlock *, 4> LoopSplitEdgeBlocks;
-  bool prepareForLoopSplit(llvm::Function * F, llvm::Loop * L0, Stats & stat);
+  ListOfBlocksType LoopBlocks;
+  bool prepareForLoopSplit(llvm::Function * F, Stats & stat);
   void fixValueDependenceBetWeenLoops();
+  void addBatchArrayForIntermediateVars(llvm::Loop * L0);
+  void traverseLoopBody(std::vector<llvm::BasicBlock *> & LoopBlocks, llvm::BasicBlock * Start);
 public:
   LoopSplitter(llvm::Function * F_, llvm::LoopInfo * LI_)
     : F(F_), LI(LI_) {}
@@ -49,7 +59,7 @@ public:
   bool run();
   Stats & getStats() { return stat; }
   void addAdapterBasicBlocks(llvm::Loop * L0, llvm::Instruction * SP, llvm::Value * Idx);
-  void doLoopSplit(llvm::Function * F, llvm::Loop * L0, llvm::BasicBlock * SplitBlock);
+  //void doLoopSplit(llvm::Function * F, llvm::Loop * L0, llvm::Instruction * SplitPoint);
 };
 
 } // tas namespace
