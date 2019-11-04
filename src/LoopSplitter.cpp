@@ -86,18 +86,19 @@ bool LoopSplitter::run() {
   EndBlocks.push_back(BodyEnd);
 
   auto EntryBlock = getPreLoopBlock(L0);
-  EntryBlock->printAsOperand(errs()); errs() << " - Entry\n";
   ExitBlock = L0->getExitBlock();
   auto TripCount = getLoopTripCount(L0);
   assert (ExitBlock && "Loop must have a single exit block!");
 
   auto ParentLoop = IRLoop(F->getContext());
   ParentLoop.extractLoopSkeleton(L0);
+  auto Index = getLoopIndexVar(L0);
+  errs() << *Index;
 
   std::vector<IRLoop> Loops;
   for (int i = 0; i < AnnotatedVars.size(); ++i) {
     Loops.push_back(IRLoop(F->getContext()));
-    Loops.back().constructEmptyLoop(TripCount, F);
+    Loops.back().constructEmptyLoop(TripCount, Index, F);
   }
   Loops.push_back(ParentLoop);
 
@@ -128,7 +129,6 @@ bool LoopSplitter::run() {
     Loops[i].setLoopBlocks(LoopBlocks[i]);
   }
 
-  F->print(errs());
   return true;
 }
 

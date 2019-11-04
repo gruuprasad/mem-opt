@@ -24,7 +24,7 @@ void IRLoop::analyze(Loop * L) {
   }
 }
 
-void IRLoop::constructEmptyLoop(AllocaInst * TripCount, Function * F) {
+void IRLoop::constructEmptyLoop(AllocaInst * TripCount, AllocaInst * Idx, Function * F) {
   Latch = BasicBlock::Create(Ctx, "latch", F);
   Header = BasicBlock::Create(Ctx, "header", F, Latch);
   PreHeader = BasicBlock::Create(Ctx, "preheader", F, Header);
@@ -32,18 +32,18 @@ void IRLoop::constructEmptyLoop(AllocaInst * TripCount, Function * F) {
 
   // Create Loop Index Variable.
   IRBuilder<> Builder(Ctx);
-  Builder.SetInsertPoint(&F->getEntryBlock().front());
-  IdxAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
+  //Builder.SetInsertPoint(&F->getEntryBlock().front());
+  //IdxAlloca = Builder.CreateAlloca(Builder.getInt32Ty());
 
   // Set Index variable to 0 in preheader block.
   Builder.SetInsertPoint(PreHeader);
-  Builder.CreateStore(Builder.getInt32(0), IdxAlloca);
+  Builder.CreateStore(Builder.getInt32(0), Idx);
   Builder.CreateBr(Header);
 
   // Populate latch block
   Builder.SetInsertPoint(Latch);
   auto BackEdge = Builder.CreateBr(Header);
-  addIncrementIndexOp(IdxAlloca, BackEdge);
+  addIncrementIndexOp(Idx, BackEdge);
 
   // Branch Empty block to latch
   Builder.SetInsertPoint(EmptyBody);
@@ -51,7 +51,7 @@ void IRLoop::constructEmptyLoop(AllocaInst * TripCount, Function * F) {
 
   // Populate header block
   Builder.SetInsertPoint(Header);
-  auto IdxVal = Builder.CreateLoad(IdxAlloca);
+  auto IdxVal = Builder.CreateLoad(Idx);
   auto TC = Builder.CreateLoad(TripCount);
   auto * Icmp = Builder.CreateICmpSLT(IdxVal, TC, "loop-predicate");
   Builder.CreateCondBr(Icmp, EmptyBody, EmptyBody);

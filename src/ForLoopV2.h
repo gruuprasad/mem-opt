@@ -27,7 +27,7 @@ public:
   IRLoop(llvm::LLVMContext & C) : Ctx(C) {}
 
   void analyze(llvm::Loop * L);
-  void constructEmptyLoop(llvm::AllocaInst * TripCount,
+  void constructEmptyLoop(llvm::AllocaInst * TripCount, llvm::AllocaInst * Idx,
                           llvm::Function * F);
   void extractLoopSkeleton(llvm::Loop * L);
   void setLoopBlocks(std::vector<llvm::BasicBlock *> & Blocks);
