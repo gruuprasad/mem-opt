@@ -1,6 +1,8 @@
 # TAS-OPT
 
 ## Getting Started
+TAS-OPT implements optimisation to enhance cache locality in network packet processing code.
+It also contains contorl flow linearization transform.
 
 ### Prerequisites
 
@@ -19,16 +21,18 @@ $ cmake ..
 $ make
 ```
 
-## To test the Pass
-
-Use `opt` tool to load the pass and invoke in llvm pass pipeline.
-Running below command from `build` directory:
+## To run unit tests
 
 ```
-$ opt -load lib/libLLVMHelloFunction.so -hello < examples/hello_world.bc > /dev/null 
+$ cd build/bin
+command: ./tests <TEST_DIR_PATH>
+In our case test files are in  $PROJECT_ROOT/test/unittests/input
+$./tests ../../test/unittests/input/
 ```
-Expected output:
 
+## Running tool
 ```
-Hello: main
-```
+$ cd build/bin
+$ ./tasopt -c <input C source file>
+## Documentation
+Few design notes can be found in the project wiki.
