@@ -9,6 +9,7 @@
 namespace tas {
 
 // TODO Rewrite this class with clean interface.
+// use IRLoop class for new for loop usages.
 /// For loop construct containing single logical body
 class TASForLoop {
   llvm::Function * F;

@@ -53,7 +53,7 @@ void BlockPredication::linearizeControlFlow() {
   // For each Action block add a Predicate block.
   insertPredicateBlocks();
     
-  setBlocksSuccessors(PredicateBlocks);
+  setActionBlocksSuccessors(PredicateBlocks);
 
   setPredBlockSuccessors(PredicateBlocks, ActionBlocks);
 
@@ -64,6 +64,7 @@ void BlockPredication::linearizeControlFlow() {
   }
 }
 
+// Handling phi nodes. These cases appeared in tas code.
 void BlockPredication::movePhiNodeToPredicateBlock(BasicBlock * PredBB,
                                                    BasicBlock * ActionBB) {
   for (auto I = ActionBB->begin(); isa<PHINode>(I);) {
@@ -106,7 +107,7 @@ void BlockPredication::setPathIDCondition(BranchInst * BI,
   Builder.CreateStore(PathIdVal, MaskIDAlloca);
 }
 
-void BlockPredication::setBlocksSuccessors(deque<BasicBlock *> & PredicateBlocks) {
+void BlockPredication::setActionBlocksSuccessors(deque<BasicBlock *> & PredicateBlocks) {
   BranchInst * BI = cast<BranchInst>(F->getEntryBlock().getTerminator());
   BranchInst::Create(PredicateBlocks.front(), BI);
   BI->eraseFromParent();
@@ -122,7 +123,6 @@ void BlockPredication::insertPredicateBlocks() {
   for (int i = 0; i < ActionBlocks.size(); ++i) {
     auto PB = BasicBlock::Create(F->getContext(),
         string("predicate_") + std::to_string(i), F, ActionBlocks[i]);
-    //ActionBlocks[i]->replaceAllUsesWith(PB);
     PredicateBlocks.push_back(PB);
   }
 }

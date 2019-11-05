@@ -1,6 +1,5 @@
 #include "LoopSplitter.h"
-#include "ForLoop.h"
-#include "ForLoopV2.h"
+#include "IRLoop.h"
 #include "Util.h"
 
 #include <llvm/ADT/SmallVector.h>
@@ -81,6 +80,7 @@ bool LoopSplitter::run() {
 
   addBatchArrayForIntermediateVars(L0);
 
+  // Collect existing loop's ingrediants.
   auto BodyBegin = L0->getHeader()->getTerminator()->getSuccessor(0);
   BodyEnd = L0->getLoopLatch()->getSinglePredecessor();
   EndBlocks.push_back(BodyEnd);
@@ -90,10 +90,16 @@ bool LoopSplitter::run() {
   auto TripCount = getLoopTripCount(L0);
   assert (ExitBlock && "Loop must have a single exit block!");
 
+  // Parent loop skeleton is extracted and used as a new loop.
   auto ParentLoop = IRLoop(F->getContext());
   ParentLoop.extractLoopSkeleton(L0);
+
+  // Same index is used in all the loops.
+  // It gets reset to 0 in preheader basic block.
   auto Index = getLoopIndexVar(L0);
 
+  // Create skeleton loop. Number of loops depend on how many variables
+  // we need to prefetch.
   std::vector<IRLoop> Loops;
   for (int i = 0; i < AnnotatedVars.size(); ++i) {
     Loops.push_back(IRLoop(F->getContext()));
@@ -108,6 +114,7 @@ bool LoopSplitter::run() {
   }
   Loops.back().setExitBlock(ExitBlock);
 
+  // Divide original loop body into partitions and assign it to new loop parts.
   std::vector<BasicBlock *> Blocks;
   traverseLoopBody(Blocks, BodyBegin);
 

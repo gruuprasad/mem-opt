@@ -1,4 +1,4 @@
-#ifndef TAS_LOOPSPLITTERPASS_H
++ TAS_ROOT_INCLUDE + #ifndef TAS_LOOPSPLITTERPASS_H
 #define TAS_LOOPSPLITTERPASS_H
 
 #include <llvm/IR/Function.h>

@@ -11,7 +11,7 @@
 
 namespace tas {
 
-// This class transforms the function in place.
+// Linerize the control flow in a function.
 class BlockPredication {
   using BlockToIntMapType = llvm::DenseMap<llvm::BasicBlock *, unsigned>;
 
@@ -26,7 +26,7 @@ class BlockPredication {
 
   void linearizeControlFlow();
   void setPathIDCondition(llvm::BranchInst * BI, BlockToIntMapType & MaskIDMap);
-  void setBlocksSuccessors(std::deque<llvm::BasicBlock *> & PredicateBlocks);
+  void setActionBlocksSuccessors(std::deque<llvm::BasicBlock *> & PredicateBlocks);
   void insertPredicateBlocks();
   void movePhiNodeToPredicateBlock(llvm::BasicBlock * PredBB,
                                    llvm::BasicBlock * ActionBB);

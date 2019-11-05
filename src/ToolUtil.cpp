@@ -10,6 +10,8 @@ using namespace std;
 
 namespace tas {
 
+static std::string TAS_ROOT_INCLUDE { "-I/home/gp/mpi-sws/tas/" };
+
 string generateIR(string InFile, string Input_dir, bool isTas = false) {
   // Compile source to LLVM IR using clang
   string OutFile;
@@ -17,17 +19,16 @@ string generateIR(string InFile, string Input_dir, bool isTas = false) {
     OutFile = InFile.substr(0, InFile.find_last_of(".")) +  string(".ll");
     string tags ("-O0 -Xclang -disable-O0-optnone -S -emit-llvm ");
     if (isTas) {
-      tags += "-std=gnu99 -Wall -Werror -I. -I/home/gp/mpi-sws/tas/include/ -march=native "
+      tags += "-std=gnu99 -Wall -Werror -I." + TAS_ROOT_INCLUDE + "include/ -march=native "
         "-fno-omit-frame-pointer -Wno-unused-variable -Wno-unused-function "
         "-Wno-address-of-packed-member -Wno-sometimes-uninitialized "
         "-I/usr/share/dpdk/x86_64-native-linuxapp-gcc/include "
         "-I/usr/share/dpdk/x86_64-native-linuxapp-gcc/include/dpdk "
         "-I/usr/share/dpdk/x86_64-native-linuxapp-gcc/include/x86_64-linux-gnu/dpdk/ "
-        "-I/usr/include/dpdk "
-        "-I/home/gp/mpi-sws/tas -I/home/gp/mpi-sws/tas/lib/tas/include "
-        "-I/home/gp/mpi-sws/tas/lib/sockets/include "
-        "-I/home/gp/mpi-sws/tas/tas/include " 
-        "-I/home/gp/mpi-sws/tas/tas/fast "; 
+        "-I/usr/include/dpdk " + TAS_ROOT_INCLUDE + "lib/tas/include "
+        + TAS_ROOT_INCLUDE + "lib/sockets/include "
+        + TAS_ROOT_INCLUDE + "tas/include " 
+        + TAS_ROOT_INCLUDE + "tas/fast "; 
     }
 
     string GenerateIRCmd = string("clang ") + tags + string("-o") +

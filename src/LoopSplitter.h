@@ -18,9 +18,6 @@ class AllocaInst;
 
 namespace tas {
 
-class TASForLoop;
-llvm::AllocaInst * getLoopIndexVar(llvm::Loop * L);
-
 struct Stats {
   unsigned AnnotatedVarsSize;
   unsigned VarUsePointsSize;
@@ -31,6 +28,10 @@ struct Stats {
   Stats(const Stats & o) = default;
 };
 
+/// This class operates on a function.
+/// Preconditions: at least one variable annotated as EXPENSIVE
+///                at least one loop.
+/// Class updates the function in place. It doesn't create new function.
 class LoopSplitter {
   using ListOfBlocksType = std::vector<std::vector<llvm::BasicBlock *>>; 
   llvm::Function * F;
