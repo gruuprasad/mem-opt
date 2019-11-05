@@ -161,6 +161,7 @@ TEST_CASE("lot of if else") {
   REQUIRE(ret == 0);
 }
 
+/*
 TEST_CASE("fast_flows_packet") {
   std::string fileprefix = "fast_flows";
   auto M = parseIR(generateIR(fileprefix + string(".c"), input_dir, true), input_dir);
@@ -182,3 +183,4 @@ TEST_CASE("fast_flows_packet") {
   //auto ret = system(binary.c_str());
   //REQUIRE(ret == 0);
 }
+*/

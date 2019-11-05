@@ -269,6 +269,7 @@ TEST_CASE("input parameter struct type") {
   REQUIRE(ret == 0);
 }
 
+/*
 TEST_CASE("make fast_flows_packet fn as batched form") {
   std::string filePrefix = "fast_flows";
   auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir, true), input_dir);
@@ -297,3 +298,4 @@ TEST_CASE("make fast_flows_packet fn as batched form") {
   // Generate object for unit under test.
   auto TestObject = generateObject(writeToBitCodeFile(*M));
 }
+*/

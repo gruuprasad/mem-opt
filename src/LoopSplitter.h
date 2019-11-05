@@ -59,7 +59,6 @@ public:
   bool run();
   Stats & getStats() { return stat; }
   void addAdapterBasicBlocks(llvm::Loop * L0, llvm::Instruction * SP, llvm::Value * Idx);
-  //void doLoopSplit(llvm::Function * F, llvm::Loop * L0, llvm::Instruction * SplitPoint);
 };
 
 } // tas namespace

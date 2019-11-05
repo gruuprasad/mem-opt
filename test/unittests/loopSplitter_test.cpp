@@ -38,16 +38,16 @@ static unique_ptr<Module> parseIR(string Filename, string FileDir) {
   return M;
 }
 
+/*
 TEST_CASE("fn with single loop") {
   std::string filePrefix = "loopsplitter_test1";
   std::string functionName = "fn";
 
   auto IR = generateIR(filePrefix + string(".c"), input_dir);
 
-  /*
+ 
   vector<string> OptList {"indvars", "loop-simplify", "lcssa"};
   IR= runOpt(IR, input_dir, OptList);
-  */
 
   auto M = parseIR(IR, input_dir);
   REQUIRE(M != nullptr);
@@ -75,7 +75,9 @@ TEST_CASE("fn with single loop") {
   auto ret = system(binary.c_str());
   REQUIRE(ret == 0);
 }
+*/
 
+/*
 TEST_CASE("fast_flows_packet loop split") {
   std::string filePrefix = "fast_flows";
   auto M = parseIR(generateIR(filePrefix + string(".c"), input_dir, true), input_dir);
@@ -96,3 +98,4 @@ TEST_CASE("fast_flows_packet loop split") {
     auto TestObject = generateObject(asmFile);
   }
 }
+*/

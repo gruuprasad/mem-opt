@@ -6,7 +6,7 @@
 
 * `g++` or `clang++`
 * `cmake `3.4.3 or later
-* `LLVM framework` 7.0.1 or later
+* `LLVM framework` 8.0.1
 * `git`
 
 ### Building
